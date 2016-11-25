@@ -49,7 +49,8 @@ let client = new Wit({
 // response to the user typing "help"
 slapp.message('.*', ['mention', 'direct_message'], (msg, text) => {
     client.converse('session1', text, {}).then((data) => {
-        msg.say(data.msg)
+        console.log(data);
+        msg.say(data.msg || 'nothing to say')
     })
 });
 
