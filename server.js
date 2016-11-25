@@ -26,11 +26,16 @@ let client = new Wit({
             });
         },
         getForecast({sessionId, context, text, entities}) {
-            console.log(`Session ${sessionId} received ${text}`);
-            console.log(`The current context is ${JSON.stringify(context)}`);
-            console.log(`Wit extracted ${JSON.stringify(entities)}`);
-            return new Promise((resolve) => {
-                return resolve();
+            return new Promise((resolve, reject) => {
+                let location = firstEntityValue(entities, 'location');
+                if (location) {
+                    context.forecast = 'sunny in ' + location; // we should call a weather API here
+                    delete context.missingLocation;
+                } else {
+                    context.missingLocation = true;
+                    delete context.forecast;
+                }
+                return resolve(context);
             });
         }
     }
