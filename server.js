@@ -4,7 +4,7 @@ const express = require('express');
 const Slapp = require('slapp');
 const ConvoStore = require('slapp-convo-beepboop');
 const Context = require('slapp-context-beepboop');
-const Wit = require('node-wit');
+const {Wit} = require('node-wit');
 
 // use `PORT` env var on Beep Boop - default to 3000 locally
 let port = process.env.PORT || 3000;
