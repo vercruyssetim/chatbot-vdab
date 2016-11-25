@@ -43,7 +43,7 @@ let client = new Wit({
 
 // response to the user typing "help"
 slapp.message('.*', ['mention', 'direct_message'], (msg, text) => {
-    client.message(text).then((data) => {
+    client.converse('session1', text, '').then((data) => {
         msg.say('Wit ai response: ' + JSON.stringify(data))
     })
 });
