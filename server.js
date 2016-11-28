@@ -42,6 +42,8 @@ let client = new Wit({
         },
         getForecast({context, entities}) {
             return new Promise((resolve, reject) => {
+                console.log('context: ', JSON.stringify(context));
+                console.log('entities: ', JSON.stringify(entities));
                 let location = firstEntityValue(entities, 'location');
                 if (location) {
                     context.forecast = 'sunny in ' + location; // we should call a weather API here
@@ -65,6 +67,7 @@ let client = new Wit({
 slapp.message('.*', ['mention', 'direct_message'], (msg, text) => {
     client.converse('session1', text, {}).then((data) => {
         console.log(data);
+        console.log(data.entities.location);
         msg.say(data.msg || 'nothing to say')
     })
 });
