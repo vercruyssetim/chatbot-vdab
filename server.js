@@ -28,6 +28,25 @@ const firstEntityValue = (entities, entity) => {
     return typeof val === 'object' ? val.value : val;
 };
 
+class MessageSender{
+    constructor(){
+        this.senders = {};
+    }
+
+    addSender(sessionId, sender){
+        this.senders['sessionId'] = sender;
+    }
+
+    sendMessage(sessionId, text){
+        this.senders['sessionId'].say(text);
+    }
+
+    removeSender(sessionId){
+        delete this.senders['sessionId'];
+    }
+}
+const messageSender = new MessageSender();
+
 let client = new Wit({
     accessToken: '4KLPNU647TKNYKGL6BYHQZK2MIZSFSQI',
     actions: {
@@ -36,6 +55,7 @@ let client = new Wit({
             const {text, quickreplies} = response;
             console.log('receiving...', JSON.stringify(request));
             console.log('sending...', JSON.stringify(response));
+            messageSender.sendMessage(sessionId, response.text);
             return Promise.resolve();
         },
         getForecast({context, entities}) {
@@ -54,18 +74,14 @@ let client = new Wit({
     }
 });
 
-
-//*********************************************
-// Setup different handlers for messages
-//*********************************************
-
-// response to the user typing "help"
 slapp.message('.*', ['mention', 'direct_message'], (msg, text) => {
-    client.runActions('someSession', text, {}).then((context, param2) => {
-        console.log('Wit context: ' + JSON.stringify(context));
-        console.log('Wit param2: ' + JSON.stringify(param2));
-        msg.say(context.text || 'nothing to say')
-    })
+    let sessionId = 'someSessionId';
+    messageSender.addSender(sessionId, msg);
+    client.runActions(sessionId, text, {})
+        .then((context) => {
+            console.log('saving context: ' + JSON.stringify(context));
+            messageSender.removeSender(sessionId);
+        })
         .catch(console.error);
 });
 
