@@ -47,6 +47,8 @@ class MessageSender{
 }
 const messageSender = new MessageSender();
 
+const contexts = [];
+
 let client = new Wit({
     accessToken: '4KLPNU647TKNYKGL6BYHQZK2MIZSFSQI',
     actions: {
@@ -76,10 +78,12 @@ let client = new Wit({
 
 slapp.message('.*', ['mention', 'direct_message'], (msg, text) => {
     let sessionId = 'someSessionId';
+    let context = contexts['sessionId'] || {};
     messageSender.addSender(sessionId, msg);
-    client.runActions(sessionId, text, {})
+    client.runActions(sessionId, text, context)
         .then((context) => {
             console.log('saving context: ' + JSON.stringify(context));
+            contexts['sessionId'] = context;
             messageSender.removeSender(sessionId);
         })
         .catch(console.error);
