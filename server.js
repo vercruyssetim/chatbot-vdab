@@ -61,8 +61,9 @@ let client = new Wit({
 
 // response to the user typing "help"
 slapp.message('.*', ['mention', 'direct_message'], (msg, text) => {
-    client.runActions('someSession', text, {}).then((context) => {
-        console.log('Wit response: ' + JSON.stringify(context));
+    client.runActions('someSession', text, {}).then((context, param2) => {
+        console.log('Wit context: ' + JSON.stringify(context));
+        console.log('Wit param2: ' + JSON.stringify(param2));
         msg.say(context.text || 'nothing to say')
     })
         .catch(console.error);
