@@ -61,8 +61,6 @@ let client = new Wit({
             return Promise.resolve();
         },
         getForecast({context, entities}) {
-            console.log('context: ', JSON.stringify(context));
-            console.log('entities: ', JSON.stringify(entities));
             let location = firstEntityValue(entities, 'location');
             if (location) {
                 context.forecast = 'sunny in ' + location; // we should call a weather API here
@@ -71,13 +69,15 @@ let client = new Wit({
                 context.missingLocation = true;
                 delete context.forecast;
             }
+            console.log('context: ', JSON.stringify(context));
+            console.log('entities: ', JSON.stringify(entities));
             return Promise.resolve(context);
         }
     }
 });
 
 slapp.message('.*', ['mention', 'direct_message'], (msg, text) => {
-    let sessionId = 'someSessionId';
+    let sessionId = 'otherSession';
     let context = contexts['sessionId'] || {};
     messageSender.addSender(sessionId, msg);
     client.runActions(sessionId, text, context)
