@@ -16,4 +16,4 @@ class MessageService{
     }
 }
 const messageService = new MessageService();
-module.exports = MessageService;
+module.exports = messageService;
