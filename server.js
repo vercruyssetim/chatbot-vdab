@@ -34,26 +34,22 @@ let client = new Wit({
         send(request, response) {
             const {sessionId, context, entities} = request;
             const {text, quickreplies} = response;
-            return new Promise(function (resolve, reject) {
-                console.log('receiving...', JSON.stringify(request));
-                console.log('sending...', JSON.stringify(response));
-                return resolve();
-            });
+            console.log('receiving...', JSON.stringify(request));
+            console.log('sending...', JSON.stringify(response));
+            return Promise.resolve();
         },
         getForecast({context, entities}) {
-            return new Promise((resolve, reject) => {
-                console.log('context: ', JSON.stringify(context));
-                console.log('entities: ', JSON.stringify(entities));
-                let location = firstEntityValue(entities, 'location');
-                if (location) {
-                    context.forecast = 'sunny in ' + location; // we should call a weather API here
-                    delete context.missingLocation;
-                } else {
-                    context.missingLocation = true;
-                    delete context.forecast;
-                }
-                return resolve(context);
-            });
+            console.log('context: ', JSON.stringify(context));
+            console.log('entities: ', JSON.stringify(entities));
+            let location = firstEntityValue(entities, 'location');
+            if (location) {
+                context.forecast = 'sunny in ' + location; // we should call a weather API here
+                delete context.missingLocation;
+            } else {
+                context.missingLocation = true;
+                delete context.forecast;
+            }
+            return Promise.resolve(context);
         }
     },
     logger: new log.Logger(log.debug)
