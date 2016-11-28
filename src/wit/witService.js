@@ -23,6 +23,7 @@ class WitService {
 
     handleInteractive(){
         return (msg, text) => {
+            console.log(JSON.stringify(msg));
             let sessionId = 'session3';
             let context = this.sessionService.getContext(sessionId);
             this.messageService.addSender(sessionId, msg);
