@@ -32,12 +32,15 @@ let client = new Wit({
     accessToken: '4KLPNU647TKNYKGL6BYHQZK2MIZSFSQI',
     actions: {
         send(request, response) {
-            return new Promise((resolve) => {
-                console.log(JSON.stringify(response));
+            const {sessionId, context, entities} = request;
+            const {text, quickreplies} = response;
+            return new Promise(function(resolve, reject) {
+                console.log('receiving...', JSON.stringify(request));
+                console.log('sending...', JSON.stringify(response));
                 return resolve();
             });
         },
-        getForecast({sessionId, context, text, entities}) {
+        getForecast({context, entities}) {
             return new Promise((resolve, reject) => {
                 let location = firstEntityValue(entities, 'location');
                 if (location) {
