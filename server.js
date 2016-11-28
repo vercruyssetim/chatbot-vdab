@@ -21,20 +21,9 @@ class Server {
 
     $onInit() {
         this.port = this.process.env.PORT || 3000;
-        this.slapp = this.initSlap();
         this.witClient = this.initWitClient();
-        this.initServer();
-    }
-
-    initSlap() {
-        let slapp = this.Slapp({
-            // Beep Boop sets the SLACK_VERIFY_TOKEN env var
-            verify_token: this.process.env.SLACK_VERIFY_TOKEN,
-            convo_store: this.ConvoStore(),
-            context: this.Context()
-        });
-        slapp.message('.*', ['mention', 'direct_message'], this.witResponse);
-        return slapp;
+        this.slapp = this.initSlap(this.witClient);
+        this.initServer(this.slapp);
     }
 
     initWitClient() {
@@ -47,8 +36,19 @@ class Server {
         });
     }
 
-    initServer() {
-        let server = this.slapp.attachToExpress(express());
+    initSlap(witClient) {
+        let slapp = this.Slapp({
+            // Beep Boop sets the SLACK_VERIFY_TOKEN env var
+            verify_token: this.process.env.SLACK_VERIFY_TOKEN,
+            convo_store: this.ConvoStore(),
+            context: this.Context()
+        });
+        slapp.message('.*', ['mention', 'direct_message'], this.interactiveWit(this.witClient));
+        return slapp;
+    }
+
+    initServer(slapp) {
+        let server = slapp.attachToExpress(express());
 
         server.listen(this.port, (err) => {
             if (err) {
@@ -59,16 +59,18 @@ class Server {
         });
     }
 
-    witResponse(msg, text) {
-        let sessionId = 'session3';
-        let context = this.sessionService.getContext(sessionId);
-        this.messageService.addSender(sessionId, msg);
-        this.witClient.runActions(sessionId, text, context)
-            .then((context) => {
-                this.sessionService.setContext(context);
-                this.messageService.removeSender(sessionId);
-            })
-            .catch(console.error);
+    interactiveWit(witclient){
+        return (msg, text) => {
+            let sessionId = 'session3';
+            let context = this.sessionService.getContext(sessionId);
+            this.messageService.addSender(sessionId, msg);
+            witClient.runActions(sessionId, text, context)
+                .then((context) => {
+                    this.sessionService.setContext(context);
+                    this.messageService.removeSender(sessionId);
+                })
+                .catch(console.error);
+        }
     }
 
     send(request, response) {
