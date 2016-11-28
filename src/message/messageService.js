@@ -15,5 +15,5 @@ class MessageService{
         delete this.senders[sessionId];
     }
 }
-
+const messageService = new MessageService();
 module.exports = MessageService;

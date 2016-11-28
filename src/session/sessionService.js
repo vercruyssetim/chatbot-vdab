@@ -17,4 +17,5 @@ class SessionService{
         }
     }
 }
-module.exports = SessionService;
+const sessionService = new SessionService();
+module.exports = sessionService;

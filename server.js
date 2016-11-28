@@ -3,11 +3,11 @@ const Slapp = require('slapp');
 const ConvoStore = require('slapp-convo-beepboop');
 const Context = require('slapp-context-beepboop');
 const {Wit, log} = require('node-wit');
-const MessageService = require('./src/message/messageService');
-const SessionService = require('./src/session/sessionService');
+const messageService = require('./src/message/messageService');
+const sessionService = require('./src/session/sessionService');
 
 class Server {
-    constructor(express, Slapp, ConvoStore, Context, Wit, log, process, MessageService, SessionService) {
+    constructor(express, Slapp, ConvoStore, Context, Wit, log, process, messageService, sessionService) {
         this.express = express;
         this.Slapp = Slapp;
         this.ConvoStore = ConvoStore;
@@ -15,8 +15,8 @@ class Server {
         this.Wit = Wit;
         this.log = log;
         this.process = process;
-        this.sessionService = new SessionService();
-        this.messageService = new MessageService();
+        this.sessionService = sessionService;
+        this.messageService = messageService;
     }
 
     $onInit() {
@@ -43,7 +43,7 @@ class Server {
             convo_store: this.ConvoStore(),
             context: this.Context()
         });
-        slapp.message('.*', ['mention', 'direct_message'], this.interactiveWit(this.witClient));
+        slapp.message('.*', ['mention', 'direct_message'], this.interactiveWit(this.witClient, this.sessionService, this.messageService));
         return slapp;
     }
 
@@ -59,15 +59,15 @@ class Server {
         });
     }
 
-    interactiveWit(witClient){
+    interactiveWit(witClient, sessionService, messageService){
         return (msg, text) => {
             let sessionId = 'session3';
-            let context = this.sessionService.getContext(sessionId);
-            this.messageService.addSender(sessionId, msg);
+            let context = sessionService.getContext(sessionId);
+            messageService.addSender(sessionId, msg);
             witClient.runActions(sessionId, text, context)
                 .then((context) => {
-                    this.sessionService.setContext(context);
-                    this.messageService.removeSender(sessionId);
+                    sessionService.setContext(context);
+                    messageService.removeSender(sessionId);
                 })
                 .catch(console.error);
         }
@@ -108,5 +108,5 @@ class Server {
     }
 }
 
-const server = new Server(express, Slapp, ConvoStore, Context, Wit, log, process, MessageService, SessionService);
+const server = new Server(express, Slapp, ConvoStore, Context, Wit, log, process, messageService, sessionService);
 server.$onInit();
