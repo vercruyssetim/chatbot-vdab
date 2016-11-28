@@ -59,7 +59,7 @@ class Server {
         });
     }
 
-    interactiveWit(witclient){
+    interactiveWit(witClient){
         return (msg, text) => {
             let sessionId = 'session3';
             let context = this.sessionService.getContext(sessionId);
