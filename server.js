@@ -62,10 +62,10 @@ let client = new Wit({
 
 // response to the user typing "help"
 slapp.message('.*', ['mention', 'direct_message'], (msg, text) => {
-    client.message(text, {}).then((data) => {
-        console.log(data);
-        console.log(data.entities.location);
-        msg.say(data.msg || 'nothing to say')
+    client.runActions('someSession', text, {}).then((context) => {
+        console.log(context);
+        console.log(context.entities.location);
+        msg.say(context.msg || 'nothing to say')
     })
         .catch(console.error);
 });
