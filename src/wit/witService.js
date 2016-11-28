@@ -45,7 +45,7 @@ class WitService {
     }
 
     getForecast({context, entities}) {
-        let location = Server.firstEntityValue(entities, 'location');
+        let location = WitService.firstEntityValue(entities, 'location');
         if (location) {
             context.forecast = 'sunny in ' + location; // we should call a weather API here
             delete context.missingLocation;
