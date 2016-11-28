@@ -30,8 +30,8 @@ class Server {
         return new Wit({
             accessToken: '4KLPNU647TKNYKGL6BYHQZK2MIZSFSQI',
             actions: {
-                send: this.send,
-                getForecast: this.getForecast
+                send: this.send.bind(this),
+                getForecast: this.getForecast.bind(this)
             }
         });
     }
