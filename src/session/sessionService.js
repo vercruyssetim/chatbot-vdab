@@ -10,7 +10,11 @@ class SessionService{
     }
 
     getContext(sessionId){
-        return this.sessionService[sessionId].context;
+        if(this.sessionService[sessionId]){
+            return this.sessionService[sessionId].context;
+        } else {
+            return {};
+        }
     }
 }
 module.exports = SessionService;
