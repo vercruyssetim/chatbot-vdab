@@ -77,7 +77,7 @@ let client = new Wit({
 });
 
 slapp.message('.*', ['mention', 'direct_message'], (msg, text) => {
-    let sessionId = 'session1';
+    let sessionId = 'session2';
     let context = contexts['sessionId'] || {};
     console.log('retrieving context: ' + JSON.stringify(context));
     messageSender.addSender(sessionId, msg);
