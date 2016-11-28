@@ -52,7 +52,7 @@ let client = new Wit({
             return Promise.resolve(context);
         }
     },
-    logger: new log.Logger(log.debug)
+    logger: new log.Logger(log.info)
 });
 
 
@@ -63,8 +63,7 @@ let client = new Wit({
 // response to the user typing "help"
 slapp.message('.*', ['mention', 'direct_message'], (msg, text) => {
     client.runActions('someSession', text, {}).then((context) => {
-        console.log(context);
-        console.log(context.entities.location);
+        console.log('Wit response: ' + context);
         msg.say(context.msg || 'nothing to say')
     })
         .catch(console.error);
