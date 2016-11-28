@@ -4,7 +4,7 @@ const express = require('express');
 const Slapp = require('slapp');
 const ConvoStore = require('slapp-convo-beepboop');
 const Context = require('slapp-context-beepboop');
-const {Wit} = require('node-wit');
+const {Wit, log} = require('node-wit');
 
 // use `PORT` env var on Beep Boop - default to 3000 locally
 let port = process.env.PORT || 3000;
@@ -34,7 +34,7 @@ let client = new Wit({
         send(request, response) {
             const {sessionId, context, entities} = request;
             const {text, quickreplies} = response;
-            return new Promise(function(resolve, reject) {
+            return new Promise(function (resolve, reject) {
                 console.log('receiving...', JSON.stringify(request));
                 console.log('sending...', JSON.stringify(response));
                 return resolve();
@@ -55,7 +55,8 @@ let client = new Wit({
                 return resolve(context);
             });
         }
-    }
+    },
+    logger: new log.Logger(log.debug)
 });
 
 
@@ -65,11 +66,12 @@ let client = new Wit({
 
 // response to the user typing "help"
 slapp.message('.*', ['mention', 'direct_message'], (msg, text) => {
-    client.converse('session1', text, {}).then((data) => {
+    client.message(text, {}).then((data) => {
         console.log(data);
         console.log(data.entities.location);
         msg.say(data.msg || 'nothing to say')
     })
+        .catch(console.error);
 });
 
 
