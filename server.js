@@ -16,6 +16,18 @@ let slapp = Slapp({
     context: Context()
 });
 
+const firstEntityValue = (entities, entity) => {
+    const val = entities && entities[entity] &&
+            Array.isArray(entities[entity]) &&
+            entities[entity].length > 0 &&
+            entities[entity][0].value
+        ;
+    if (!val) {
+        return null;
+    }
+    return typeof val === 'object' ? val.value : val;
+};
+
 let client = new Wit({
     accessToken: '4KLPNU647TKNYKGL6BYHQZK2MIZSFSQI',
     actions: {
