@@ -34,15 +34,15 @@ class MessageSender{
     }
 
     addSender(sessionId, sender){
-        this.senders['sessionId'] = sender;
+        this.senders[sessionId] = sender;
     }
 
     sendMessage(sessionId, text){
-        this.senders['sessionId'].say(text);
+        this.senders[sessionId].say(text);
     }
 
     removeSender(sessionId){
-        delete this.senders['sessionId'];
+        delete this.senders[sessionId];
     }
 }
 const messageSender = new MessageSender();
@@ -77,14 +77,14 @@ let client = new Wit({
 });
 
 slapp.message('.*', ['mention', 'direct_message'], (msg, text) => {
-    let sessionId = 'session2';
-    let context = contexts['sessionId'] || {};
+    let sessionId = 'session3';
+    let context = contexts[sessionId] || {};
     console.log('retrieving context: ' + JSON.stringify(context));
     messageSender.addSender(sessionId, msg);
     client.runActions(sessionId, text, context)
         .then((context) => {
             console.log('saving context: ' + JSON.stringify(context));
-            contexts['sessionId'] = context;
+            contexts[sessionId] = context;
             messageSender.removeSender(sessionId);
         })
         .catch(console.error);
