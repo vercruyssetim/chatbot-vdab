@@ -16,7 +16,8 @@ class WitService {
             accessToken: '4KLPNU647TKNYKGL6BYHQZK2MIZSFSQI',
             actions: {
                 send: this.send.bind(this),
-                getForecast: this.getForecast.bind(this)
+                getForecast: this.getForecast.bind(this),
+                getShopLocation: this.getShopLocation.bind(this)
             }
         });
     }
@@ -55,6 +56,11 @@ class WitService {
         }
         console.log('context: ', JSON.stringify(context));
         console.log('entities: ', JSON.stringify(entities));
+        return Promise.resolve(context);
+    }
+
+    getShopLocation({context, entities}) {
+        context.location = WitService.firstEntityValue(entities, 'shop') + 'vile';
         return Promise.resolve(context);
     }
 
