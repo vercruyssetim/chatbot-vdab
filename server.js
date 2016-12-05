@@ -21,7 +21,8 @@ class Server {
         });
 
         this.slackController.spawn({
-            token: process.env.SLACK_TOKEN,
+            clientId: '19468825747.109798990870',
+            clientSecret: 'ee07f0d62f0757a8a3e572a24615b64c'
         }).startRTM((err) => {
             if(err){
                 throw new Error(err);
