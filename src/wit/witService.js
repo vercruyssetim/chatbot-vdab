@@ -24,6 +24,7 @@ class WitService {
 
     handleInteractive(){
         return (bot, message) => {
+            console.log(message);
             let sessionId = bot.conversation_id;
             let context = this.sessionService.getContext(sessionId);
             this.messageService.addSender(sessionId, bot);
