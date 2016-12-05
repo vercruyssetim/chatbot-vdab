@@ -20,7 +20,7 @@ class Server {
             debug: true
         });
 
-        this.slackController.setupWebserver(this.process.ENV.port || 3000, (err, webserver) => {
+        this.slackController.setupWebserver(this.process.env.PORT || 3000, (err, webserver) => {
             this.slackController.createWebhookEndpoints(webserver);
         });
 
