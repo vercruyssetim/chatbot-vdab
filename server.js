@@ -1,47 +1,36 @@
 const express = require('express');
-const Slapp = require('slapp');
-const ConvoStore = require('slapp-convo-beepboop');
-const Context = require('slapp-context-beepboop');
+const Botkit = require('botkit');
 const witService = require('./src/wit/witService');
 
 class Server {
-    constructor(express, Slapp, ConvoStore, Context, process, witService) {
+    constructor(express, Botkit, process, witService) {
         this.express = express;
-        this.Slapp = Slapp;
-        this.ConvoStore = ConvoStore;
-        this.Context = Context;
+        this.Botkit = Botkit;
         this.process = process;
         this.witService = witService;
+        this.slackController = null;
     }
 
     $onInit() {
-        this.slapp = this.initSlap();
-        this.initServer(this.slapp, this.process.env.PORT || 3000);
+        this.initSlap();
     }
 
     initSlap() {
-        let slapp = this.Slapp({
-            // Beep Boop sets the SLACK_VERIFY_TOKEN env var
-            verify_token: this.process.env.SLACK_VERIFY_TOKEN,
-            convo_store: this.ConvoStore(),
-            context: this.Context()
+        this.slackController = this.Botkit.slackbot({
+            debug: false
+        }).configureSlackApp({
+            clientId: '19468825747.109798990870',
+            clientSecret: 'ee07f0d62f0757a8a3e572a24615b64c',
+            rtm_receive_messages: false,
+            scopes: ['bot']
         });
-        slapp.message('.*', ['mention', 'direct_message'], this.witService.handleInteractive());
-        return slapp;
-    }
-
-    initServer(slapp, port) {
-        let server = slapp.attachToExpress(express());
-
-        server.listen(port, (err) => {
-            if (err) {
-                return console.error(err)
-            }
-
-            console.log(`Listening on port ${port}`)
+        this.slackController.setupWebserver(this.process.env.PORT, () => {
+            this.slackController.createWebhookEndpoints(controller.webserver);
+            this.slackController.createOauthEndpoints(controller.webserver);
         });
+        this.slackController.hears(['(.*)'], 'mention,direct_message', this.witService.handleInteractive());
     }
 }
 
-const server = new Server(express, Slapp, ConvoStore, Context, process, witService);
+const server = new Server(express, Botkit, ConvoStore, Context, process, witService);
 server.$onInit();

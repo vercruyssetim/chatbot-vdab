@@ -8,7 +8,7 @@ class MessageService{
     }
 
     sendMessage(sessionId, text){
-        this.senders[sessionId].say(text);
+        this.senders[sessionId].reply(text);
     }
 
     removeSender(sessionId){

@@ -23,11 +23,11 @@ class WitService {
     }
 
     handleInteractive(){
-        return (message, text) => {
-            let sessionId = message.conversation_id;
+        return (bot, message) => {
+            let sessionId = bot.conversation_id;
             let context = this.sessionService.getContext(sessionId);
-            this.messageService.addSender(sessionId, message);
-            this.witClient.runActions(sessionId, text, context)
+            this.messageService.addSender(sessionId, bot);
+            this.witClient.runActions(sessionId, message, context)
                 .then((context) => {
                     this.sessionService.setContext(context);
                     this.messageService.removeSender(sessionId);

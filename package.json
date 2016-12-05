@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/BeepBoopHQ/starter-slapp-app#readme",
   "dependencies": {
+    "botkit": "^0.4.2",
     "express": "^4.14.0",
     "node-wit": "^4.1.0",
     "nodemon": "^1.11.0",
