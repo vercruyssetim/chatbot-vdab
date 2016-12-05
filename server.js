@@ -18,7 +18,9 @@ class Server {
     initSlap() {
         this.slackController = this.Botkit.slackbot({
             debug: false
-        }).spawn({
+        });
+
+        this.slackController.spawn({
             token: process.env.SLACK_TOKEN,
         }).startRTM((err) => {
             if(err){
