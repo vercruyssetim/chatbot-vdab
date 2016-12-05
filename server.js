@@ -18,15 +18,26 @@ class Server {
     initSlap() {
         this.slackController = this.Botkit.slackbot({
             debug: false
-        });
-
-        this.slackController.spawn({
+        }).configureSlackApp({
             clientId: '19468825747.109798990870',
-            clientSecret: 'ee07f0d62f0757a8a3e572a24615b64c'
-        }).startRTM((err) => {
-            if(err){
-                throw new Error(err);
-            }
+            clientSecret: 'ee07f0d62f0757a8a3e572a24615b64c',
+            rtm_receive_messages: false,
+            scopes: ['bot']
+        });
+        this.slackController.setupWebserver(this.process.env.PORT || 3000, () => {
+            this.slackController.createWebhookEndpoints(this.slackController.webserver);
+            this.slackController.createOauthEndpoints(this.slackController.webserver, (err, req, res) => {
+                if (err) {
+                    res.status(500).send('ERROR: ' + err);
+                } else {
+                    res.send('Success!');
+                }
+            });
+        });
+        this.slackController.on('create_incoming_webhook', (bot, weboook_config) => {
+           bot.sendWebhook({
+               text: ':thumnbsup: Incoming webhook sucessfully configured'
+           })
         });
         this.slackController.hears(['(.*)'], 'mention,direct_message', this.witService.handleInteractive());
     }
