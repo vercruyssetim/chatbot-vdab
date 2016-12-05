@@ -24,9 +24,9 @@ class Server {
             rtm_receive_messages: false,
             scopes: ['bot']
         });
-        this.slackController.setupWebserver(this.process.env.PORT, () => {
-            this.slackController.createWebhookEndpoints(controller.webserver);
-            this.slackController.createOauthEndpoints(controller.webserver);
+        this.slackController.setupWebserver(this.process.env.PORT || 3000, () => {
+            this.slackController.createWebhookEndpoints(this.slackController.webserver);
+            this.slackController.createOauthEndpoints(this.slackController.webserver);
         });
         this.slackController.hears(['(.*)'], 'mention,direct_message', this.witService.handleInteractive());
     }
