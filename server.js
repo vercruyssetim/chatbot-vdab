@@ -32,5 +32,5 @@ class Server {
     }
 }
 
-const server = new Server(express, Botkit, ConvoStore, Context, process, witService);
+const server = new Server(express, Botkit, process, witService);
 server.$onInit();
