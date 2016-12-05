@@ -17,7 +17,7 @@ class Server {
 
     initSlap() {
         this.slackController = this.Botkit.slackbot({
-            debug: false
+            debug: true
         }).configureSlackApp({
             clientId: '19468825747.109798990870',
             clientSecret: 'ee07f0d62f0757a8a3e572a24615b64c',
