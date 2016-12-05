@@ -18,15 +18,12 @@ class Server {
     initSlap() {
         this.slackController = this.Botkit.slackbot({
             debug: false
-        }).configureSlackApp({
-            clientId: '19468825747.109798990870',
-            clientSecret: 'ee07f0d62f0757a8a3e572a24615b64c',
-            rtm_receive_messages: false,
-            scopes: ['bot']
-        });
-        this.slackController.setupWebserver(this.process.env.PORT || 3000, () => {
-            this.slackController.createWebhookEndpoints(this.slackController.webserver);
-            this.slackController.createOauthEndpoints(this.slackController.webserver);
+        }).spawn({
+            token: process.env.SLACK_TOKEN,
+        }).startRTM((err) => {
+            if(err){
+                throw new Error(err);
+            }
         });
         this.slackController.hears(['(.*)'], 'mention,direct_message', this.witService.handleInteractive());
     }
