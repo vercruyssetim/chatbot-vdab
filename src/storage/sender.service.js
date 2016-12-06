@@ -1,4 +1,4 @@
-class MessageService{
+class SenderService{
     constructor(){
         this.senders = {};
     }
@@ -8,12 +8,12 @@ class MessageService{
     }
 
     sendMessage(sessionId, text){
-        this.senders[sessionId].reply(text);
+        this.senders[sessionId](text);
     }
 
     removeSender(sessionId){
         delete this.senders[sessionId];
     }
 }
-const messageService = new MessageService();
-module.exports = messageService;
+const senderService = new SenderService();
+module.exports = senderService;
