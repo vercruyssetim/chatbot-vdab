@@ -1,19 +1,13 @@
-const Slapp = require('slapp');
-const express = require('express');
-const ConvoStore = require('slapp-convo-beepboop');
-const Context = require('slapp-context-beepboop');
+const Botkit = require('botkit');
 const witService = require('../ai/wit.service');
 
 class SlackServer {
-    constructor(Slapp, ConvoStore, Context, witService, express) {
-        this.Slapp = Slapp;
-        this.ConvoStore = ConvoStore;
-        this.Context = Context;
+    constructor(Botkit, witService) {
+        this.Botkit = Botkit;
         this.witService = witService;
-        this.slapp = null;
     }
 
-    startServer(express, port, slackVerifyToken) {
+    startServer(Botkit, port, slackVerifyToken) {
         let controller = Botkit.slackbot({
             debug:false
         });
@@ -28,11 +22,11 @@ class SlackServer {
             })
         });
         controller.hears(['(.*)'], 'message_received', (bot, message) => {
-            witServer.handleInteractive(message.text, message.mid, (text) => {
+            this.witServer.handleInteractive(message.text, message.mid, (text) => {
                 bot.reply(message, text);
             });
         });
     }
 }
-const slackServer = new SlackServer(Slapp, ConvoStore, Context, witService, express);
+const slackServer = new SlackServer(Botkit, witService);
 module.exports = slackServer;
