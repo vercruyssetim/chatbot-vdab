@@ -10,11 +10,10 @@ class SlackServer {
         this.ConvoStore = ConvoStore;
         this.Context = Context;
         this.witService = witService;
-        this.express = express;
         this.slapp = null;
     }
 
-    startServer(port, slackVerifyToken) {
+    startServer(express, port, slackVerifyToken) {
         this.slapp = this.Slapp({
             verify_token: slackVerifyToken,
             convo_store: this.ConvoStore(),
@@ -24,7 +23,7 @@ class SlackServer {
             this.witService.handleInteractive(msg, bot.conversation_id, (text) => bot.say(text))
         });
 
-        let server = this.slapp.attachToExpress(this.express());
+        let server = this.slapp.attachToExpress(express);
         server.listen(port, (err) => {
             if (err) {
                 return console.error(err)
