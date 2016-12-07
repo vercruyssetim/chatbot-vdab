@@ -15,7 +15,7 @@ class Server {
     $onInit() {
         console.log(JSON.stringify(this.process.env));
         this.slackServer.startServer(this.express, this.process.env.PORT || 3000, this.process.env.SLACK_VERIFY_TOKEN);
-        this.facebookServer.startServer(this.express, this.process.env.PORT || 3000, this.facebookAccessToken, this.facebookVerifyToken);
+        // this.facebookServer.startServer(this.express, this.process.env.PORT || 3000, this.facebookAccessToken, this.facebookVerifyToken);
     }
 }
 
