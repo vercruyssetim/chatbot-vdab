@@ -17,6 +17,7 @@ class SlackServer {
         let controller = Botkit.slackbot({
             debug:false
         });
+
         let bot = controller.spawn({
             token: 'xoxp-19468825747-19467089236-113138910897-49790901bb9253f87a21283975bb13ea'
         }).startRTM();
