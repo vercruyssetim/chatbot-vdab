@@ -14,22 +14,22 @@ class SlackServer {
     }
 
     startServer(express, port, slackVerifyToken) {
-        this.slapp = this.Slapp({
-            verify_token: slackVerifyToken,
-            convo_store: this.ConvoStore(),
-            context: this.Context()
+        let controller = Botkit.slackbot({
+            debug:false
         });
-        this.slapp.message('.*', ['mention', 'direct_message'], (bot, msg) => {
-            this.witService.handleInteractive(msg, bot.conversation_id, (text) => bot.say(text))
+        let bot = controller.spawn({
+            token: 'xoxp-19468825747-19467089236-113138910897-49790901bb9253f87a21283975bb13ea'
+        }).startRTM();
+
+        controller.setupWebserver(port, (err, webserver) => {
+            controller.createWebhookEndpoints(controller.webserver, bot, () => {
+                console.log(`Bot online on port ${port}`);
+            })
         });
-
-        let server = this.slapp.attachToExpress(express);
-        server.listen(port, (err) => {
-            if (err) {
-                return console.error(err)
-            }
-
-            console.log(`Listening on port ${port}`)
+        controller.hears(['(.*)'], 'message_received', (bot, message) => {
+            witServer.handleInteractive(message.text, message.mid, (text) => {
+                bot.reply(message, text);
+            });
         });
     }
 }
