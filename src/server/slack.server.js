@@ -7,7 +7,7 @@ class SlackServer {
         this.witService = witService;
     }
 
-    startServer(Botkit, port, slackVerifyToken) {
+    startServer(port, slackVerifyToken) {
         let controller = Botkit.slackbot({
             debug:false
         });
