@@ -1,5 +1,7 @@
 const Botkit = require('botkit');
 const witService = require('../ai/wit.service');
+const bodyParser = require('body-parser');
+const express = require('express');
 
 class SlackServer {
     constructor(Botkit, witService) {
@@ -7,22 +9,23 @@ class SlackServer {
         this.witService = witService;
     }
 
-    startServer(port, slackVerifyToken) {
+    startServer(webserver, clientId, clientSecret, verifyTokens) {
         let controller = Botkit.slackbot({
-            debug:false
+            clientId,
+            clientSecret,
+            json_file_store: './storage',
+            port: '3000',
+            hostname: 'localhost',
+            scopes: ['bot'],
+            debug: false
         });
 
-        let bot = controller.spawn({
-            token: 'xoxp-19468825747-19467089236-113138910897-49790901bb9253f87a21283975bb13ea'
-        }).startRTM();
+        //passing verifyTokens will block the facebook bot
+        controller.createWebhookEndpoints(webserver);
+        controller.createOauthEndpoints(webserver, (err) => console.log(err));
 
-        controller.setupWebserver(port, (err, webserver) => {
-            controller.createWebhookEndpoints(controller.webserver, bot, () => {
-                console.log(`Bot online on port ${port}`);
-            })
-        });
-        controller.hears(['(.*)'], 'message_received', (bot, message) => {
-            this.witServer.handleInteractive(message.text, message.mid, (text) => {
+        controller.hears(['(.*)'], 'mention,direct_message', (bot, message) => {
+            this.witService.handleInteractive(message.text, message.ts, (text) => {
                 bot.reply(message, text);
             });
         });
