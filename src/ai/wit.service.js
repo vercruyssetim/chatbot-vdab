@@ -34,8 +34,7 @@ class WitService {
     send(request, response) {
         const {sessionId, context, entities} = request;
         const {text, quickreplies} = response;
-        console.log('receiving...', JSON.stringify(request));
-        console.log('sending...', JSON.stringify(response));
+        console.log('sending from wit...', JSON.stringify(response.text));
         this.senderService.sendMessage(sessionId, response.text);
         return Promise.resolve();
     }

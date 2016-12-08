@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/BeepBoopHQ/starter-slapp-app#readme",
   "dependencies": {
+    "apiai": "^3.0.3",
     "beepboop-botkit": "^1.4.1",
     "botkit": "^0.4.2",
     "express": "^4.14.0",

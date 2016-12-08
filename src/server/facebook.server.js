@@ -1,17 +1,19 @@
 const Botkit = require('botkit');
-const witServer = require('../ai/wit.service');
-const bodyParser = require('body-parser');
-const express = require('express');
+const webserver = require('./web.server');
+const witService = require('../ai/wit.service');
+const apiService = require('../ai/api.service');
 const request = require('request');
 
 class FacebookServer {
 
-    constructor(Botkit, witServer) {
+    constructor(Botkit, webserver, witService, apiService) {
         this.Botkit = Botkit;
-        this.witServer = witServer;
+        this.webserver = webserver;
+        this.witService = witService;
+        this.apiService = apiService;
     }
 
-    startServer(webserver, accessToken, verifyToken) {
+    startServer(accessToken, verifyToken) {
         let controller = Botkit.facebookbot({
             verify_token: verifyToken,
             access_token: accessToken,
@@ -21,29 +23,34 @@ class FacebookServer {
         });
         let bot = controller.spawn({});
 
-        this.login.bind(controller)(accessToken);
-        controller.createWebhookEndpoints(webserver, bot);
+        this.login(accessToken, () => {
+            controller.startTicking();
+        });
+        controller.createWebhookEndpoints(this.webserver.server, bot);
 
         controller.hears(['(.*)'], 'message_received', (bot, message) => {
-            witServer.handleInteractive(message.text, message.mid, (text) => {
-                bot.reply(message, text);
+            this.apiService.sendRequest(message.text, message.mid, (text) => {
+                bot.reply(message, `From api.ai: ${text}`);
+            });
+            this.witService.handleInteractive(message.text, message.mid, (text) => {
+                bot.reply(message, `From wit.ai: ${text}`);
             });
         });
     }
 
-    login(access_token) {
+    login(access_token, callBack) {
         request.post('https://graph.facebook.com/me/subscribed_apps?access_token=' + access_token,
             (err, res, body) => {
                 if (err) {
                     console.log('Could not subscribe to page messages');
                 } else {
                     console.log('Successfully subscribed to Facebook events:', body);
-                    this.startTicking();
+                    callBack();
                 }
             });
         return this;
     };
 }
 
-const botkit = new FacebookServer(Botkit, witServer);
+const botkit = new FacebookServer(Botkit, webserver, witService, apiService);
 module.exports = botkit;
