@@ -42,4 +42,4 @@ yarn.lock
 
 storage/
 
-server.properties
+application.properties
