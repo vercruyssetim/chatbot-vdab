@@ -1,18 +1,20 @@
 const {Wit, log} = require('node-wit');
 const senderService = require('../storage/sender.service');
 const sessionService = require('../storage/session.service');
+const propertiesService = require('../storage/properties.service');
 
 class WitService {
-    constructor(Wit, sessionService, senderService) {
+    constructor(Wit, sessionService, senderService, propertiesService) {
         this.Wit = Wit;
         this.sessionService = sessionService;
         this.senderService = senderService;
+        this.propertiesService = propertiesService;
         this.witClient = {};
     }
 
     $onInit() {
         this.witClient = new this.Wit({
-            accessToken: '4KLPNU647TKNYKGL6BYHQZK2MIZSFSQI',
+            accessToken: this.propertiesService.get('wit.ai.access.token'),
             actions: {
                 send: this.send.bind(this),
                 getForecast: this.getForecast.bind(this),
@@ -68,6 +70,6 @@ class WitService {
     }
 }
 
-const witService = new WitService(Wit, sessionService, senderService);
+const witService = new WitService(Wit, sessionService, senderService, propertiesService);
 witService.$onInit();
 module.exports = witService;

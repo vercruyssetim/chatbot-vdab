@@ -1,0 +1,10 @@
+wit.ai.access.token=
+
+api.ai.access.token=
+
+facebook.access.token=
+facebook.verify.token=
+
+slack.verify.token=
+slack.client.id=
+slack.client.secret=

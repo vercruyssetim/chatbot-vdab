@@ -17,15 +17,16 @@
   },
   "homepage": "https://github.com/BeepBoopHQ/starter-slapp-app#readme",
   "dependencies": {
-    "apiai": "^3.0.3",
-    "beepboop-botkit": "^1.4.1",
-    "botkit": "^0.4.2",
-    "express": "^4.14.0",
-    "node-wit": "^4.1.0",
-    "nodemon": "^1.11.0",
-    "slapp": "^1.2.0",
-    "slapp-context-beepboop": "^1.1.0",
-    "slapp-convo-beepboop": "^1.0.0",
-    "standard": "^8.4.0"
+    "apiai": "3.0.3",
+    "beepboop-botkit": "1.4.1",
+    "botkit": "0.4.2",
+    "express": "4.14.0",
+    "node-wit": "4.1.0",
+    "nodemon": "1.11.0",
+    "properties-reader": "0.0.15",
+    "slapp": "1.2.0",
+    "slapp-context-beepboop": "1.1.0",
+    "slapp-convo-beepboop": "1.0.0",
+    "standard": "8.4.0"
   }
 }

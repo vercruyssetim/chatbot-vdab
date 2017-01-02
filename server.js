@@ -1,22 +1,24 @@
 const slackServer = require('./src/server/slack.server');
 const facebookServer = require('./src/server/facebook.server');
+const propertiesService = require('./src/storage/properties.service');
 
 class Server {
-    constructor(slackServer, facebookServer) {
+    constructor(slackServer, facebookServer, propertiesService) {
         this.slackServer = slackServer;
         this.facebookServer = facebookServer;
-        this.facebookAccessToken = 'EAADewLyZAdYcBAAi0GZB0D1hAah7npwYcnehX0EeHm2ZBI2ZBn1VyVLoBhBwhodKVKmIIeUgAJfMizRRG9Hl18LTuwfCA3U6pNjgyVrz3yyVo1Aq5TiLXyIZBe2bVMVrmcnaE1yIawObFT3eZCcD76fwpoGZCI6RD74gmZBzCNqnRRhxgOdcZCwMZC';
-        this.facebookVerifyToken = 'VDAB_CHAT_TOKEN';
-        this.slackVerifyToken = 'iPzRWC0PTa7ZCgfHaimMcYCl';
-        this.slackClientId = '19468825747.109798990870';
-        this.slackClientSecret = 'ee07f0d62f0757a8a3e572a24615b64c';
+        this.propertiesService = propertiesService;
     }
 
     $onInit() {
-        this.slackServer.startServer(this.slackClientId, this.slackClientSecret, this.slackVerifyToken);
-        this.facebookServer.startServer(this.facebookAccessToken, this.facebookVerifyToken);
+        let facebookAccessToken = this.propertiesService.get('facebook.access.token');
+        let facebookVerifyToken = this.propertiesService.get('facebook.verify.token');
+        let slackVerifyToken = this.propertiesService.get('slack.verify.token');
+        let slackClientId = this.propertiesService.get('slack.client.id');
+        let slackClientSecret = this.propertiesService.get('slack.client.secret');
+        this.slackServer.startServer(slackClientId, slackClientSecret, slackVerifyToken);
+        this.facebookServer.startServer(facebookAccessToken, facebookVerifyToken);
     }
 }
 
-const server = new Server(slackServer, facebookServer);
+const server = new Server(slackServer, facebookServer, propertiesService);
 server.$onInit();

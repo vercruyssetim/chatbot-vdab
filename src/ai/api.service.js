@@ -1,14 +1,16 @@
 const apiai = require('apiai');
 const webserver = require('../server/web.server');
+const propertiesService = require('../storage/properties.service');
 
 class ApiService {
-    constructor(apiai, webserver) {
+    constructor(apiai, webserver, propertiesService) {
         this.apiai = apiai;
         this.webserver = webserver;
+        this.propertiesService = propertiesService;
     }
 
     $onInit() {
-        this.app = apiai("a00b99c7210944678bfdabb7bbb29dd6");
+        this.app = apiai(this.propertiesService.get('api.ai.access.token'));
         this.initWebhook(this.webserver);
     }
 
@@ -51,7 +53,7 @@ class ApiService {
     }
 }
 
-const apiService = new ApiService(apiai, webserver);
+const apiService = new ApiService(apiai, webserver, propertiesService);
 apiService.$onInit();
 module.exports = apiService;
 
