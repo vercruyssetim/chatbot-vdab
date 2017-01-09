@@ -1,14 +1,14 @@
 const Botkit = require('botkit');
 const webserver = require('./web.server');
 const witService = require('../ai/wit.service');
-const apiService = require('../ai/api.service');
+const apiEndpoint = require('../ai/api.endpoint');
 
 class SlackServer {
-    constructor(Botkit, webserver, witService, apiService) {
+    constructor(Botkit, webserver, witService, apiEndpoint) {
         this.Botkit = Botkit;
         this.webserver = webserver;
         this.witService = witService;
-        this.apiService = apiService;
+        this.conversationService = apiEndpoint;
     }
 
     startServer(clientId, clientSecret, verifyTokens) {
@@ -27,7 +27,7 @@ class SlackServer {
         controller.createOauthEndpoints(this.webserver.server, (err) => console.log(err));
 
         controller.hears(['(.*)'], 'mention,direct_message', (bot, message) => {
-            this.apiService.sendRequest(message.text, message.ts, (text) => {
+            this.apiEndpoint.sendQuery(message.text, message.ts, (text) => {
                 bot.reply(message, `From api.ai: ${text}`)
             });
             this.witService.handleInteractive(message.text, message.ts, (text) => {
@@ -36,5 +36,5 @@ class SlackServer {
         });
     }
 }
-const slackServer = new SlackServer(Botkit, webserver, witService, apiService);
+const slackServer = new SlackServer(Botkit, webserver, witService, apiEndpoint);
 module.exports = slackServer;

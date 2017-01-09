@@ -1,13 +1,13 @@
 const {Wit, log} = require('node-wit');
-const senderService = require('../storage/sender.service');
-const sessionService = require('../storage/session.service');
+const senderRepository = require('../storage/sender.repository');
+const sessionRepository = require('../storage/session.repository');
 const propertiesService = require('../storage/properties.service');
 
 class WitService {
-    constructor(Wit, sessionService, senderService, propertiesService) {
+    constructor(Wit, sessionRepository, senderService, propertiesService) {
         this.Wit = Wit;
-        this.sessionService = sessionService;
-        this.senderService = senderService;
+        this.userRepository = sessionRepository;
+        this.senderRepository = senderService;
         this.propertiesService = propertiesService;
         this.witClient = {};
     }
@@ -25,9 +25,9 @@ class WitService {
 
     handleInteractive(message, sessionId, sender) {
         this.senderService.addSender(sessionId, sender);
-        this.witClient.runActions(sessionId, message, this.sessionService.getContext(sessionId))
+        this.witClient.runActions(sessionId, message, this.contextService.getSession(sessionId))
             .then((context) => {
-                this.sessionService.setContext(context);
+                this.contextService.setContext(context);
                 this.senderService.removeSender(sessionId);
             })
             .catch(console.error);
@@ -70,6 +70,6 @@ class WitService {
     }
 }
 
-const witService = new WitService(Wit, sessionService, senderService, propertiesService);
+const witService = new WitService(Wit, sessionRepository, senderRepository, propertiesService);
 witService.$onInit();
 module.exports = witService;

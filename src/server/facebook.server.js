@@ -1,16 +1,16 @@
 const Botkit = require('botkit');
 const webserver = require('./web.server');
 const witService = require('../ai/wit.service');
-const apiService = require('../ai/api.service');
+const conversationService = require('../conversation/conversation.service');
 const request = require('request');
 
 class FacebookServer {
 
-    constructor(Botkit, webserver, witService, apiService) {
+    constructor(Botkit, webserver, witService, conversationService) {
         this.Botkit = Botkit;
         this.webserver = webserver;
         this.witService = witService;
-        this.apiService = apiService;
+        this.conversationService = conversationService;
     }
 
     startServer(accessToken, verifyToken) {
@@ -29,11 +29,9 @@ class FacebookServer {
         controller.createWebhookEndpoints(this.webserver.server, bot);
 
         controller.hears(['(.*)'], 'message_received', (bot, message) => {
-            this.apiService.sendRequest(message.text, message.mid, (text) => {
-                bot.reply(message, `From api.ai: ${text}`);
-            });
-            this.witService.handleInteractive(message.text, message.mid, (text) => {
-                bot.reply(message, `From wit.ai: ${text}`);
+            console.log(`user id: ${message.user}`);
+            this.conversationService.handleRequest({text: message.text, userId: message.user}, (text) => {
+                bot.reply(message, text);
             });
         });
     }
@@ -52,5 +50,5 @@ class FacebookServer {
     };
 }
 
-const botkit = new FacebookServer(Botkit, webserver, witService, apiService);
+const botkit = new FacebookServer(Botkit, webserver, witService, conversationService);
 module.exports = botkit;
