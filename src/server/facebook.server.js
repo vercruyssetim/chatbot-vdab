@@ -29,11 +29,26 @@ class FacebookServer {
         controller.createWebhookEndpoints(this.webserver.server, bot);
 
         controller.hears(['(.*)'], 'message_received', (bot, message) => {
-            console.log(`user id: ${message.user}`);
-            this.conversationService.handleRequest({text: message.text, userId: message.user}, (text) => {
-                bot.reply(message, text);
+            this.conversationService.handleRequest({text: message.text, userId: message.user}, (reply) => {
+                let response = {};
+                response.text = reply.text;
+                if (reply.quickReplies) {
+                    response.quick_replies = FacebookServer.mapToQuickReplies(reply.quickReplies);
+                }
+                bot.reply(message, response);
             });
         });
+
+    }
+
+    static mapToQuickReplies(quickReplies) {
+        return quickReplies.map((reply) => {
+            return {
+                content_type: 'text',
+                title: reply,
+                payload: reply
+            }
+        })
     }
 
     login(access_token, callBack) {

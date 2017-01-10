@@ -24,7 +24,7 @@ class Context{
 
     static fromType(contextType){
         return new Context({
-            name: `${contextType}_0`,
+            name: `${contextType}_1`,
             parameters: {},
             lifespan: 1
         })

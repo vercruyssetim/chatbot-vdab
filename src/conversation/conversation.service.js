@@ -12,14 +12,14 @@ class ConversationService {
 
     $onInit() {
         this.handlers['start.orientation'] = (message, sender, response) => this.handleStartOrientation(message, sender, response);
-        this.handlers['end.orientation'] = (message, sender, response) => this.handleEndOrientation(message, sender, response);
+        this.handlers['save.answer'] = (message, sender, response) => this.handleSaveAnswer(message, sender, response);
         this.handlers['default'] = (message, sender, response) => this.handleDefault(message, sender, response);
     }
 
     handleRequest(message, sender) {
         this.apiEndpoint.sendQuery(message.text, message.userId, (response) => {
             let handler = this.handlers[response.action];
-            if(handler){
+            if (handler) {
                 handler(message, sender, response);
             } else {
                 this.handlers['default'](message, sender, response);
@@ -27,28 +27,30 @@ class ConversationService {
         })
     }
 
-    handleStartOrientation(message, sender){
-        let context = this.contextService.getContext(message.userId, 'orientation');
-        console.log(context);
+    handleStartOrientation(message, sender) {
+        let context = this.contextService.getContext(message.userId, 'orientation-question');
         this.apiEndpoint.sendContext(context, message.userId, () => {
-            message.text = 'RESTART.CONVERSATION';
+            message.text = 'START.CONVERSATION';
             this.handleRequest(message, sender);
         });
     }
 
-    handleEndOrientation(message, sender){
-        let context = this.contextService.getContext(message.userId, 'orientation');
-        context.handleEnd();
+    handleSaveAnswer(message, sender, response) {
+        sender({text: response.text});
 
-        this.apiEndpoint.sendContext(Context.fromType('end_orientation'), message.userId, () => {
+        this.apiEndpoint.sendContext(Context.fromType('orientation-end'), message.userId, () => {
             message.text = 'END.CONVERSATION';
             this.handleRequest(message, sender);
         });
+
+        let context = this.contextService.getContext(message.userId, 'orientation-question');
+        context.handleEnd();
     }
 
-    handleDefault(message, sender, response){
+    handleDefault(message, sender, response) {
+        console.log(JSON.stringify(response.contexts));
         this.contextService.setContext(message.userId, response.contexts);
-        sender(response.text);
+        sender({text: response.text, quickReplies: response.quickReplies});
     }
 }
 const conversationService = new ConversationService(apiEndpoint, contextService);
