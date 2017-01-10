@@ -1,7 +1,7 @@
 class Context{
     constructor(context){
         this.name = context.name;
-        this.parameters = context.parameters;
+        this.parameters = context.parameters ? context.parameters : {};
         this.lifespan = context.lifespan;
     }
 
@@ -15,6 +15,11 @@ class Context{
 
     getIndex(){
         return this.name.split('_')[1];
+    }
+
+    withParameter(name, value){
+        this.parameters[name] = value;
+        return this;
     }
 
     handleEnd(){

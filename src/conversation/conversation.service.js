@@ -1,12 +1,14 @@
 const apiEndpoint = require('../ai/api.endpoint');
 const contextService = require('../context/context.repository');
+const backendService = require('../backend/backend.stub');
 const Context = require('../context/context');
 
 class ConversationService {
 
-    constructor(apiEndpoint, contextService) {
+    constructor(apiEndpoint, contextService, backendService) {
         this.apiEndpoint = apiEndpoint;
         this.contextService = contextService;
+        this.backendService = backendService;
         this.handlers = {};
     }
 
@@ -27,7 +29,8 @@ class ConversationService {
         })
     }
 
-    handleStartOrientation(message, sender) {
+    handleStartOrientation(message, sender, response) {
+        sender({text: response.text});
         let context = this.contextService.getContext(message.userId, 'orientation-question');
         this.apiEndpoint.sendContext(context, message.userId, () => {
             message.text = 'START.CONVERSATION';
@@ -37,22 +40,26 @@ class ConversationService {
 
     handleSaveAnswer(message, sender, response) {
         sender({text: response.text});
-
-        this.apiEndpoint.sendContext(Context.fromType('orientation-end'), message.userId, () => {
-            message.text = 'END.CONVERSATION';
-            this.handleRequest(message, sender);
-        });
-
+        this.backendService.saveParameter(response.parameters);
+        this.sendEndMessage(message, sender);
         let context = this.contextService.getContext(message.userId, 'orientation-question');
         context.handleEnd();
     }
 
     handleDefault(message, sender, response) {
-        console.log(JSON.stringify(response.contexts));
         this.contextService.setContext(message.userId, response.contexts);
         sender({text: response.text, quickReplies: response.quickReplies});
     }
+
+    sendEndMessage(message, sender) {
+        let contexts = Context.fromType('orientation-end')
+            .withParameter('answerList', this.backendService.answersToString('orientation'));
+        this.apiEndpoint.sendContext(contexts, message.userId, () => {
+            message.text = 'END.CONVERSATION';
+            this.handleRequest(message, sender);
+        });
+    }
 }
-const conversationService = new ConversationService(apiEndpoint, contextService);
+const conversationService = new ConversationService(apiEndpoint, contextService, backendService);
 conversationService.$onInit();
 module.exports = conversationService;
