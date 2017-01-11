@@ -3,22 +3,37 @@ const Answer = require('./answer');
 class BackendStub {
     constructor() {
         this.answers = {};
+        this.usernames = {};
     }
 
     $onInit() {
 
     }
 
-    saveParameter(parameter) {
-        let answer = Answer.fromParameter(parameter);
-        if(!this.answers[answer.getConversationType()]){
-            this.answers[answer.getConversationType()] = [];
+    saveUsername(userId, username){
+        if(!this.usernames[userId]){
+            this.usernames[userId] = {};
         }
-        this.answers[answer.getConversationType()].push(answer);
+        this.usernames[userId] = username;
     }
 
-    answersToString(conversationType){
-        return this.answers[conversationType].map((answer) =>
+    getUsername(userId){
+        return this.usernames[userId];
+    }
+
+    saveParameter(userId, parameter) {
+        let answer = Answer.fromParameter(parameter);
+        if(!this.answers[userId]){
+            this.answers[userId] = {};
+        }
+        if(!this.answers[userId][answer.getConversationType()]){
+            this.answers[userId][answer.getConversationType()] = [];
+        }
+        this.answers[userId][answer.getConversationType()].push(answer);
+    }
+
+    answersToString(userId, conversationType){
+        return this.answers[userId][conversationType].map((answer) =>
             `your ${answer.type} is ${answer.value}`
         )
     }

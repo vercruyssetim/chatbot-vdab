@@ -32,7 +32,8 @@ class ConversationService {
 
     handleStartOrientation(message, sender, response) {
         sender({text: response.text});
-        let context = this.contextService.getContext(message.userId, 'orientation-question');
+        let context = this.contextService.getContext(message.userId, 'orientation-question')
+            .withParameter("username", this.backendService.getUsername(message.userId));
         this.apiEndpoint.sendContext(context, message.userId, () => {
             message.text = 'START.CONVERSATION';
             this.handleRequest(message, sender);
@@ -41,7 +42,7 @@ class ConversationService {
 
     handleSaveAnswer(message, sender, response) {
         sender({text: response.text});
-        this.backendService.saveParameter(response.parameters);
+        this.backendService.saveParameter(message.userId, response.parameters);
         this.sendOrientationEndMessage(message, sender);
         let context = this.contextService.getContext(message.userId, 'orientation-question');
         context.handleEnd();
@@ -54,7 +55,7 @@ class ConversationService {
 
     sendOrientationEndMessage(message, sender) {
         let contexts = Context.fromType('orientation-end')
-            .withParameter('answerList', this.backendService.answersToString('orientation'));
+            .withParameter('answerList', this.backendService.answersToString(message.userId, 'orientation'));
         this.apiEndpoint.sendContext(contexts, message.userId, () => {
             message.text = 'END.CONVERSATION';
             this.handleRequest(message, sender);
@@ -63,7 +64,7 @@ class ConversationService {
 
     handleSaveUsername(message, sender, response){
         sender({text: response.text});
-        this.username = response.parameters.username;
+        this.backendService.saveUsername(message.userId, response.parameters.username);
     }
 }
 const conversationService = new ConversationService(apiEndpoint, contextService, backendService);
