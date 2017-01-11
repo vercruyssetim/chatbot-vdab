@@ -13,6 +13,7 @@ class ConversationService {
     }
 
     $onInit() {
+        this.handlers['save.username'] = (message, sender, response) => this.handleSaveUsername(message, sender, response);
         this.handlers['start.orientation'] = (message, sender, response) => this.handleStartOrientation(message, sender, response);
         this.handlers['save.answer'] = (message, sender, response) => this.handleSaveAnswer(message, sender, response);
         this.handlers['default'] = (message, sender, response) => this.handleDefault(message, sender, response);
@@ -21,7 +22,7 @@ class ConversationService {
     handleRequest(message, sender) {
         this.apiEndpoint.sendQuery(message.text, message.userId, (response) => {
             let handler = this.handlers[response.action];
-            if (handler) {
+            if (!response.incomplete && handler) {
                 handler(message, sender, response);
             } else {
                 this.handlers['default'](message, sender, response);
@@ -41,23 +42,28 @@ class ConversationService {
     handleSaveAnswer(message, sender, response) {
         sender({text: response.text});
         this.backendService.saveParameter(response.parameters);
-        this.sendEndMessage(message, sender);
+        this.sendOrientationEndMessage(message, sender);
         let context = this.contextService.getContext(message.userId, 'orientation-question');
         context.handleEnd();
     }
 
     handleDefault(message, sender, response) {
-        this.contextService.setContext(message.userId, response.contexts);
         sender({text: response.text, quickReplies: response.quickReplies});
+        this.contextService.setContext(message.userId, response.contexts);
     }
 
-    sendEndMessage(message, sender) {
+    sendOrientationEndMessage(message, sender) {
         let contexts = Context.fromType('orientation-end')
             .withParameter('answerList', this.backendService.answersToString('orientation'));
         this.apiEndpoint.sendContext(contexts, message.userId, () => {
             message.text = 'END.CONVERSATION';
             this.handleRequest(message, sender);
         });
+    }
+
+    handleSaveUsername(message, sender, response){
+        sender({text: response.text});
+        this.username = response.parameters.username;
     }
 }
 const conversationService = new ConversationService(apiEndpoint, contextService, backendService);

@@ -41,6 +41,7 @@ class ApiEndpoint {
 
     mapToQueryResponse(response) {
         return {
+            incomplete: response.result.actionIncomplete,
             text: response.result.fulfillment.speech,
             action: response.result.action,
             parameters: response.result.parameters,
