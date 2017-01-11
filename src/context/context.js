@@ -27,9 +27,10 @@ class Context{
         this.lifespan = 1;
     }
 
-    static fromType(contextType){
+    static fromType(contextType, index){
+        let number = index ? index : 1;
         return new Context({
-            name: `${contextType}_1`,
+            name: `${contextType}_${number}`,
             parameters: {},
             lifespan: 1
         })

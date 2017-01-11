@@ -14,14 +14,10 @@ class ContextService {
         if (!this.contexts[userId]) {
             this.contexts[userId] = {};
         }
-        let context = this.contexts[userId][contextType];
-        if (!context) {
-            return Context.fromType(contextType);
-        }
-        return context;
+        return this.contexts[userId][contextType];
     }
 
-    setContext(userId, contexts) {
+    setContexts(userId, contexts) {
         if (!this.contexts[userId]) {
             this.contexts[userId] = {};
         }
@@ -29,6 +25,14 @@ class ContextService {
         contexts.forEach((context) => {
             this.contexts[userId][context.getContextType()] = context;
         });
+    }
+
+    setContext(userId, context){
+        this.setContexts(userId, [context]);
+    }
+
+    clearData(){
+        this.contexts = {};
     }
 
 

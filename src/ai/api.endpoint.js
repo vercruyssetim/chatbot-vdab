@@ -56,6 +56,7 @@ class ApiEndpoint {
     }
 
     sendContext(contexts, sessionId, callBack) {
+        console.log(`sending context ${JSON.stringify(contexts)}`);
         let request = this.app.contextsRequest(contexts, {
             sessionId: sessionId
         });

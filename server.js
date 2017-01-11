@@ -1,6 +1,7 @@
 const slackServer = require('./src/server/slack.server');
 const facebookServer = require('./src/server/facebook.server');
 const propertiesService = require('./src/storage/properties.service');
+const apiAiWebhook = require('./src/webhook/api.ai.webhook');
 
 class Server {
     constructor(slackServer, facebookServer, propertiesService) {
