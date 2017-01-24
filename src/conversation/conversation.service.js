@@ -1,7 +1,7 @@
-const apiEndpoint = require('../ai/api.endpoint');
-const contextService = require('../context/context.repository');
-const backendService = require('../backend/backend.stub');
-const Context = require('../context/context');
+import apiEndpoint from '../ai/api.endpoint';
+import contextService from '../context/context.repository';
+import backendService from '../backend/backend.stub';
+import Context from '../context/context';
 
 class ConversationService {
 
@@ -16,7 +16,7 @@ class ConversationService {
         this.handlers['save.username'] = (message, sender, response) => this.handleSaveUsername(message, sender, response);
         this.handlers['start.orientation'] = (message, sender, response) => this.handleStartOrientation(message, sender, response);
         this.handlers['save.answer'] = (message, sender, response) => this.handleSaveAnswer(message, sender, response);
-        this.handlers['clear.data'] = (message, sender, response) => this.handleClearData(message, sender, response);
+        this.handlers['clear.data'] = (message, sender, response) => this.handleClearData(sender, response);
         this.handlers['default'] = (message, sender, response) => this.handleDefault(message, sender, response);
     }
 
@@ -30,14 +30,14 @@ class ConversationService {
             } else {
                 this.handlers['default'](message, sender, response);
             }
-        })
+        });
     }
 
     handleStartOrientation(message, sender, response) {
         sender({text: response.text});
         let context = this._getContextOfNextQuestion(message);
         this.apiEndpoint.sendContext(
-            context.withParameter("username", this._getUsername(message.userId)),
+            context.withParameter('username', this._getUsername(message.userId)),
             message.userId, () => {
                 message.text = 'START.CONVERSATION';
                 this.handleRequest(message, sender);
@@ -56,7 +56,7 @@ class ConversationService {
         this.backendService.saveUsername(message.userId, response.parameters.username);
     }
 
-    handleClearData(message, sender, response){
+    handleClearData(sender, response){
         sender({text: response.text});
         this.backendService.clearData();
         this.contextService.clearData();
@@ -101,4 +101,4 @@ class ConversationService {
 }
 const conversationService = new ConversationService(apiEndpoint, contextService, backendService);
 conversationService.$onInit();
-module.exports = conversationService;
+export default conversationService;

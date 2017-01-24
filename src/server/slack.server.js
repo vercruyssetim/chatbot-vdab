@@ -1,7 +1,7 @@
-const Botkit = require('botkit');
-const webserver = require('./web.server');
-const witService = require('../ai/wit.service');
-const apiEndpoint = require('../ai/api.endpoint');
+import Botkit from 'botkit';
+import webserver from './web.server';
+import witService from '../ai/wit.service';
+import apiEndpoint from '../ai/api.endpoint';
 
 class SlackServer {
     constructor(Botkit, webserver, witService, apiEndpoint) {
@@ -11,8 +11,8 @@ class SlackServer {
         this.conversationService = apiEndpoint;
     }
 
-    startServer(clientId, clientSecret, verifyTokens) {
-        let controller = Botkit.slackbot({
+    startServer(clientId, clientSecret) {
+        let controller = this.Botkit.slackbot({
             clientId,
             clientSecret,
             json_file_store: './storage',
@@ -28,7 +28,7 @@ class SlackServer {
 
         controller.hears(['(.*)'], 'mention,direct_message', (bot, message) => {
             this.apiEndpoint.sendQuery(message.text, message.ts, (text) => {
-                bot.reply(message, `From api.ai: ${text}`)
+                bot.reply(message, `From api.ai: ${text}`);
             });
             this.witService.handleInteractive(message.text, message.ts, (text) => {
                 bot.reply(message, `From wit.ai: ${text}`);
@@ -37,4 +37,4 @@ class SlackServer {
     }
 }
 const slackServer = new SlackServer(Botkit, webserver, witService, apiEndpoint);
-module.exports = slackServer;
+export default slackServer;

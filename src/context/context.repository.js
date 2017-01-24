@@ -1,8 +1,6 @@
-const Context = require('./context');
-
 class ContextService {
     constructor() {
-        this.contexts = {}
+        this.contexts = {};
     }
 
 
@@ -39,4 +37,4 @@ class ContextService {
 }
 const contextService = new ContextService();
 contextService.$onInit();
-module.exports = contextService;
+export default contextService;

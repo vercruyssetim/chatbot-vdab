@@ -1,4 +1,4 @@
-class Context{
+export default class Context{
     constructor(context){
         this.name = context.name;
         this.parameters = context.parameters ? context.parameters : {};
@@ -33,7 +33,6 @@ class Context{
             name: `${contextType}_${number}`,
             parameters: {},
             lifespan: 1
-        })
+        });
     }
 }
-module.exports = Context;

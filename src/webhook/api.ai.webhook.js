@@ -1,5 +1,5 @@
-const webserver = require('../server/web.server');
-const backendService = require('../backend/backend.stub');
+import webserver from '../server/web.server';
+import backendService from '../backend/backend.stub';
 
 class ApiAiWebhook{
     constructor(webserver, backendService){
@@ -27,19 +27,19 @@ class ApiAiWebhook{
     handleGetUsername(req, res){
         let message = this.getUsernameMessage(req);
         res.send({
-            "speech": message,
-            "displayText": message,
-            "source": "apiai-webhook"
-        })
+            speech: message,
+            displayText: message,
+            source: 'apiai-webhook'
+        });
     }
 
     handleListAnswers(req, res){
         let message = this.getListAnswers(req);
         res.send({
-            "speech": message,
-            "displayText": message,
-            "source": "apiai-webhook-bla"
-        })
+            speech: message,
+            displayText: message,
+            source: 'apiai-webhook-bla'
+        });
     }
 
     getListAnswers(req){
@@ -56,10 +56,10 @@ class ApiAiWebhook{
         if(username){
             return `your username is ${username}`;
         }
-        return `I don't know your username yet`;
+        return 'I don\'t know your username yet';
     }
 
 }
 const apiAiWebhook = new ApiAiWebhook(webserver, backendService);
 apiAiWebhook.$onInit();
-module.exports = apiAiWebhook;
+export default apiAiWebhook;

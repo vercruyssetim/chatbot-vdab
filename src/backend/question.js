@@ -1,4 +1,4 @@
-class Question {
+export default class Question {
     constructor(index) {
         this.index = index;
         this.defaultNextQuestion = null;
@@ -33,4 +33,3 @@ class Question {
         return new Question(index);
     }
 }
-module.exports = Question;

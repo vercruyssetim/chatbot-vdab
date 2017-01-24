@@ -1,6 +1,6 @@
-const apiai = require('apiai');
-const propertiesService = require('../storage/properties.service');
-const Context = require('../context/context');
+import apiai from 'apiai';
+import propertiesService from '../storage/properties.service';
+import Context from '../context/context';
 
 class ApiEndpoint {
     constructor(apiai, propertiesService) {
@@ -14,26 +14,26 @@ class ApiEndpoint {
 
     sendQuery(text, sessionId, callBack) {
         let request = this.app.textRequest(text, {
-            sessionId: sessionId
+            sessionId
         });
         request.on('response', (response) => {
             callBack(this.mapToQueryResponse(response));
         });
-        request.on('error', (error) => {
-            console.log('error')
+        request.on('error', () => {
+            console.log('error');
         });
         request.end();
     }
 
     sendEvents(event, sessionId, callBack) {
         let request = this.app.eventRequest(event, {
-            sessionId: sessionId
+            sessionId
         });
         request.on('response', (response) => {
             callBack(this.mapToQueryResponse(response));
         });
-        request.on('error', (error) => {
-            console.log('error')
+        request.on('error', () => {
+            console.log('error');
         });
         request.end();
     }
@@ -47,18 +47,18 @@ class ApiEndpoint {
             parameters: response.result.parameters,
             contexts: response.result.contexts.map((context) => new Context(context)),
             quickReplies: ApiEndpoint.mapToQuickReplies(response.result.fulfillment.messages)
-        }
+        };
     }
 
     static mapToQuickReplies(messages){
-        let quickReplies = messages.filter(message => message.type === 2)[0];
+        let quickReplies = messages.filter((message) => message.type === 2)[0];
         return quickReplies ? quickReplies.replies : null;
     }
 
     sendContext(contexts, sessionId, callBack) {
         console.log(`sending context ${JSON.stringify(contexts)}`);
         let request = this.app.contextsRequest(contexts, {
-            sessionId: sessionId
+            sessionId
         });
         request.on('response', (response) => {
             callBack(response);
@@ -72,5 +72,5 @@ class ApiEndpoint {
 
 const apiEndpoint = new ApiEndpoint(apiai, propertiesService);
 apiEndpoint.$onInit();
-module.exports = apiEndpoint;
+export default apiEndpoint;
 

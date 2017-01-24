@@ -1,8 +1,8 @@
-const Botkit = require('botkit');
-const webserver = require('./web.server');
-const witService = require('../ai/wit.service');
-const conversationService = require('../conversation/conversation.service');
-const request = require('request');
+import Botkit from 'botkit';
+import webserver from './web.server';
+import witService from '../ai/wit.service';
+import conversationService from '../conversation/conversation.service';
+import request from 'request';
 
 class FacebookServer {
 
@@ -14,7 +14,7 @@ class FacebookServer {
     }
 
     startServer(accessToken, verifyToken) {
-        let controller = Botkit.facebookbot({
+        let controller = this.Botkit.facebookbot({
             verify_token: verifyToken,
             access_token: accessToken,
             json_file_store: './storage',
@@ -47,8 +47,8 @@ class FacebookServer {
                 content_type: 'text',
                 title: reply,
                 payload: reply
-            }
-        })
+            };
+        });
     }
 
     login(access_token, callBack) {
@@ -62,8 +62,8 @@ class FacebookServer {
                 }
             });
         return this;
-    };
+    }
 }
 
 const botkit = new FacebookServer(Botkit, webserver, witService, conversationService);
-module.exports = botkit;
+export default botkit;

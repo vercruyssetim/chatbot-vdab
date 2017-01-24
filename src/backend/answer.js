@@ -11,6 +11,6 @@ export default class Answer {
 
     static fromParameter(parameter) {
         let fieldName = Object.keys(parameter)[0];
-        return new Answer(fieldName.split("_")[0], fieldName.split("_")[1], parameter[fieldName]);
+        return new Answer(fieldName.split('_')[0], fieldName.split('_')[1], parameter[fieldName]);
     }
 }

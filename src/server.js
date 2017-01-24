@@ -1,8 +1,7 @@
-require('babel-register');
-require('./webhook/api.ai.webhook');
-const slackServer = require('./server/slack.server');
-const facebookServer = require('./server/facebook.server');
-const propertiesService = require('./storage/properties.service');
+import './webhook/api.ai.webhook';
+import slackServer from './server/slack.server';
+import facebookServer from './server/facebook.server';
+import propertiesService from './storage/properties.service';
 
 class Server {
     constructor(slackServer, facebookServer, propertiesService) {

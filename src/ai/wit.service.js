@@ -1,7 +1,7 @@
-const {Wit, log} = require('node-wit');
-const senderRepository = require('../storage/sender.repository');
-const sessionRepository = require('../storage/session.repository');
-const propertiesService = require('../storage/properties.service');
+import {Wit} from 'node-wit';
+import senderRepository from '../storage/sender.repository';
+import sessionRepository from '../storage/session.repository';
+import propertiesService from '../storage/properties.service';
 
 class WitService {
     constructor(Wit, sessionRepository, senderService, propertiesService) {
@@ -17,8 +17,8 @@ class WitService {
             accessToken: this.propertiesService.get('wit.ai.access.token'),
             actions: {
                 send: this.send.bind(this),
-                getForecast: this.getForecast.bind(this),
-                getShopLocation: this.getShopLocation.bind(this)
+                getForecast: WitService.getForecast.bind(this),
+                getShopLocation: WitService.getShopLocation.bind(this)
             }
         });
     }
@@ -34,14 +34,14 @@ class WitService {
     }
 
     send(request, response) {
-        const {sessionId, context, entities} = request;
-        const {text, quickreplies} = response;
+        const {sessionId} = request;
+        // const {text, quickreplies} = response;
         console.log('sending from wit...', JSON.stringify(response.text));
         this.senderService.sendMessage(sessionId, response.text);
         return Promise.resolve();
     }
 
-    getForecast({context, entities}) {
+    static getForecast({context, entities}) {
         let location = WitService.firstEntityValue(entities, 'location');
         if (location) {
             context.forecast = 'sunny in ' + location; // we should call a weather API here
@@ -53,7 +53,7 @@ class WitService {
         return Promise.resolve(context);
     }
 
-    getShopLocation({context, entities}) {
+    static getShopLocation({context, entities}) {
         context.location = WitService.firstEntityValue(entities, 'shop') + 'vile';
         return Promise.resolve(context);
     }
@@ -72,4 +72,4 @@ class WitService {
 
 const witService = new WitService(Wit, sessionRepository, senderRepository, propertiesService);
 witService.$onInit();
-module.exports = witService;
+export default witService;

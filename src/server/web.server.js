@@ -1,6 +1,7 @@
-const bodyParser = require('body-parser');
-const express = require('express');
+import bodyParser from 'body-parser';
+import express from 'express';
 
+/* global __dirname */
 class ExpressServer{
 
     constructor(express, bodyParser){
@@ -25,4 +26,4 @@ class ExpressServer{
 }
 const expressServer = new ExpressServer(express, bodyParser);
 expressServer.$onInit();
-module.exports = expressServer;
+export default expressServer;

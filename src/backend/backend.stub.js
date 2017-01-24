@@ -1,5 +1,5 @@
-const Answer = require('./answer');
-const Question = require('./question');
+import Answer from './answer';
+import Question from './question';
 
 class BackendStub {
     constructor() {
@@ -60,7 +60,7 @@ class BackendStub {
         }
         return this.answers[userId][conversationType].map((answer) =>
             `your ${answer.type} is ${answer.value}`
-        )
+        );
     }
 
     clearData(){
@@ -72,5 +72,5 @@ class BackendStub {
 }
 const backendStub = new BackendStub();
 backendStub.$onInit();
-module.exports = backendStub;
+export default backendStub;
 
