@@ -1,0 +1,77 @@
+{
+  "root": true,
+  "env": {
+    "es6": true,
+    "jasmine": true
+  },
+  "parser": "babel-eslint",
+  "globals": {
+    "iceUnit": false,
+    "angular": false,
+    "cordova": false,
+    "StatusBar": false,
+    "device": false,
+    "Media": false,
+    "PushNotification": false,
+    "PushNotificationBuilder": false,
+    "ionic": false,
+    "console": false,
+    "XMLHttpRequest": false,
+    "FileReader": false,
+    "document": false,
+    "Image": false,
+    "Camera": false
+  },
+  "plugins": [
+    "babel"
+  ],
+  "rules": {
+    "indent": [
+      2,
+      4,
+      {
+        "SwitchCase": 1
+      }
+    ],
+    "quotes": [
+      2,
+      "single"
+    ],
+    "comma-spacing": [
+      2,
+      {
+        "before": false,
+        "after": true
+      }
+    ],
+    "semi": [
+      2,
+      "always"
+    ],
+    "strict": 0,
+    "no-console": 0,
+    "no-debugger": 0,
+    "new-cap": 0,
+    "object-curly-spacing": 0,
+    "generator-star-spacing": [
+      "error",
+      "after"
+    ],
+    "object-shorthand": [
+      "error",
+      "always"
+    ],
+    "arrow-parens": [
+      "error",
+      "always"
+    ],
+    "no-await-in-loop": 0,
+    "babel/new-cap": 2,
+    "babel/object-curly-spacing": [
+      2,
+      "never"
+    ],
+    "babel/no-await-in-loop": 2
+  },
+  "extends": "eslint:recommended"
+}

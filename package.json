@@ -1,21 +1,16 @@
 {
-  "name": "starter-slapp-app",
+  "name": "chat-vdab",
   "version": "1.0.0",
-  "description": "Basic Slack app using the Slapp library and Slack Events API",
+  "description": "Chat application for VDAB",
   "scripts": {
     "watch": "nodemon server.js",
     "test": "standard"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BeepBoopHQ/starter-slapp-app.git"
+    "url": "git+https://github.com/vercruyssetim/chatbot-vdab.git"
   },
-  "author": "Brad Harris",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/BeepBoopHQ/starter-slapp-app/issues"
-  },
-  "homepage": "https://github.com/BeepBoopHQ/starter-slapp-app#readme",
   "dependencies": {
     "apiai": "3.0.3",
     "beepboop-botkit": "1.4.1",
@@ -23,11 +18,33 @@
     "express": "4.14.0",
     "node-wit": "4.1.0",
     "nodemon": "1.11.0",
-    "promise": "^7.1.1",
+    "promise": "7.1.1",
     "properties-reader": "0.0.15",
     "slapp": "1.2.0",
     "slapp-context-beepboop": "1.1.0",
     "slapp-convo-beepboop": "1.0.0",
     "standard": "8.4.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^7.1.1",
+    "babel-polyfill": "^6.22.0",
+    "babel-preset-es2015": "^6.22.0",
+    "babel-register": "^6.22.0",
+    "eslint": "^3.14.0",
+    "eslint-plugin-babel": "^4.0.1",
+    "fs": "0.0.1-security",
+    "gulp": "3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-eslint": "^3.0.1",
+    "gulp-nodemon": "^2.2.1",
+    "jasmine-core": "^2.5.2",
+    "karma": "^1.4.0",
+    "karma-babel-preprocessor": "^6.0.1",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-jasmine": "^1.1.0",
+    "karma-junit-reporter": "^1.2.0",
+    "karma-phantomjs-launcher": "^1.0.2",
+    "phantomjs-prebuilt": "^2.1.14",
+    "run-sequence": "^1.2.2"
   }
 }

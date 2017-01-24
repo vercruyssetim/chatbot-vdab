@@ -1,4 +1,4 @@
-class Answer {
+export default class Answer {
     constructor(conversationType, type, value) {
         this.conversationType = conversationType;
         this.type = type;
@@ -14,4 +14,3 @@ class Answer {
         return new Answer(fieldName.split("_")[0], fieldName.split("_")[1], parameter[fieldName]);
     }
 }
-module.exports = Answer;
