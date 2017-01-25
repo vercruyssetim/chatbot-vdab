@@ -8,3 +8,4 @@ storage/
 
 application.properties
 dist/
+test-reports/

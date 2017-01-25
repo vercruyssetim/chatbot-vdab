@@ -1,12 +1,6 @@
-class ContextService {
-    constructor() {
-        this.contexts = {};
-    }
-
-
-    $onInit() {
-
-    }
+import {Context} from "./context";
+export class ContextService {
+    private contexts: {[userId: string]: {[contextType: string]: Context}};
 
     getContext(userId, contextType) {
         if (!this.contexts[userId]) {
@@ -25,16 +19,13 @@ class ContextService {
         });
     }
 
-    setContext(userId, context){
+    setContext(userId, context) {
         this.setContexts(userId, [context]);
     }
 
-    clearData(){
+    clearData() {
         this.contexts = {};
     }
 
 
 }
-const contextService = new ContextService();
-contextService.$onInit();
-export default contextService;

@@ -1,19 +1,16 @@
-import apiai from 'apiai';
-import propertiesService from '../storage/properties.service';
-import Context from '../context/context';
+import * as apiai from "apiai";
+import {Context} from "../context/context";
+import {ApiAi} from "apiai";
 
-class ApiEndpoint {
-    constructor(apiai, propertiesService) {
-        this.apiai = apiai;
-        this.propertiesService = propertiesService;
-    }
+export class ApiEndpoint {
+    private apiai: ApiAi.ApiAiClient;
 
-    $onInit() {
-        this.app = apiai(this.propertiesService.get('api.ai.access.token'));
+    constructor(apiAiAccessToken: string) {
+        this.apiai = apiai(apiAiAccessToken);
     }
 
     sendQuery(text, sessionId, callBack) {
-        let request = this.app.textRequest(text, {
+        let request = this.apiai.textRequest(text, {
             sessionId
         });
         request.on('response', (response) => {
@@ -26,7 +23,7 @@ class ApiEndpoint {
     }
 
     sendEvents(event, sessionId, callBack) {
-        let request = this.app.eventRequest(event, {
+        let request = this.apiai.eventRequest(event, {
             sessionId
         });
         request.on('response', (response) => {
@@ -50,14 +47,14 @@ class ApiEndpoint {
         };
     }
 
-    static mapToQuickReplies(messages){
+    static mapToQuickReplies(messages) {
         let quickReplies = messages.filter((message) => message.type === 2)[0];
         return quickReplies ? quickReplies.replies : null;
     }
 
-    sendContext(contexts, sessionId, callBack) {
+    sendContext(contexts: Context, sessionId, callBack) {
         console.log(`sending context ${JSON.stringify(contexts)}`);
-        let request = this.app.contextsRequest(contexts, {
+        let request = this.apiai.contextsRequest(contexts, {
             sessionId
         });
         request.on('response', (response) => {
@@ -69,8 +66,4 @@ class ApiEndpoint {
         request.end();
     }
 }
-
-const apiEndpoint = new ApiEndpoint(apiai, propertiesService);
-apiEndpoint.$onInit();
-export default apiEndpoint;
 

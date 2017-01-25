@@ -1,20 +1,23 @@
-import Botkit from 'botkit';
-import webserver from './web.server';
-import witService from '../ai/wit.service';
-import conversationService from '../conversation/conversation.service';
-import request from 'request';
+import * as Botkit from "botkit";
+import {WitService} from "../ai/wit.service";
+import {ConversationService} from "../conversation/conversation.service";
+import * as request from "request";
+import {FacebookResponse} from "./FacebookResponse";
+import {ExpressServer} from "./web.server";
 
-class FacebookServer {
+export class FacebookServer {
+    private webserver: ExpressServer;
+    private witService : WitService;
+    private conversationService;
 
-    constructor(Botkit, webserver, witService, conversationService) {
-        this.Botkit = Botkit;
+    constructor(webserver: ExpressServer, witService: WitService, conversationService: ConversationService) {
         this.webserver = webserver;
         this.witService = witService;
         this.conversationService = conversationService;
     }
 
     startServer(accessToken, verifyToken) {
-        let controller = this.Botkit.facebookbot({
+        let controller = Botkit.facebookbot({
             verify_token: verifyToken,
             access_token: accessToken,
             json_file_store: './storage',
@@ -26,11 +29,11 @@ class FacebookServer {
         this.login(accessToken, () => {
             controller.startTicking();
         });
-        controller.createWebhookEndpoints(this.webserver.server, bot);
+        controller.createWebhookEndpoints(this.webserver.getServer(), bot);
 
         controller.hears(['(.*)'], 'message_received', (bot, message) => {
             this.conversationService.handleRequest({text: message.text, userId: message.user}, (reply) => {
-                let response = {};
+                let response = new FacebookResponse();
                 response.text = reply.text;
                 if (reply.quickReplies) {
                     response.quick_replies = FacebookServer.mapToQuickReplies(reply.quickReplies);
@@ -64,6 +67,3 @@ class FacebookServer {
         return this;
     }
 }
-
-const botkit = new FacebookServer(Botkit, webserver, witService, conversationService);
-export default botkit;

@@ -1,14 +1,13 @@
-import Answer from './answer';
-import Question from './question';
+import {Answer} from "./answer";
+import {Question} from "./question";
 
-class BackendStub {
+export class BackendStub {
+    private answers: {[userid: string] : {[conversationType: string]: Array<Answer>}};
+    private usernames: {[userid: string]: string};
+    private currentQuestion: Question;
+    private questions: {[conversationType: string]: {[index: number]: Question}};
+
     constructor() {
-        this.answers = {};
-        this.usernames = {};
-        this.currentQuestion = {};
-    }
-
-    $onInit() {
         this.questions = {
             orientation: {
                 1: Question.aQuestion(1).withNextQuestion('boxing', 3).withNextQuestion('drinking', 4),
@@ -19,58 +18,54 @@ class BackendStub {
         };
     }
 
-    getStartQuestionIndex(conversationType){
+    getStartQuestionIndex(conversationType) {
         this.currentQuestion[conversationType] = this.questions[conversationType][1];
         return this.currentQuestion[conversationType].index;
     }
 
-    getNextQuestion(conversationType){
+    getNextQuestion(conversationType) {
         let currentQuestion = this.currentQuestion[conversationType];
         let nextQuestion = currentQuestion.getNextQuestion();
         this.currentQuestion[conversationType] = this.questions[conversationType][nextQuestion];
         return this.currentQuestion[conversationType].index;
     }
 
-    saveUsername(userId, username){
-        if(!this.usernames[userId]){
-            this.usernames[userId] = {};
+    saveUsername(userId: string, username: string) {
+        if (!this.usernames[userId]) {
+            this.usernames[userId] = '';
         }
         this.usernames[userId] = username;
     }
 
-    getUsername(userId){
+    getUsername(userId) {
         return this.usernames[userId];
     }
 
     saveParameter(userId, parameter) {
         let answer = Answer.fromParameter(parameter);
-        if(!this.answers[userId]){
+        if (!this.answers[userId]) {
             this.answers[userId] = {};
         }
-        if(!this.answers[userId][answer.getConversationType()]){
+        if (!this.answers[userId][answer.getConversationType()]) {
             this.answers[userId][answer.getConversationType()] = [];
         }
         this.answers[userId][answer.getConversationType()].push(answer);
         this.currentQuestion[answer.getConversationType()].saveAnswer(answer);
     }
 
-    answersToString(userId, conversationType){
-        if(!this.answers[userId] || !this.answers[userId][conversationType]){
+    answersToString(userId, conversationType) {
+        if (!this.answers[userId] || !this.answers[userId][conversationType]) {
             return null;
         }
         return this.answers[userId][conversationType].map((answer) =>
-            `your ${answer.type} is ${answer.value}`
+            `your ${answer.getType()} is ${answer.getValue()}`
         );
     }
 
-    clearData(){
-        this.currentQuestion = {};
+    clearData() {
+        this.currentQuestion = null;
         this.usernames = {};
         this.answers = {};
-        this.$onInit();
     }
 }
-const backendStub = new BackendStub();
-backendStub.$onInit();
-export default backendStub;
 

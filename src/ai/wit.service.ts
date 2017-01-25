@@ -1,20 +1,18 @@
-import {Wit} from 'node-wit';
-import senderRepository from '../storage/sender.repository';
-import sessionRepository from '../storage/session.repository';
-import propertiesService from '../storage/properties.service';
+import {Wit} from "node-wit";
+import * as Promise from "promise";
+import {SenderService} from "../storage/sender.repository";
+import {SessionService} from "../storage/session.repository";
 
-class WitService {
-    constructor(Wit, sessionRepository, senderService, propertiesService) {
-        this.Wit = Wit;
-        this.userRepository = sessionRepository;
-        this.senderRepository = senderService;
-        this.propertiesService = propertiesService;
-        this.witClient = {};
-    }
+export class WitService {
+    private witClient: Wit;
+    private senderService;
+    private sessionRepository;
 
-    $onInit() {
-        this.witClient = new this.Wit({
-            accessToken: this.propertiesService.get('wit.ai.access.token'),
+    constructor(sessionRepository: SessionService, senderRepository: SenderService, witAccessToken: string) {
+        this.sessionRepository = sessionRepository;
+        this.senderService = senderRepository;
+        this.witClient = new Wit({
+            accessToken: witAccessToken,
             actions: {
                 send: this.send.bind(this),
                 getForecast: WitService.getForecast.bind(this),
@@ -25,9 +23,9 @@ class WitService {
 
     handleInteractive(message, sessionId, sender) {
         this.senderService.addSender(sessionId, sender);
-        this.witClient.runActions(sessionId, message, this.contextService.getSession(sessionId))
+        this.witClient.runActions(sessionId, message, this.sessionRepository.getSession(sessionId))
             .then((context) => {
-                this.contextService.setContext(context);
+                this.sessionRepository.setContext(context);
                 this.senderService.removeSender(sessionId);
             })
             .catch(console.error);
@@ -38,7 +36,7 @@ class WitService {
         // const {text, quickreplies} = response;
         console.log('sending from wit...', JSON.stringify(response.text));
         this.senderService.sendMessage(sessionId, response.text);
-        return Promise.resolve();
+        return Promise.resolve(null);
     }
 
     static getForecast({context, entities}) {
@@ -69,7 +67,3 @@ class WitService {
         return typeof val === 'object' ? val.value : val;
     }
 }
-
-const witService = new WitService(Wit, sessionRepository, senderRepository, propertiesService);
-witService.$onInit();
-export default witService;

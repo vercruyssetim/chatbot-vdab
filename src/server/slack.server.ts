@@ -1,18 +1,21 @@
-import Botkit from 'botkit';
-import webserver from './web.server';
-import witService from '../ai/wit.service';
-import apiEndpoint from '../ai/api.endpoint';
+import * as Botkit from "botkit";
+import {WitService} from "../ai/wit.service";
+import {ExpressServer} from "./web.server";
 
-class SlackServer {
-    constructor(Botkit, webserver, witService, apiEndpoint) {
-        this.Botkit = Botkit;
+export class SlackServer {
+
+    private witService: WitService;
+    private webserver: ExpressServer;
+    private apiEndpoint;
+
+    public constructor(webserver: ExpressServer, witService: WitService, apiEndpoint) {
         this.webserver = webserver;
         this.witService = witService;
-        this.conversationService = apiEndpoint;
+        this.apiEndpoint = apiEndpoint;
     }
 
-    startServer(clientId, clientSecret) {
-        let controller = this.Botkit.slackbot({
+    startServer(clientId: string, clientSecret: string) {
+        let controller = Botkit.slackbot({
             clientId,
             clientSecret,
             json_file_store: './storage',
@@ -23,8 +26,8 @@ class SlackServer {
         });
 
         //passing verifyTokens will block the facebook bot
-        controller.createWebhookEndpoints(this.webserver.server);
-        controller.createOauthEndpoints(this.webserver.server, (err) => console.log(err));
+        controller.createWebhookEndpoints(this.webserver.getServer());
+        controller.createOauthEndpoints(this.webserver.getServer(), (err) => console.log(err));
 
         controller.hears(['(.*)'], 'mention,direct_message', (bot, message) => {
             this.apiEndpoint.sendQuery(message.text, message.ts, (text) => {
@@ -36,5 +39,3 @@ class SlackServer {
         });
     }
 }
-const slackServer = new SlackServer(Botkit, webserver, witService, apiEndpoint);
-export default slackServer;

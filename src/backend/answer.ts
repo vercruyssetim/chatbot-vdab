@@ -1,4 +1,8 @@
-export default class Answer {
+export class Answer {
+    private conversationType:  string;
+    private type: string;
+    private value: string;
+
     constructor(conversationType, type, value) {
         this.conversationType = conversationType;
         this.type = type;
@@ -7,6 +11,14 @@ export default class Answer {
 
     getConversationType() {
         return this.conversationType;
+    }
+
+    getValue(){
+        return this.value;
+    }
+
+    getType(){
+        return this.type;
     }
 
     static fromParameter(parameter) {

@@ -1,9 +1,13 @@
-import apiEndpoint from '../ai/api.endpoint';
-import contextService from '../context/context.repository';
-import backendService from '../backend/backend.stub';
-import Context from '../context/context';
+import {ApiEndpoint} from "../ai/api.endpoint";
+import {BackendStub} from "../backend/backend.stub";
+import {Context} from "../context/context";
+import {ContextService} from "../context/context.repository";
 
-class ConversationService {
+export class ConversationService {
+    private apiEndpoint: ApiEndpoint;
+    private contextService: ContextService;
+    private backendService: BackendStub;
+    private handlers: {[action: string]: (message: any, sender: any, response: any) => void};
 
     constructor(apiEndpoint, contextService, backendService) {
         this.apiEndpoint = apiEndpoint;
@@ -56,7 +60,7 @@ class ConversationService {
         this.backendService.saveUsername(message.userId, response.parameters.username);
     }
 
-    handleClearData(sender, response){
+    handleClearData(sender, response) {
         sender({text: response.text});
         this.backendService.clearData();
         this.contextService.clearData();
@@ -77,7 +81,7 @@ class ConversationService {
 
     _getContextOfNextQuestion(message) {
         let context = this.contextService.getContext(message.userId, 'orientation-question');
-        if(!context){
+        if (!context) {
             return Context.fromType('orientation-question', this.backendService.getStartQuestionIndex('orientation'));
         }
         return context;
@@ -90,6 +94,7 @@ class ConversationService {
         }
         return username;
     }
+
     _sendOrientationEndMessage(message, sender) {
         let contexts = Context.fromType('orientation-end')
             .withParameter('answerList', this.backendService.answersToString(message.userId, 'orientation'));
@@ -99,6 +104,3 @@ class ConversationService {
         });
     }
 }
-const conversationService = new ConversationService(apiEndpoint, contextService, backendService);
-conversationService.$onInit();
-export default conversationService;
