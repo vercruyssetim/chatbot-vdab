@@ -1,20 +1,12 @@
 import {Wit} from 'node-wit';
-import senderRepository from '../storage/sender.repository';
-import sessionRepository from '../storage/session.repository';
-import propertiesService from '../storage/properties.service';
+import Promise from 'Promise';
 
-class WitService {
-    constructor(Wit, sessionRepository, senderService, propertiesService) {
-        this.Wit = Wit;
-        this.userRepository = sessionRepository;
-        this.senderRepository = senderService;
-        this.propertiesService = propertiesService;
-        this.witClient = {};
-    }
-
-    $onInit() {
-        this.witClient = new this.Wit({
-            accessToken: this.propertiesService.get('wit.ai.access.token'),
+export default class WitService {
+    constructor(sessionRepository, senderService, witAiAccessToken) {
+        this.sessionRepository = sessionRepository;
+        this.senderService = senderService;
+        this.witClient = Wit({
+            accessToken: witAiAccessToken,
             actions: {
                 send: this.send.bind(this),
                 getForecast: WitService.getForecast.bind(this),
@@ -69,7 +61,3 @@ class WitService {
         return typeof val === 'object' ? val.value : val;
     }
 }
-
-const witService = new WitService(Wit, sessionRepository, senderRepository, propertiesService);
-witService.$onInit();
-export default witService;

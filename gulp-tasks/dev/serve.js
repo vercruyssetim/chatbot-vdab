@@ -6,7 +6,7 @@ export const serve = 'dev:serve';
 
 gulp.task(serve, () => {
     nodemon({
-        script: files.server,
+        script: files.main,
         watch: [dirs.dist]
     });
 });

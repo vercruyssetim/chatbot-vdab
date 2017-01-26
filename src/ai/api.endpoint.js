@@ -1,15 +1,9 @@
 import apiai from 'apiai';
-import propertiesService from '../storage/properties.service';
 import Context from '../context/context';
 
-class ApiEndpoint {
-    constructor(apiai, propertiesService) {
-        this.apiai = apiai;
-        this.propertiesService = propertiesService;
-    }
-
-    $onInit() {
-        this.app = apiai(this.propertiesService.get('api.ai.access.token'));
+export default class ApiEndpoint {
+    constructor(apiAiAccessToken) {
+        this.app = apiai(apiAiAccessToken);
     }
 
     sendQuery(text, sessionId, callBack) {
@@ -69,8 +63,4 @@ class ApiEndpoint {
         request.end();
     }
 }
-
-const apiEndpoint = new ApiEndpoint(apiai, propertiesService);
-apiEndpoint.$onInit();
-export default apiEndpoint;
 

@@ -1,11 +1,6 @@
-class ContextService {
+export default class ContextService {
     constructor() {
         this.contexts = {};
-    }
-
-
-    $onInit() {
-
     }
 
     getContext(userId, contextType) {
@@ -35,6 +30,3 @@ class ContextService {
 
 
 }
-const contextService = new ContextService();
-contextService.$onInit();
-export default contextService;

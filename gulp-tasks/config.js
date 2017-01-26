@@ -5,7 +5,7 @@ export const dirs = {
 };
 
 export const filenames = {
-    serverjs: 'server.js',
+    main: 'application.js',
     gulp: 'gulpfile.babel.js',
 };
 
@@ -14,5 +14,9 @@ export const files = {
     esLint: `${dirs.conf}/.eslintrc`,
     js: `${dirs.src}/**/*.js`,
     karmaConf: `${__dirname}/../${dirs.conf}/karma.conf.js`,
-    server: `${dirs.dist}/${filenames.serverjs}`
+    main: `${dirs.dist}/${filenames.main}`
+};
+
+export const filegroups = {
+    cleanDist: [`${dirs.dist}/**/*.*`]
 };

@@ -1,18 +1,16 @@
-import apiEndpoint from '../ai/api.endpoint';
-import contextService from '../context/context.repository';
-import backendService from '../backend/backend.stub';
 import Context from '../context/context';
 
-class ConversationService {
+export default class ConversationService {
 
     constructor(apiEndpoint, contextService, backendService) {
         this.apiEndpoint = apiEndpoint;
         this.contextService = contextService;
         this.backendService = backendService;
         this.handlers = {};
+        this.initHandlers();
     }
 
-    $onInit() {
+    initHandlers() {
         this.handlers['save.username'] = (message, sender, response) => this.handleSaveUsername(message, sender, response);
         this.handlers['start.orientation'] = (message, sender, response) => this.handleStartOrientation(message, sender, response);
         this.handlers['save.answer'] = (message, sender, response) => this.handleSaveAnswer(message, sender, response);
@@ -99,6 +97,3 @@ class ConversationService {
         });
     }
 }
-const conversationService = new ConversationService(apiEndpoint, contextService, backendService);
-conversationService.$onInit();
-export default conversationService;

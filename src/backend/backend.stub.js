@@ -1,14 +1,11 @@
 import Answer from './answer';
 import Question from './question';
 
-class BackendStub {
+export default class BackendStub {
     constructor() {
         this.answers = {};
         this.usernames = {};
         this.currentQuestion = {};
-    }
-
-    $onInit() {
         this.questions = {
             orientation: {
                 1: Question.aQuestion(1).withNextQuestion('boxing', 3).withNextQuestion('drinking', 4),
@@ -67,10 +64,7 @@ class BackendStub {
         this.currentQuestion = {};
         this.usernames = {};
         this.answers = {};
-        this.$onInit();
+        this.startServer();
     }
 }
-const backendStub = new BackendStub();
-backendStub.$onInit();
-export default backendStub;
 

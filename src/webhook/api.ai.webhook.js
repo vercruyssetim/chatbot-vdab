@@ -1,20 +1,13 @@
-import webserver from '../server/web.server';
-import backendService from '../backend/backend.stub';
-
-class ApiAiWebhook{
+export default class ApiAiWebhook{
     constructor(webserver, backendService){
         this.webserver = webserver;
         this.backendService = backendService;
         this.handlers = {};
-    }
-
-    $onInit(){
-        this.initWebhook();
         this.handlers['get.username'] = (req, res) => this.handleGetUsername(req, res);
         this.handlers['list.answers'] = (req, res) => this.handleListAnswers(req, res);
     }
 
-    initWebhook(){
+    startWebhook(){
         this.webserver.server.post('/api/webhook', (req, res) => {
             let action = req.body.result.action;
             if(this.handlers[action]){
@@ -60,6 +53,3 @@ class ApiAiWebhook{
     }
 
 }
-const apiAiWebhook = new ApiAiWebhook(webserver, backendService);
-apiAiWebhook.$onInit();
-export default apiAiWebhook;

@@ -1,20 +1,16 @@
 import Botkit from 'botkit';
-import webserver from './web.server';
-import witService from '../ai/wit.service';
-import conversationService from '../conversation/conversation.service';
 import request from 'request';
 
-class FacebookServer {
+export default class FacebookServer {
 
-    constructor(Botkit, webserver, witService, conversationService) {
-        this.Botkit = Botkit;
+    constructor(webserver, witService, conversationService) {
         this.webserver = webserver;
         this.witService = witService;
         this.conversationService = conversationService;
     }
 
     startServer(accessToken, verifyToken) {
-        let controller = this.Botkit.facebookbot({
+        let controller = Botkit.facebookbot({
             verify_token: verifyToken,
             access_token: accessToken,
             json_file_store: './storage',
@@ -64,6 +60,3 @@ class FacebookServer {
         return this;
     }
 }
-
-const botkit = new FacebookServer(Botkit, webserver, witService, conversationService);
-export default botkit;

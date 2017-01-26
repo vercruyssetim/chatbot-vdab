@@ -1,18 +1,14 @@
 import Botkit from 'botkit';
-import webserver from './web.server';
-import witService from '../ai/wit.service';
-import apiEndpoint from '../ai/api.endpoint';
 
-class SlackServer {
-    constructor(Botkit, webserver, witService, apiEndpoint) {
-        this.Botkit = Botkit;
+export default class SlackServer {
+    constructor(webserver, witService, apiEndpoint) {
         this.webserver = webserver;
         this.witService = witService;
         this.conversationService = apiEndpoint;
     }
 
     startServer(clientId, clientSecret) {
-        let controller = this.Botkit.slackbot({
+        let controller = Botkit.slackbot({
             clientId,
             clientSecret,
             json_file_store: './storage',
@@ -36,5 +32,3 @@ class SlackServer {
         });
     }
 }
-const slackServer = new SlackServer(Botkit, webserver, witService, apiEndpoint);
-export default slackServer;
