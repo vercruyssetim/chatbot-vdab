@@ -30,18 +30,18 @@ export class FacebookServer {
             controller.startTicking();
         });
         controller.createWebhookEndpoints(this.webserver.getServer(), bot);
+        controller.hears(['(.*)'], 'message_received', (bot, message) => this.handleMessageReceived(bot, message));
+    }
 
-        controller.hears(['(.*)'], 'message_received', (bot, message) => {
-            this.conversationService.handleRequest({text: message.text, userId: message.user}, (reply) => {
-                let response = new FacebookResponse();
-                response.text = reply.text;
-                if (reply.quickReplies) {
-                    response.quick_replies = FacebookServer.mapToQuickReplies(reply.quickReplies);
-                }
-                bot.reply(message, response);
-            });
+    handleMessageReceived(bot, message){
+        this.witService.handleInteractive(message.text, message.user, (reply) => {
+            let response = new FacebookResponse();
+            response.text = reply.text;
+            if (reply.quickReplies) {
+                response.quick_replies = FacebookServer.mapToQuickReplies(reply.quickReplies);
+            }
+            bot.reply(message, response);
         });
-
     }
 
     static mapToQuickReplies(quickReplies) {

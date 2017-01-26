@@ -21,7 +21,7 @@ export class WitService {
         });
     }
 
-    handleInteractive(message, sessionId, sender) {
+    handleInteractive(message: string, sessionId: string, sender: (text: any) => void) {
         this.senderService.addSender(sessionId, sender);
         this.witClient.runActions(sessionId, message, this.sessionRepository.getSession(sessionId))
             .then((context) => {

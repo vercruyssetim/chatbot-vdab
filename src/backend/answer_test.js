@@ -1,9 +1,0 @@
-describe('answer', () => {
-    beforeEach(() => {
-
-    });
-
-    it('', () => {
-
-    });
-});

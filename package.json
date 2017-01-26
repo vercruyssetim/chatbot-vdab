@@ -32,6 +32,7 @@
     "typings": "^2.1.0"
   },
   "devDependencies": {
+    "@types/jasmine": "^2.5.41",
     "@types/node": "^7.0.3",
     "babel-eslint": "^7.1.1",
     "babel-polyfill": "^6.22.0",
@@ -49,10 +50,14 @@
     "karma": "^1.4.0",
     "karma-babel-preprocessor": "^6.0.1",
     "karma-chrome-launcher": "^2.0.0",
+    "karma-coverage": "^1.1.1",
     "karma-jasmine": "^1.1.0",
     "karma-junit-reporter": "^1.2.0",
     "karma-phantomjs-launcher": "^1.0.2",
+    "karma-typescript": "^2.1.6",
+    "karma-typescript-preprocessor": "^0.3.1",
     "phantomjs-prebuilt": "^2.1.14",
+    "requirejs": "^2.3.2",
     "run-sequence": "^1.2.2",
     "ts-node": "^2.0.0",
     "typescript": "^2.1.5"
