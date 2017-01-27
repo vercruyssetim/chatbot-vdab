@@ -1,25 +1,25 @@
 import {Wit} from 'node-wit';
 import Promise from 'Promise';
 
-export default class WitService {
+export default class WitClient {
+
     constructor(sessionRepository, senderService, witAiAccessToken) {
         this.sessionRepository = sessionRepository;
         this.senderService = senderService;
-        this.witClient = Wit({
+        this.witClient = new Wit({
             accessToken: witAiAccessToken,
             actions: {
                 send: this.send.bind(this),
-                getForecast: WitService.getForecast.bind(this),
-                getShopLocation: WitService.getShopLocation.bind(this)
+                saveLocation: WitClient.saveLocation.bind(this)
             }
         });
     }
 
-    handleInteractive(message, sessionId, sender) {
+    handleMessageReceived(message, sessionId, sender) {
         this.senderService.addSender(sessionId, sender);
-        this.witClient.runActions(sessionId, message, this.contextService.getSession(sessionId))
+        this.witClient.runActions(sessionId, message, this.sessionRepository.getContext(sessionId))
             .then((context) => {
-                this.contextService.setContext(context);
+                this.sessionRepository.setContext(sessionId, context);
                 this.senderService.removeSender(sessionId);
             })
             .catch(console.error);
@@ -29,24 +29,12 @@ export default class WitService {
         const {sessionId} = request;
         // const {text, quickreplies} = response;
         console.log('sending from wit...', JSON.stringify(response.text));
-        this.senderService.sendMessage(sessionId, response.text);
+        this.senderService.sendMessage(sessionId, response);
         return Promise.resolve();
     }
 
-    static getForecast({context, entities}) {
-        let location = WitService.firstEntityValue(entities, 'location');
-        if (location) {
-            context.forecast = 'sunny in ' + location; // we should call a weather API here
-            delete context.missingLocation;
-        } else {
-            context.missingLocation = true;
-            delete context.forecast;
-        }
-        return Promise.resolve(context);
-    }
-
-    static getShopLocation({context, entities}) {
-        context.location = WitService.firstEntityValue(entities, 'shop') + 'vile';
+    static saveLocation({context, entities}){
+        context.location = WitClient.firstEntityValue(entities, 'location');
         return Promise.resolve(context);
     }
 

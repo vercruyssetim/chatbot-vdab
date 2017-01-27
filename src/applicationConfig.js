@@ -1,58 +1,24 @@
-import SlackServer from './server/slack.server';
-import FacebookServer from './server/facebook.server';
-import ApiEndpoint from './ai/api.endpoint';
-import WitService from './ai/wit.service';
-import ConversationService from './conversation/conversation.service';
-import ContextService from './context/context.repository';
+import FacebookResource from './server/facebook.resource';
+import WitClient from './ai/wit.client';
 import SessionService from './storage/session.repository';
-import SenderService from './storage/sender.repository';
+import SenderService from './storage/sender.service';
 import PropertiesService from './storage/properties.service';
-import ApiAiWebhook from './webhook/api.ai.webhook';
-import BackendStub from './backend/backend.stub';
-import ExpressServer from './server/web.server';
+import ExpressServer from './server/express.server';
 
 export default class ApplicationConfig {
 
-    getSlackServer() {
-        if (!this.slackServer) {
-            this.slackServer = new SlackServer(this.getWebserver(), this.getWitService(), this.getApiEndpoint());
-        }
-        return this.slackServer;
-    }
-
-    getFacebookServer() {
+    getFacebookResource() {
         if (!this.facebookServer) {
-            this.facebookServer = new FacebookServer(this.getWebserver(), this.getWitService(), this.getConversationService());
+            this.facebookServer = new FacebookResource(this.getExpressserver(), this.getWitClient());
         }
         return this.facebookServer;
     }
 
-    getApiEndpoint() {
-        if (!this.apiService) {
-            this.apiService = new ApiEndpoint(this.getPropertiesService().get('api.ai.access.token'));
-        }
-        return this.apiService;
-    }
-
-    getWitService() {
+    getWitClient() {
         if (!this.witService) {
-            this.witService = new WitService(this.getSessionService(), this.getSenderService(), this.getPropertiesService().get('wit.ai.access.token'));
+            this.witService = new WitClient(this.getSessionService(), this.getSenderService(), this.getPropertiesService().get('wit.ai.access.token'));
         }
         return this.witService;
-    }
-
-    getConversationService() {
-        if (!this.conversationService) {
-            this.conversationService = new ConversationService(this.getApiEndpoint(), this.getContextService(), this.getBackendStub());
-        }
-        return this.conversationService;
-    }
-
-    getContextService() {
-        if (!this.contextService) {
-            this.contextService = new ContextService();
-        }
-        return this.contextService;
     }
 
     getSessionService() {
@@ -76,22 +42,7 @@ export default class ApplicationConfig {
         return this.propertiesService;
     }
 
-    getApiAiWebhook() {
-        if (!this.apiAiWebhook) {
-            this.apiAiWebhook = new ApiAiWebhook(this.getWebserver(), this.getBackendStub());
-            this.apiAiWebhook.startWebhook();
-        }
-        return this.apiAiWebhook;
-    }
-
-    getBackendStub() {
-        if (!this.backendStub) {
-            this.backendStub = new BackendStub();
-        }
-        return this.backendStub;
-    }
-
-    getWebserver() {
+    getExpressserver() {
         if (!this.expressServer) {
             this.expressServer = new ExpressServer();
             this.expressServer.startServer();

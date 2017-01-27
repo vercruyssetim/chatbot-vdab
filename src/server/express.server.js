@@ -18,7 +18,7 @@ export default class ExpressServer {
         this.server.listen(
             this.port,
             this.hostname,
-            () => console.log('** Starting webserver on port ' + this.port)
+            () => console.log('** Starting expressserver on port ' + this.port)
         );
     }
 }

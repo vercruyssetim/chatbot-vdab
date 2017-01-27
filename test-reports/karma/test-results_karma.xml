@@ -1,9 +1,8 @@
 <?xml version="1.0"?>
-<testsuite name="PhantomJS 2.1.1 (Windows 8 0.0.0)" package="" timestamp="2017-01-26T14:23:00" id="0" hostname="HI94866" tests="1" errors="0" failures="0" time="0.002">
+<testsuite name="PhantomJS 2.1.1 (Windows 8 0.0.0)" package="" timestamp="2017-01-27T09:18:47" id="0" hostname="HI94866" tests="0" errors="1" failures="0" time="0">
   <properties>
     <property name="browser.fullName" value="Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/538.1 (KHTML, like Gecko) PhantomJS/2.1.1 Safari/538.1"/>
   </properties>
-  <testcase name="answer " time="0.002" classname="PhantomJS_2_1_1_(Windows_8_0_0_0).answer"/>
   <system-out>
     <![CDATA[
 ]]>
