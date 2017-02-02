@@ -1,6 +1,6 @@
 import gulp from 'gulp';
 import runSequence from 'run-sequence';
-import {testunit} from './karma';
+import {testunit} from './mocha';
 import {eslint} from './eslint';
 
 export const test = 'test';

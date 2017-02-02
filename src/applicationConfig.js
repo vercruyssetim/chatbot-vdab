@@ -1,9 +1,11 @@
-import FacebookResource from './server/facebook.resource';
+import FacebookResource from './resource/facebook.resource';
 import WitClient from './ai/wit.client';
-import SessionService from './storage/session.repository';
+import SessionService from './storage/session.service';
 import SenderService from './storage/sender.service';
 import PropertiesService from './storage/properties.service';
-import ExpressServer from './server/express.server';
+import ExpressServer from './resource/express.server';
+import BackendService from './backend/backend.service';
+import VindEenJobClient from './backend/vind.een.job.client';
 
 export default class ApplicationConfig {
 
@@ -16,7 +18,7 @@ export default class ApplicationConfig {
 
     getWitClient() {
         if (!this.witService) {
-            this.witService = new WitClient(this.getSessionService(), this.getSenderService(), this.getPropertiesService().get('wit.ai.access.token'));
+            this.witService = new WitClient(this.getSessionService(), this.getSenderService(), this.getPropertiesService().get('wit.ai.access.token'), this.getBackendService());
         }
         return this.witService;
     }
@@ -33,6 +35,20 @@ export default class ApplicationConfig {
             this.senderService = new SenderService();
         }
         return this.senderService;
+    }
+
+    getBackendService(){
+        if(!this.backendService){
+            this.backendService = new BackendService(this.getVindEenJobClient(), this.getSenderService(), this.getSessionService());
+        }
+        return this.backendService;
+    }
+
+    getVindEenJobClient(){
+        if(!this.vindEenJobClient){
+            this.vindEenJobClient = new VindEenJobClient();
+        }
+        return this.vindEenJobClient;
     }
 
     getPropertiesService() {

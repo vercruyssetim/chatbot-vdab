@@ -28,9 +28,9 @@ export default class FacebookResource {
     }
 
     handleMessageReceived(bot, message) {
-        this.witService.handleMessageReceived(message.text, message.user, (reply) =>
-            bot.reply(message, FacebookResource.mapToFacebookResponse(reply))
-        );
+        this.witService.handleMessageReceived(message.text, message.user, (reply) => {
+            bot.reply(message, FacebookResource.mapToFacebookResponse(reply));
+        });
     }
 
     login(access_token, callBack) {
@@ -65,13 +65,42 @@ export default class FacebookResource {
     }
 
     static mapToFacebookResponse(reply) {
-        let response = {};
-        response.text = reply.text;
-        if (reply.quickreplies) {
-            response.quick_replies = FacebookResource.mapToQuickReplies(reply.quickreplies);
+        if (reply.elements) {
+            return {
+                attachment: {
+                    type: 'template',
+                    payload: {
+                        template_type: 'generic',
+                        elements: FacebookResource.mapListToElements(reply.elements)
+                    }
+                }
+            };
+        } else if (reply.quickreplies) {
+            return {
+                text: reply.text,
+                quick_replies: FacebookResource.mapToQuickReplies(reply.quickreplies)
+            };
+        } else {
+            return {
+                text: reply.text
+            };
         }
-        console.log(`response ${JSON.stringify(reply)}`);
-        return response;
+    }
+
+    static mapListToElements(list) {
+        return list.map((element) => {
+            return {
+                title: element.title,
+                subtitle: element.subtitle,
+                item_url: element.link,
+                image_url: element.logo,
+                buttons: [{
+                    type: 'web_url',
+                    url: element.link,
+                    title: 'Open link naar vacature'
+                }]
+            };
+        });
     }
 
     static mapToQuickReplies(quickReplies) {
