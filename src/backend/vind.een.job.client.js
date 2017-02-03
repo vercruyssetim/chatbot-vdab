@@ -6,7 +6,8 @@ import Vacature from './vacature';
 const URL = 'https://www.vdab.be/api/vindeenjob';
 export default class VindEenJobClient {
 
-    lookupJobs(location, keyword) {
+    lookupJobs(location, keyword, filters) {
+        let {arbeidsduur, arbeidscircuit, diplomaNiveau} = VindEenJobClient.mapFilters(filters);
 
         let url = UrlBuilder.aUrl(`${URL}/vacatures`)
             .withQueryParam('ts', '1485512560843')
@@ -15,20 +16,47 @@ export default class VindEenJobClient {
             .withQueryParam('afstand', '20')
             .withQueryParam('locatie', location)
             .withQueryParam('trefwoord', keyword)
+            .withQueryParam('arbeidsduur', arbeidsduur)
+            .withQueryParam('arbeidscircuit', arbeidscircuit)
+            .withQueryParam('diplomaNiveau', diplomaNiveau)
             .build();
-
+        console.log(`request naar VEJ ${url}`);
         return new Promise((resolve, error) => {
             request.get(url, (err, res, body) => {
                 if (err) {
                     error(err);
                 } else {
-                    resolve(VindEenJobClient.transformVacature(JSON.parse(body).vacatures));
+                    resolve(VindEenJobClient.mapToVacature(JSON.parse(body).vacatures));
                 }
             });
         });
     }
 
-    static transformVacature(vacatures){
+    static mapFilters(filters) {
+        let mapping = {
+            voltijds_deeltijds: {
+                voltijds: 'V',
+                arbeidsduur: 'D'
+            },
+            type: {
+                vaste_job: '8',
+                interim: 5,
+                loopbaancheque: 6
+            },
+            diploma: {
+                secundair_onderwijs: 'C',
+                bachelor: 'D',
+                master: 'E'
+            }
+        };
+        return {
+            arbeidsduur: mapping['voltijds_deeltijds'][filters['voltijds_deeltijds']],
+            arbeidscircuit: mapping['type'][filters['type']],
+            diplomaNiveau: mapping['diploma'][filters['diploma']]
+        };
+    }
+
+    static mapToVacature(vacatures) {
         return vacatures.map((vacature) => {
             return Vacature.aVacature()
                 .withFunctie(vacature.functieNaam)

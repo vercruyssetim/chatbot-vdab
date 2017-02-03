@@ -6,6 +6,7 @@ import PropertiesService from './storage/properties.service';
 import ExpressServer from './resource/express.server';
 import BackendService from './backend/backend.service';
 import VindEenJobClient from './backend/vind.een.job.client';
+import FilterService from './backend/filters.service';
 
 export default class ApplicationConfig {
 
@@ -18,7 +19,12 @@ export default class ApplicationConfig {
 
     getWitClient() {
         if (!this.witService) {
-            this.witService = new WitClient(this.getSessionService(), this.getSenderService(), this.getPropertiesService().get('wit.ai.access.token'), this.getBackendService());
+            this.witService = new WitClient(
+                this.getSessionService(),
+                this.getSenderService(),
+                this.getPropertiesService().get('wit.ai.access.token'),
+                this.getBackendService()
+            );
         }
         return this.witService;
     }
@@ -37,15 +43,20 @@ export default class ApplicationConfig {
         return this.senderService;
     }
 
-    getBackendService(){
-        if(!this.backendService){
-            this.backendService = new BackendService(this.getVindEenJobClient(), this.getSenderService(), this.getSessionService());
+    getBackendService() {
+        if (!this.backendService) {
+            this.backendService = new BackendService(
+                this.getVindEenJobClient(),
+                this.getSenderService(),
+                this.getSessionService(),
+                this.getFilterService()
+            );
         }
         return this.backendService;
     }
 
-    getVindEenJobClient(){
-        if(!this.vindEenJobClient){
+    getVindEenJobClient() {
+        if (!this.vindEenJobClient) {
             this.vindEenJobClient = new VindEenJobClient();
         }
         return this.vindEenJobClient;
@@ -56,6 +67,13 @@ export default class ApplicationConfig {
             this.propertiesService = new PropertiesService();
         }
         return this.propertiesService;
+    }
+
+    getFilterService() {
+        if (!this.filterService) {
+            this.filterService = new FilterService();
+        }
+        return this.filterService;
     }
 
     getExpressserver() {

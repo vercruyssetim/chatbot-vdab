@@ -1,10 +1,12 @@
 import Promise from 'Promise';
 
 export default class BackendService {
-    constructor(vindEenJobClient, senderService, sessionRepository) {
+    constructor(vindEenJobClient, senderService, sessionRepository, filterService) {
         this.vindEenJobClient = vindEenJobClient;
         this.senderService = senderService;
         this.sessionRepository = sessionRepository;
+        this.filterService = filterService;
+        this.filters = {};
     }
 
     saveLocation({context, entities}) {
@@ -32,25 +34,46 @@ export default class BackendService {
         return Promise.resolve({});
     }
 
-    showFilters(call) {
-        this.senderService.sendQuickReplies(call.sessionId, 'Dit zijn filters', ['ik', 'ben', 'tof']);
-        call.context.filterShown = true;
-        return Promise.resolve(call.context);
+    showFilters({sessionId, context}) {
+        this.senderService.sendButtons(sessionId, 'Maak u keuze uit volgende filters', this.filterService.getFilters());
+        context.filtershown = true;
+        return Promise.resolve(context);
     }
 
-    lookupJobs({sessionId, context}) {
-        this.vindEenJobClient.lookupJobs(context.location, context.keyword)
-            .then((response) => {
-                if (response.length > 0) {
-                    this.senderService.sendElements(sessionId, BackendService.mapToElements(response));
-                    context.jobsfound = 'Ik kan je enkele filters tonen';
-                    delete context.nojobsfound;
-                } else {
-                    context.nojobsfound = true;
-                    delete context.jobsfound;
-                }
-            });
+    showFilterOptions({sessionId, context, text}) {
+        this.senderService.sendButtons(sessionId, 'Kies een optie', this.filterService.getFilterOptions(text));
+        context.selectedfilter = text;
         return Promise.resolve(context);
+    }
+
+    saveFilterOption({context, text}) {
+        this.filters[context.selectedfilter] = text;
+        context.filter = this.filters;
+        delete context.filtershown;
+        delete context.selectedfilter;
+        delete context.jobsfound;
+        return Promise.resolve(context);
+    }
+
+
+    lookupJobs({sessionId, context}) {
+        return new Promise((resolve) => {
+            this.vindEenJobClient.lookupJobs(context.location, context.keyword, this.filters)
+                .then((response) => {
+                    if (response.length > 0) {
+                        this.senderService.sendElements(sessionId, BackendService.mapToElements(response));
+                        context.jobsfound = true;
+                        delete context.filter;
+                        delete context.nojobsfound;
+                    } else {
+                        context.nojobsfound = true;
+                        delete context.filter;
+                        delete context.jobsfound;
+                    }
+                    console.log(`context in lookupJobs ${JSON.stringify(context)}`);
+                    resolve(context);
+                });
+        });
     }
 
     static mapToElements(vacatures) {

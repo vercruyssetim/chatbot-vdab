@@ -80,6 +80,20 @@ export default class FacebookResource {
                 text: reply.text,
                 quick_replies: FacebookResource.mapToQuickReplies(reply.quickreplies)
             };
+        } else if (reply.buttons) {
+
+            let newVar = {
+                attachment: {
+                    type: 'template',
+                    payload: {
+                        template_type: 'button',
+                        text: reply.text,
+                        buttons: FacebookResource.mapToButtons(reply.buttons)
+                    }
+                }
+            };
+            console.log(`replying with buttons ${JSON.stringify(newVar)}`);
+            return newVar;
         } else {
             return {
                 text: reply.text
@@ -111,5 +125,17 @@ export default class FacebookResource {
                 payload: reply
             };
         });
+    }
+
+    static mapToButtons(buttons) {
+        let result = [];
+        Object.keys(buttons).forEach((key) => {
+            result.push({
+                type: 'postback',
+                title: buttons[key],
+                payload: key
+            });
+        });
+        return result;
     }
 }

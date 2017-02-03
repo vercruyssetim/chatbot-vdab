@@ -6,21 +6,9 @@
   },
   "parser": "babel-eslint",
   "globals": {
-    "iceUnit": false,
-    "angular": false,
-    "cordova": false,
-    "StatusBar": false,
-    "device": false,
-    "Media": false,
-    "PushNotification": false,
-    "PushNotificationBuilder": false,
-    "ionic": false,
     "console": false,
-    "XMLHttpRequest": false,
-    "FileReader": false,
     "document": false,
-    "Image": false,
-    "Camera": false
+    "setTimeout": false
   },
   "plugins": [
     "babel"

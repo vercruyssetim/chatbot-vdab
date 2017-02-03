@@ -16,7 +16,9 @@ export default class WitClient {
                 lookupJobs: (call) => this.backendService.lookupJobs(call),
                 clearData: (call) => this.backendService.clearData(call),
                 showFilters: (call) => this.backendService.showFilters(call),
-                saveLiteralKeyword: (call) => this.backendService.saveLiteralKeyword(call)
+                showFilterOptions: (call) => this.backendService.showFilterOptions(call),
+                saveLiteralKeyword: (call) => this.backendService.saveLiteralKeyword(call),
+                saveFilterOption: (call) => this.backendService.saveFilterOption(call)
             }
         });
     }
