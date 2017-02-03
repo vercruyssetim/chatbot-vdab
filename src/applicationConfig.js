@@ -7,8 +7,9 @@ import ExpressServer from './resource/express.server';
 import BackendService from './backend/backend.service';
 import VindEenJobClient from './backend/vind.een.job.client';
 import FilterService from './backend/filters.service';
+import ConversationService from './conversation/conversation.service';
 
-export default class ApplicationConfig {
+class ApplicationConfig {
 
     getFacebookResource() {
         if (!this.facebookServer) {
@@ -23,7 +24,8 @@ export default class ApplicationConfig {
                 this.getSessionService(),
                 this.getSenderService(),
                 this.getPropertiesService().get('wit.ai.access.token'),
-                this.getBackendService()
+                this.getBackendService(),
+                this.getConversationService()
             );
         }
         return this.witService;
@@ -46,10 +48,7 @@ export default class ApplicationConfig {
     getBackendService() {
         if (!this.backendService) {
             this.backendService = new BackendService(
-                this.getVindEenJobClient(),
-                this.getSenderService(),
-                this.getSessionService(),
-                this.getFilterService()
+                this.getVindEenJobClient()
             );
         }
         return this.backendService;
@@ -76,6 +75,13 @@ export default class ApplicationConfig {
         return this.filterService;
     }
 
+    getConversationService() {
+        if (!this.conversationService) {
+            this.conversationService = new ConversationService(this.getSenderService());
+        }
+        return this.conversationService;
+    }
+
     getExpressserver() {
         if (!this.expressServer) {
             this.expressServer = new ExpressServer();
@@ -84,3 +90,5 @@ export default class ApplicationConfig {
         return this.expressServer;
     }
 }
+const applicationConfig = new ApplicationConfig();
+export default applicationConfig;

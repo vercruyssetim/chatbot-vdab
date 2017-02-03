@@ -1,10 +1,10 @@
-import ApplicationConfig from './applicationConfig';
+import applicationConfig from './applicationConfig';
 
 class Server {
     constructor() {
-        let applicationConfig = new ApplicationConfig();
-        this.facebookServer = applicationConfig.getFacebookResource();
-        this.propertiesService = applicationConfig.getPropertiesService();
+        let config = applicationConfig;
+        this.facebookServer = config.getFacebookResource();
+        this.propertiesService = config.getPropertiesService();
     }
 
     startServer() {

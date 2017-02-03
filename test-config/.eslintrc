@@ -8,7 +8,9 @@
   "globals": {
     "console": false,
     "document": false,
-    "setTimeout": false
+    "setTimeout": false,
+    "setInterval": false,
+    "clearInterval": false
   },
   "plugins": [
     "babel"

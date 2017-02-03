@@ -7,6 +7,7 @@ const URL = 'https://www.vdab.be/api/vindeenjob';
 export default class VindEenJobClient {
 
     lookupJobs(location, keyword, filters) {
+        console.log('in lookupJobs');
         let {arbeidsduur, arbeidscircuit, diplomaNiveau} = VindEenJobClient.mapFilters(filters);
 
         let url = UrlBuilder.aUrl(`${URL}/vacatures`)
@@ -33,6 +34,9 @@ export default class VindEenJobClient {
     }
 
     static mapFilters(filters) {
+        if(!filters){
+            return {};
+        }
         let mapping = {
             voltijds_deeltijds: {
                 voltijds: 'V',
