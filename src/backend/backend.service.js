@@ -6,9 +6,7 @@ export default class BackendService {
     }
 
     lookupJobs({location, keyword, filters}) {
-        console.log('looking up jobs');
         return new Promise((resolve) => {
-            console.log('in promise');
             this.vindEenJobClient.lookupJobs(location, keyword, filters)
                 .then((response) => {
                     resolve(BackendService.mapToElements(response));

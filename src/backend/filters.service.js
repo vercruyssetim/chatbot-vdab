@@ -12,7 +12,7 @@ export default class FilterService {
             type: {
                 label: 'type',
                 options: {
-                    vaste_jobs: 'vaste job',
+                    vaste_job: 'vaste job',
                     interim: 'interim',
                     dienstenchequebaan: 'dienstenchequebaan'
                 }

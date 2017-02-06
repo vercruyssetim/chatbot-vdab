@@ -1,4 +1,5 @@
-import VEJScenario from '../vejScenario/scenario';
+import VEJScenario from '../scenario/vej/vej.scenario';
+import OverviewScenario from '../scenario/overview/overview.scenario';
 
 export default class ConversationService {
 
@@ -11,25 +12,31 @@ export default class ConversationService {
         const entities = ConversationService.extractEntities(data);
         const action = ConversationService.extractAction(entities, data._text);
 
+        let sender = {
+            addMessage: (message) => this.senderService.addMessage(sessionId, message),
+            addQuickReplies: (message, quickreplies) => this.senderService.addQuickReplies(sessionId, message, quickreplies),
+            addElements: (elements) => this.senderService.addElements(sessionId, elements),
+            addButtons: (message, buttons) => this.senderService.addButtons(sessionId, message, buttons),
+            addDelay: (stub) => this.senderService.addDelay(sessionId, stub),
+            send: () => this.senderService.send(sessionId)
+        };
+
+        console.log(`data ${JSON.stringify(data)}`);
         console.log(`entities ${JSON.stringify(entities)}`);
         console.log(`action ${JSON.stringify(action)}`);
+
         if (entities.intent === 'welcome') {
-            this.scenario = new VEJScenario({
-                addMessage: (message) => this.senderService.addMessage(sessionId, message),
-                addQuickReplies: (message, quickreplies) => this.senderService.addQuickReplies(sessionId, message, quickreplies),
-                addElements: (elements) => this.senderService.addElements(sessionId, elements),
-                send: () => this.senderService.send(sessionId)
-            });
+            this.scenario = new OverviewScenario(sender);
+            this.scenario.start();
+        } else if(entities.intent === 'start_vej') {
+            this.scenario = new VEJScenario(sender);
+            this.scenario.start();
+        } else {
+            this.scenario.executeAction(action);
         }
-        this.scenario.executeAction(action);
     }
 
-    static extractAction({intent, yes_no, location, profession, company}, text) {
-        if (intent === 'welcome') {
-            return {
-                type: 'start'
-            };
-        }
+    static extractAction({intent, yes_no, location, profession, company, filter, filterOption}, text) {
 
         if (yes_no === 'ja') {
             return {
@@ -64,6 +71,20 @@ export default class ConversationService {
             };
         }
 
+        if(filter) {
+            return {
+                type: 'saveFilter',
+                value: filter
+            };
+        }
+
+        if(filterOption) {
+            return {
+                type: 'saveFilterOption',
+                value: filterOption
+            };
+        }
+
         return {
             type: 'plain',
             value: text
@@ -71,15 +92,17 @@ export default class ConversationService {
     }
 
     static extractEntities(data) {
-        let intent, yes_no, location, profession, company;
+        let intent, yes_no, location, profession, company, filter, filterOption;
         if (data.entities) {
             intent = ConversationService.firstEntityValue(data.entities, 'intent');
             yes_no = ConversationService.firstEntityValue(data.entities, 'yes_no');
             location = ConversationService.firstEntityValue(data.entities, 'location');
             profession = ConversationService.firstEntityValue(data.entities, 'profession');
             company = ConversationService.firstEntityValue(data.entities, 'company');
+            filter = ConversationService.firstEntityValue(data.entities, 'filter');
+            filterOption = ConversationService.firstEntityValue(data.entities, 'filter_option');
         }
-        return {intent, yes_no, location, profession, company};
+        return {intent, yes_no, location, profession, company, filter, filterOption};
     }
 
     static firstEntityValue(entities, entity) {

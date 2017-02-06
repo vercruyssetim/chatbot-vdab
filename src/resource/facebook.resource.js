@@ -81,8 +81,7 @@ export default class FacebookResource {
                 quick_replies: FacebookResource.mapToQuickReplies(reply.quickreplies)
             };
         } else if (reply.buttons) {
-
-            let newVar = {
+            return {
                 attachment: {
                     type: 'template',
                     payload: {
@@ -92,8 +91,6 @@ export default class FacebookResource {
                     }
                 }
             };
-            console.log(`replying with buttons ${JSON.stringify(newVar)}`);
-            return newVar;
         } else {
             return {
                 text: reply.text
