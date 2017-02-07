@@ -3,7 +3,7 @@ export default class FilterService {
     constructor() {
         this.filters = {
             voltijds_deeltijds: {
-                label: 'voltijds of deeltijds',
+                label: 'voltijds/deeltijds',
                 options: {
                     voltijds: 'voltijds',
                     deeltijds: 'deeltijds'
@@ -38,6 +38,28 @@ export default class FilterService {
 
     getFilterOptions(filter) {
         return this.filters[filter].options;
+    }
+
+    getLabel(key){
+        return this.getFilters()[key];
+    }
+
+    toString(filters){
+        let keys = Object.keys(filters);
+        let result = '';
+        for(let index = 0; index < keys.length; index ++){
+            if(index !== 0){
+                if(index + 1 === keys.length){
+                    result += ' en ';
+                } else {
+                    result += ', ';
+                }
+            }
+            let key = keys[index];
+            let filter = this.filters[key];
+            result += `${filter.label}: ${filter.options[filters[key]]}`;
+        }
+        return result;
     }
 
 }

@@ -11,7 +11,7 @@ export default class AnswerKeywordState {
         reply.addMessage(`Ik zoek jobs voor ${keyword} in ${location}`);
         reply.send();
         this.backendService.lookupJobs({keyword, location}).then((jobs) => {
-            if (jobs) {
+            if(jobs.length !== 0){
                 reply.addElements(jobs);
                 reply.addDelay(3000);
                 reply.addQuickReplies('Wil je deze resultaten nog filteren?', ['ja, graag!', 'nee, dank je']);
