@@ -104,7 +104,7 @@ export default class FacebookResource {
                 title: element.title,
                 subtitle: element.subtitle,
                 item_url: element.link,
-                image_url: element.logo,
+                image_url: element.image,
                 buttons: [{
                     type: 'web_url',
                     url: element.link,
