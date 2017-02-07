@@ -1,6 +1,6 @@
 import AnswerLocationState from './answer.location.state';
 
-export default class StartState {
+export default class VEJStartState {
 
     start(reply){
         reply.addMessage('Laten we een vacature voor je zoeken!');

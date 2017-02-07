@@ -1,5 +1,6 @@
-import ConfirmFilterState from './confirm.filter.state';
 import applicationConfig from '../../applicationConfig';
+import EndState from '../end.state';
+import FilterStartState from './filter.start.state';
 
 export default class AnswerFilterOptionsState {
 
@@ -22,6 +23,6 @@ export default class AnswerFilterOptionsState {
                 reply.send();
             }
         });
-        return new ConfirmFilterState();
+        return new EndState(new FilterStartState());
     }
 }

@@ -1,4 +1,4 @@
-export default class StartState {
+export default class OverviewStartState {
 
     start(reply){
         reply.addMessage('Goeiedag!');

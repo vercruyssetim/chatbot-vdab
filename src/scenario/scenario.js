@@ -1,27 +1,14 @@
-import StartState from './start.state';
+export default class Scenario {
 
-export default class VEJScenario {
-
-    constructor(sender) {
+    constructor(sender, context, startState) {
         this.sender = sender;
-        this.context = {
-            filters: {}
-        };
-        this.state = new StartState();
-        this.handlers = {
-            negative: () => this.negative(),
-            positive: () => this.positive(),
-            saveLocation: (location) => this.saveLocation(location),
-            saveProfession: (profession) => this.saveProfession(profession),
-            saveCompany: (company) => this.saveCompany(company),
-            saveFilter: (filter) => this.saveFilter(filter),
-            saveFilterOption: (filterOption) => this.saveFilterOption(filterOption),
-        };
+        this.state = startState;
+        this.context = context;
     }
 
     executeAction(action) {
-        if (this.handlers[action.type]) {
-            this.handlers[action.type](action.value);
+        if (this[action.type]) {
+            this[action.type](action.value);
         } else {
             this.sender.addMessage('ik heb geen flauw idee wat je bedoelt');
             this.sender.send();

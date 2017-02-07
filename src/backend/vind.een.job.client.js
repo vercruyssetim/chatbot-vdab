@@ -6,7 +6,7 @@ import Vacature from './vacature';
 const URL = 'https://www.vdab.be/api/vindeenjob';
 export default class VindEenJobClient {
 
-    lookupJobs(location, keyword, filters) {
+    lookupJobs({location, keyword, filters}) {
         let {arbeidsduur, arbeidscircuit, diplomaNiveau} = VindEenJobClient.mapFilters(filters);
 
         let url = UrlBuilder.aUrl(`${URL}/vacatures`)

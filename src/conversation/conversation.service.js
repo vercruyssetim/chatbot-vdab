@@ -1,10 +1,14 @@
-import VEJScenario from '../scenario/vej/vej.scenario';
-import OverviewScenario from '../scenario/overview/overview.scenario';
+import Scenario from '../scenario/scenario';
+import VEJStartState from '../scenario/vej/vej.start.state';
+import OverviewStartState from '../scenario/overview/overview.start.state';
+import FilterStartState from '../scenario/filter.results/filter.start.state';
 
 export default class ConversationService {
 
     constructor(senderService) {
         this.senderService = senderService;
+        this.contexts = {};
+        this.scenarios = {};
     }
 
 
@@ -21,19 +25,34 @@ export default class ConversationService {
             send: () => this.senderService.send(sessionId)
         };
 
-        console.log(`data ${JSON.stringify(data)}`);
-        console.log(`entities ${JSON.stringify(entities)}`);
-        console.log(`action ${JSON.stringify(action)}`);
+        // console.log(`data ${JSON.stringify(data)}`);
+        // console.log(`entities ${JSON.stringify(entities)}`);
+        // console.log(`action ${JSON.stringify(action)}`);
+
 
         if (entities.intent === 'welcome') {
-            this.scenario = new OverviewScenario(sender);
-            this.scenario.start();
+            this.scenarios[sessionId] = new Scenario(sender, this.getContext(sessionId), new OverviewStartState());
+            this.scenarios[sessionId].start();
         } else if(entities.intent === 'start_vej') {
-            this.scenario = new VEJScenario(sender);
-            this.scenario.start();
+            this.scenarios[sessionId] = new Scenario(sender, this.getContext(sessionId), new VEJStartState());
+            this.scenarios[sessionId].start();
+        } else if(entities.intent === 'filter_results'){
+            this.scenarios[sessionId] = new Scenario(sender, this.getContext(sessionId), new FilterStartState());
+            this.scenarios[sessionId].start();
         } else {
-            this.scenario.executeAction(action);
+            this.scenarios[sessionId].executeAction(action);
         }
+
+        console.log(`context ${JSON.stringify(this.getContext(sessionId))}`);
+    }
+
+    getContext(sessionId){
+        if(!this.contexts[sessionId]){
+            this.contexts[sessionId] = {
+                filters: {}
+            };
+        }
+        return this.contexts[sessionId];
     }
 
     static extractAction({intent, yes_no, location, profession, company, filter, filterOption}, text) {
