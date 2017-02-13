@@ -2,8 +2,7 @@ import {Wit} from 'node-wit';
 
 export default class WitClient {
 
-    constructor(sessionRepository, senderService, witAiAccessToken, backendService, conversationService) {
-        this.sessionRepository = sessionRepository;
+    constructor(senderService, witAiAccessToken, backendService, conversationService) {
         this.senderService = senderService;
         this.backendService = backendService;
         this.conversationService = conversationService;

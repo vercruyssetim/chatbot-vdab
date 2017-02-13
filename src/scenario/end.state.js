@@ -6,7 +6,7 @@ export default class EndState {
     }
 
     negative(reply){
-        reply.addMessage('Ok, laat me maar weten indien je iets anders wilt weten');
+        reply.addMessage('Ok, laat me maar weten indien je iets anders wil weten');
         reply.send();
         return this;
     }

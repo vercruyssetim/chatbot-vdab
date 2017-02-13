@@ -19,7 +19,7 @@ export default class BackendService {
             return {
                 title: vacature.bedrijf,
                 subtitle: vacature.functie,
-                image: 'https://www.vdab.be/sites/web/themes/webresponsive/img/sterkvoorwerk.png',
+                image: vacature.logo,
                 link: vacature.link
             };
         });

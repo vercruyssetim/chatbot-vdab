@@ -2,11 +2,13 @@ import Scenario from '../scenario/scenario';
 import VEJStartState from '../scenario/vej/vej.start.state';
 import OverviewStartState from '../scenario/overview/overview.start.state';
 import FilterStartState from '../scenario/filter.results/filter.start.state';
+import ScheduleStartState from '../scenario/schedule/schedule.start.state';
 
 export default class ConversationService {
 
-    constructor(senderService) {
+    constructor(senderService, userService) {
         this.senderService = senderService;
+        this.userService = userService;
         this.contexts = {};
         this.scenarios = {};
     }
@@ -22,6 +24,7 @@ export default class ConversationService {
             addElements: (elements) => this.senderService.addElements(sessionId, elements),
             addButtons: (message, buttons) => this.senderService.addButtons(sessionId, message, buttons),
             addDelay: (stub) => this.senderService.addDelay(sessionId, stub),
+            addImage: (image) => this.senderService.addImage(sessionId, image),
             send: () => this.senderService.send(sessionId)
         };
 
@@ -33,23 +36,31 @@ export default class ConversationService {
         if (entities.intent === 'welcome') {
             this.scenarios[sessionId] = new Scenario(sender, this.getContext(sessionId), new OverviewStartState());
             this.scenarios[sessionId].start();
-        } else if(entities.intent === 'start_vej') {
+        } else if (entities.intent === 'start_vej') {
             this.scenarios[sessionId] = new Scenario(sender, this.getContext(sessionId), new VEJStartState());
             this.scenarios[sessionId].start();
-        } else if(entities.intent === 'filter_results'){
+        } else if (entities.intent === 'filter_results') {
             this.scenarios[sessionId] = new Scenario(sender, this.getContext(sessionId), new FilterStartState());
+            this.scenarios[sessionId].start();
+        } else if (entities.intent === 'start_schedule') {
+            this.scenarios[sessionId] = new Scenario(sender, this.getContext(sessionId), new ScheduleStartState());
+            this.scenarios[sessionId].start();
+        } else if (entities.intent === 'stop_schedule') {
+            this.scenarios[sessionId] = new Scenario(sender, this.getContext(sessionId), new ScheduleStartState());
             this.scenarios[sessionId].start();
         } else {
             this.scenarios[sessionId].executeAction(action);
         }
 
-        console.log(`context ${JSON.stringify(this.getContext(sessionId))}`);
+        // console.log(`context ${JSON.stringify(this.getContext(sessionId))}`);
     }
 
-    getContext(sessionId){
-        if(!this.contexts[sessionId]){
+    getContext(sessionId) {
+        if (!this.contexts[sessionId]) {
             this.contexts[sessionId] = {
-                filters: {}
+                sessionId,
+                filters: {},
+                user: this.userService.getUser(sessionId)
             };
         }
         return this.contexts[sessionId];
@@ -90,14 +101,14 @@ export default class ConversationService {
             };
         }
 
-        if(filter) {
+        if (filter) {
             return {
                 type: 'saveFilter',
                 value: filter
             };
         }
 
-        if(filterOption) {
+        if (filterOption) {
             return {
                 type: 'saveFilterOption',
                 value: filterOption

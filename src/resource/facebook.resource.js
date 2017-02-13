@@ -1,11 +1,12 @@
 import Botkit from 'botkit';
-import request from 'request';
 
 export default class FacebookResource {
 
-    constructor(webserver, witService) {
+    constructor(webserver, witService, facebookClient, userService) {
         this.webserver = webserver;
         this.witService = witService;
+        this.facebookClient = facebookClient;
+        this.userService = userService;
     }
 
     startResource(accessToken, verifyToken) {
@@ -18,8 +19,8 @@ export default class FacebookResource {
         });
         let bot = controller.spawn({});
 
-        this.addGreeting(accessToken);
-        this.login(accessToken, () => {
+        this.facebookClient.addGreeting();
+        this.facebookClient.login().then(() => {
             controller.startTicking();
         });
 
@@ -28,40 +29,18 @@ export default class FacebookResource {
     }
 
     handleMessageReceived(bot, message) {
+        this.saveUser(message.user);
         this.witService.handleMessageReceived(message.text, message.user, (reply) => {
             bot.reply(message, FacebookResource.mapToFacebookResponse(reply));
         });
     }
 
-    login(access_token, callBack) {
-        request.post('https://graph.facebook.com/me/subscribed_apps?access_token=' + access_token,
-            (err, res, body) => {
-                if (err) {
-                    console.log('Could not subscribe to page messages');
-                } else {
-                    console.log('Successfully subscribed to Facebook events:', body);
-                    callBack();
-                }
+    saveUser(userId){
+        if(!this.userService.getUser(userId)){
+            this.facebookClient.getUser(userId).then((user) => {
+                this.userService.setUser(userId, user);
             });
-    }
-
-    addGreeting(access_token) {
-        request.post('https://graph.facebook.com/v2.6/me/thread_settings?access_token=' + access_token,
-            {
-                form: {
-                    setting_type: 'greeting',
-                    greeting: {
-                        text: 'hallo {{user_full_name}} welkom bij de chatbot van de vdab.'
-                    }
-                }
-            },
-            (err, res, body) => {
-                if (err) {
-                    console.log('Could not set setting to page messages');
-                } else {
-                    console.log('Successfully set Facebook settings:', body);
-                }
-            });
+        }
     }
 
     static mapToFacebookResponse(reply) {
@@ -88,6 +67,15 @@ export default class FacebookResource {
                         template_type: 'button',
                         text: reply.text,
                         buttons: FacebookResource.mapToButtons(reply.buttons)
+                    }
+                }
+            };
+        } else if(reply.image) {
+            return {
+                attachment: {
+                    type: 'image',
+                    payload: {
+                        url: reply.image
                     }
                 }
             };

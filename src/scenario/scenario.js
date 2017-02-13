@@ -16,15 +16,15 @@ export default class Scenario {
     }
 
     start() {
-        this.state = this.state.start(this.sender);
+        this.state = this.state.start(this.sender, this.context);
     }
 
     negative() {
-        this.state = this.state.negative(this.sender);
+        this.state = this.state.negative(this.sender, this.context);
     }
 
     positive() {
-        this.state = this.state.positive(this.sender);
+        this.state = this.state.positive(this.sender, this.context);
     }
 
     saveLocation(location) {

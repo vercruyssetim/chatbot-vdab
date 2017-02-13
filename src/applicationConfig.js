@@ -1,6 +1,5 @@
 import FacebookResource from './resource/facebook.resource';
 import WitClient from './ai/wit.client';
-import SessionService from './storage/session.service';
 import SenderService from './storage/sender.service';
 import PropertiesService from './storage/properties.service';
 import ExpressServer from './resource/express.server';
@@ -8,20 +7,29 @@ import BackendService from './backend/backend.service';
 import VindEenJobClient from './backend/vind.een.job.client';
 import FilterService from './backend/filters.service';
 import ConversationService from './conversation/conversation.service';
+import SchedulingService from './reminder/scheduling.service';
+import FacebookClient from './resource/facebook.client';
+import UserService from './storage/user.service';
 
 class ApplicationConfig {
 
     getFacebookResource() {
         if (!this.facebookServer) {
-            this.facebookServer = new FacebookResource(this.getExpressserver(), this.getWitClient());
+            this.facebookServer = new FacebookResource(this.getExpressserver(), this.getWitClient(), this.getFacebookClient(), this.getUserService());
         }
         return this.facebookServer;
+    }
+
+    getFacebookClient(){
+        if(!this.facebookClient){
+            this.facebookClient = new FacebookClient(this.getPropertiesService().get('facebook.access.token'));
+        }
+        return this.facebookClient;
     }
 
     getWitClient() {
         if (!this.witService) {
             this.witService = new WitClient(
-                this.getSessionService(),
                 this.getSenderService(),
                 this.getPropertiesService().get('wit.ai.access.token'),
                 this.getBackendService(),
@@ -31,18 +39,18 @@ class ApplicationConfig {
         return this.witService;
     }
 
-    getSessionService() {
-        if (!this.sessionService) {
-            this.sessionService = new SessionService();
-        }
-        return this.sessionService;
-    }
-
     getSenderService() {
         if (!this.senderService) {
             this.senderService = new SenderService();
         }
         return this.senderService;
+    }
+
+    getUserService() {
+        if(!this.userService) {
+            this.userService = new UserService();
+        }
+        return this.userService;
     }
 
     getBackendService() {
@@ -52,6 +60,13 @@ class ApplicationConfig {
             );
         }
         return this.backendService;
+    }
+
+    getSchedulingService(){
+        if(!this.schedulingService){
+            this.schedulingService = new SchedulingService();
+        }
+        return this.schedulingService;
     }
 
     getVindEenJobClient() {
@@ -77,7 +92,7 @@ class ApplicationConfig {
 
     getConversationService() {
         if (!this.conversationService) {
-            this.conversationService = new ConversationService(this.getSenderService());
+            this.conversationService = new ConversationService(this.getSenderService(), this.getUserService());
         }
         return this.conversationService;
     }
