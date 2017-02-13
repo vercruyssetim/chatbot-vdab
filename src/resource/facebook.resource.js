@@ -19,6 +19,7 @@ export default class FacebookResource {
         });
         let bot = controller.spawn({});
 
+        this.facebookClient.addMenu();
         this.facebookClient.addGreeting();
         this.facebookClient.login().then(() => {
             controller.startTicking();

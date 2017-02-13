@@ -45,6 +45,49 @@ export default class FacebookClient {
         });
     }
 
+    addMenu() {
+        return new Promise((resolve, error) => {
+            request.post(`https://graph.facebook.com/v2.6/me/thread_settings?access_token=${this.accessToken}`,
+                {
+                    form: {
+                        setting_type: 'call_to_actions',
+                        thread_state: 'existing_thread',
+                        call_to_actions: [
+                            {
+                                type: 'web_url',
+                                title: 'Website van de vdab',
+                                url: 'http://www.vdab.be'
+                            },
+                            {
+                                type: 'postback',
+                                title: 'Start',
+                                payload: 'Hallo'
+                            },
+                            {
+                                type: 'postback',
+                                title: 'Start herinneringen',
+                                payload: 'Kan ik herinneringen inplannen?'
+                            },
+                            {
+                                type: 'postback',
+                                title: 'Stop herinneringen',
+                                payload: 'kan je me geen berichten meer sturen?'
+                            }
+                        ]
+                    }
+                },
+                (err, res, body) => {
+                    if (!err && res.statusCode === 200) {
+                        console.log('Successfully set Facebook settings:', body);
+                        resolve();
+                    } else {
+                        console.log('Could not set setting to page menu');
+                        error(err);
+                    }
+                });
+        });
+    }
+
     getUser(user) {
         return new Promise((resolve, error) => {
             request.get(`https://graph.facebook.com/v2.6/${user}?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=${this.accessToken}`,

@@ -3,6 +3,7 @@ import VEJStartState from '../scenario/vej/vej.start.state';
 import OverviewStartState from '../scenario/overview/overview.start.state';
 import FilterStartState from '../scenario/filter.results/filter.start.state';
 import ScheduleStartState from '../scenario/schedule/schedule.start.state';
+import ScheduleStopState from '../scenario/schedule/schedule.stop.state';
 
 export default class ConversationService {
 
@@ -46,7 +47,7 @@ export default class ConversationService {
             this.scenarios[sessionId] = new Scenario(sender, this.getContext(sessionId), new ScheduleStartState());
             this.scenarios[sessionId].start();
         } else if (entities.intent === 'stop_schedule') {
-            this.scenarios[sessionId] = new Scenario(sender, this.getContext(sessionId), new ScheduleStartState());
+            this.scenarios[sessionId] = new Scenario(sender, this.getContext(sessionId), new ScheduleStopState());
             this.scenarios[sessionId].start();
         } else {
             this.scenarios[sessionId].executeAction(action);
@@ -89,36 +90,59 @@ export default class ConversationService {
 
         if (intent === 'telling_profession' && profession) {
             return {
-                type: 'saveProfession',
+                type: 'saveKeyword',
                 value: profession
             };
         }
 
         if (intent === 'telling_company' && company) {
             return {
-                type: 'saveCompany',
+                type: 'saveKeyword',
                 value: company
             };
         }
 
-        if (filter) {
+        if (!intent) {
+            if (filter) {
+                return {
+                    type: 'saveFilter',
+                    value: filter
+                };
+            }
+
+            if (filterOption) {
+                return {
+                    type: 'saveFilterOption',
+                    value: filterOption
+                };
+            }
+
+            if (location) {
+                return {
+                    type: 'saveLocation',
+                    value: location
+                };
+            }
+
+            if (profession) {
+                return {
+                    type: 'saveKeyword',
+                    value: profession
+                };
+            }
+
+            if (company) {
+                return {
+                    type: 'saveKeyword',
+                    value: company
+                };
+            }
+
             return {
-                type: 'saveFilter',
-                value: filter
+                type: 'plain',
+                value: text
             };
         }
-
-        if (filterOption) {
-            return {
-                type: 'saveFilterOption',
-                value: filterOption
-            };
-        }
-
-        return {
-            type: 'plain',
-            value: text
-        };
     }
 
     static extractEntities(data) {
