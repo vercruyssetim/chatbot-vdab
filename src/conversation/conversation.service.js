@@ -1,73 +1,39 @@
-import Scenario from '../scenario/scenario';
-import VEJStartState from '../scenario/vej/vej.start.state';
-import OverviewStartState from '../scenario/overview/overview.start.state';
-import FilterStartState from '../scenario/filter.results/filter.start.state';
-import ScheduleStartState from '../scenario/schedule/schedule.start.state';
-import ScheduleStopState from '../scenario/schedule/schedule.stop.state';
-
 export default class ConversationService {
 
-    constructor(senderService, userService) {
-        this.senderService = senderService;
-        this.userService = userService;
-        this.contexts = {};
-        this.scenarios = {};
+    constructor() {
     }
 
 
     getResponse(data, sessionId) {
         const entities = ConversationService.extractEntities(data);
-        const action = ConversationService.extractAction(entities, data._text);
+        const userAction = ConversationService.extractUserAction(entities, data._text);
+        let context = this.getContext(sessionId);
 
-        let sender = {
-            addMessage: (message) => this.senderService.addMessage(sessionId, message),
-            addQuickReplies: (message, quickreplies) => this.senderService.addQuickReplies(sessionId, message, quickreplies),
-            addElements: (elements) => this.senderService.addElements(sessionId, elements),
-            addButtons: (message, buttons) => this.senderService.addButtons(sessionId, message, buttons),
-            addDelay: (stub) => this.senderService.addDelay(sessionId, stub),
-            addImage: (image) => this.senderService.addImage(sessionId, image),
-            send: () => this.senderService.send(sessionId)
-        };
+        let goal = this.goalEngine.getNextGoal(context, userAction);
+        this.workExecutor.executeWork(context, goal);
+        this.speecher.talk(context, goal);
 
         // console.log(`data ${JSON.stringify(data)}`);
         // console.log(`entities ${JSON.stringify(entities)}`);
         // console.log(`action ${JSON.stringify(action)}`);
 
-
-        if (entities.intent === 'welcome') {
-            this.scenarios[sessionId] = new Scenario(sender, this.getContext(sessionId), new OverviewStartState());
-            this.scenarios[sessionId].start();
-        } else if (entities.intent === 'start_vej') {
-            this.scenarios[sessionId] = new Scenario(sender, this.getContext(sessionId), new VEJStartState());
-            this.scenarios[sessionId].start();
-        } else if (entities.intent === 'filter_results') {
-            this.scenarios[sessionId] = new Scenario(sender, this.getContext(sessionId), new FilterStartState());
-            this.scenarios[sessionId].start();
-        } else if (entities.intent === 'start_schedule') {
-            this.scenarios[sessionId] = new Scenario(sender, this.getContext(sessionId), new ScheduleStartState());
-            this.scenarios[sessionId].start();
-        } else if (entities.intent === 'stop_schedule') {
-            this.scenarios[sessionId] = new Scenario(sender, this.getContext(sessionId), new ScheduleStopState());
-            this.scenarios[sessionId].start();
-        } else {
-            this.scenarios[sessionId].executeAction(action);
-        }
-
-        // console.log(`context ${JSON.stringify(this.getContext(sessionId))}`);
     }
 
     getContext(sessionId) {
         if (!this.contexts[sessionId]) {
             this.contexts[sessionId] = {
-                sessionId,
-                filters: {},
-                user: this.userService.getUser(sessionId)
+                data: {
+                    sessionId,
+                    filters: {},
+                    user: this.userService.getUser(sessionId)
+                },
+                goal: {}
             };
         }
         return this.contexts[sessionId];
     }
 
-    static extractAction({intent, yes_no, location, profession, company, filter, filterOption}, text) {
+    static extractUserAction({intent, yes_no, location, profession, company, filter, filterOption}, text) {
 
         if (yes_no === 'ja') {
             return {
@@ -81,67 +47,74 @@ export default class ConversationService {
             };
         }
 
-        if (intent === 'telling_location' && location) {
+        if (intent === 'telling_location') {
             return {
-                type: 'saveLocation',
+                type: intent,
                 value: location
             };
         }
 
-        if (intent === 'telling_profession' && profession) {
+        if (intent === 'telling_profession') {
             return {
-                type: 'saveKeyword',
+                type: intent,
                 value: profession
             };
         }
 
-        if (intent === 'telling_company' && company) {
+        if (intent === 'telling_company') {
             return {
-                type: 'saveKeyword',
+                type: intent,
                 value: company
             };
         }
 
-        if (!intent) {
-            if (filter) {
-                return {
-                    type: 'saveFilter',
-                    value: filter
-                };
-            }
-
-            if (filterOption) {
-                return {
-                    type: 'saveFilterOption',
-                    value: filterOption
-                };
-            }
-
-            if (location) {
-                return {
-                    type: 'saveLocation',
-                    value: location
-                };
-            }
-
-            if (profession) {
-                return {
-                    type: 'saveKeyword',
-                    value: profession
-                };
-            }
-
-            if (company) {
-                return {
-                    type: 'saveKeyword',
-                    value: company
-                };
-            }
-
+        if (intent) {
             return {
-                type: 'plain',
-                value: text
+                type: intent,
+                hasInitiative: true
             };
+        } else {
+            if (!intent) {
+                if (filter) {
+                    return {
+                        type: 'telling_filter',
+                        value: filter
+                    };
+                }
+
+                if (filterOption) {
+                    return {
+                        type: 'telling_filter_option',
+                        value: filterOption
+                    };
+                }
+
+                if (location) {
+                    return {
+                        type: 'telling_location',
+                        value: location
+                    };
+                }
+
+                if (profession) {
+                    return {
+                        type: 'telling_profession',
+                        value: profession
+                    };
+                }
+
+                if (company) {
+                    return {
+                        type: 'telling_company',
+                        value: company
+                    };
+                }
+
+                return {
+                    type: 'plain',
+                    value: text
+                };
+            }
         }
     }
 
