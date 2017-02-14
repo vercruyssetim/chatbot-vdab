@@ -65,6 +65,11 @@ export default class FacebookClient {
                             },
                             {
                                 type: 'postback',
+                                title: 'Filteren',
+                                payload: 'Kan ik op iets anders filteren?'
+                            },
+                            {
+                                type: 'postback',
                                 title: 'Start herinneringen',
                                 payload: 'Kan ik herinneringen inplannen?'
                             },

@@ -12,7 +12,7 @@ export default class VindEenJobClient {
         let url = UrlBuilder.aUrl(`${URL}/vacatures`)
             .withQueryParam('ts', '1485512560843')
             .withQueryParam('offset', '0')
-            .withQueryParam('limit', '6')
+            .withQueryParam('limit', '100')
             .withQueryParam('afstand', '20')
             .withQueryParam('locatie', location)
             .withQueryParam('trefwoord', keyword)
@@ -62,6 +62,7 @@ export default class VindEenJobClient {
     static mapToVacature(vacatures) {
         return vacatures.map((vacature) => {
             return Vacature.aVacature()
+                .withId(vacature.id)
                 .withFunctie(vacature.functieNaam)
                 .withBedrijf(vacature.plaatsNaam)
                 .withLogo(vacature.logo)

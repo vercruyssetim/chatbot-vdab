@@ -7,6 +7,11 @@ export default class Vacature {
         return new Vacature();
     }
 
+    withId(id){
+        this.id = id;
+        return this;
+    }
+
     withFunctie(functie) {
         this.functie = functie;
         return this;

@@ -7,9 +7,10 @@ export default class AnswerFilterOptionsState {
     constructor() {
         this.backendService = applicationConfig.getBackendService();
         this.filterService = applicationConfig.getFilterService();
+        this.schedulingService = applicationConfig.getSchedulingService();
     }
 
-    saveFilterOption(reply, {filters, keyword, location}) {
+    saveFilterOption(reply, {sessionId, filters, keyword, location}) {
         reply.addMessage(`Ik zoek jobs voor ${keyword} in ${location} gefilterd op ${this.filterService.toString(filters)}`);
         reply.send();
         this.backendService.lookupJobs({keyword, location, filters}).then((jobs) => {

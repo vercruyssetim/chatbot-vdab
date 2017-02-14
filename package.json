@@ -16,6 +16,7 @@
     "apiai": "3.0.3",
     "beepboop-botkit": "1.4.1",
     "botkit": "0.4.2",
+    "chai-as-promised": "^6.0.0",
     "express": "4.14.0",
     "node-schedule": "^1.2.0",
     "node-wit": "4.1.0",
@@ -25,7 +26,8 @@
     "slapp": "1.2.0",
     "slapp-context-beepboop": "1.1.0",
     "slapp-convo-beepboop": "1.0.0",
-    "standard": "8.4.0"
+    "standard": "8.4.0",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "babel-eslint": "^7.1.1",

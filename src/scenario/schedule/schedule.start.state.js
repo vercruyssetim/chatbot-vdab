@@ -12,7 +12,7 @@ export default class ScheduleStartState {
         reply.addMessage('Ik zal je om de zoveel tijd lastigvallen met jobs');
         reply.send();
         this.schedulingService.schedule(sessionId, () => {
-            this.backendService.lookupJobs({keyword, location, filters}).then((jobs) => {
+            this.backendService.lookupJobs({sessionId, keyword, location, filters}).then((jobs) => {
                 if(jobs.length !== 0){
                     reply.addMessage('Kijk eens hier welke jobs ik allemaal voor je gevonden heb!');
                     reply.addElements(jobs);
