@@ -13,7 +13,7 @@ export default class AnswerFilterOptionsState {
     saveFilterOption(reply, {sessionId, filters, keyword, location}) {
         reply.addMessage(`Ik zoek jobs voor ${keyword} in ${location} gefilterd op ${this.filterService.toString(filters)}`);
         reply.send();
-        this.backendService.lookupJobs({keyword, location, filters}).then((jobs) => {
+        this.backendService.lookupJobs({sessionId, keyword, location, filters}).then((jobs) => {
             if(jobs.length !== 0){
                 reply.addElements(jobs);
                 reply.addDelay(3000);
