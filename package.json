@@ -2,10 +2,14 @@
   "name": "chat-vdab",
   "version": "1.0.0",
   "description": "Chat application for VDAB",
+  "main": "dist/application.js",
+  "author": "Tim Vercruysse <tim.vercruysse@vdab.be>",
   "scripts": {
     "watch": "nodemon server.js",
     "test": "gulp test",
-    "dev": "gulp"
+    "testCI": "gulp test:ci",
+    "dev": "gulp",
+    "start": "gulp"
   },
   "repository": {
     "type": "git",
@@ -53,6 +57,7 @@
     "karma-mocha": "^1.3.0",
     "karma-phantomjs-launcher": "^1.0.2",
     "mocha": "^3.2.0",
+    "mocha-junit-reporter": "^1.13.0",
     "phantomjs-prebuilt": "^2.1.14",
     "run-sequence": "^1.2.2"
   }

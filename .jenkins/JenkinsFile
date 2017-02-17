@@ -1,0 +1,131 @@
+VERSION_NUMBER = ""
+VERSION_PREFIX = "1.0.0"
+
+JENKINS_NPM_NAME = "jenkins_app_npm"
+
+CONSTANTS_FILE_LOCATION = env.CONSTANTS_FILE_LOCATION
+
+/*********** Build workflow ***********/
+try {
+    stage("pre-steps") {
+        node("linux && docker") {
+            cleanWorkspace()
+            cloneProject()
+            determineVersionNumber()
+        }
+    }
+
+    stage("build") {
+        node("linux && docker") {
+            buildNpmImage()
+            yarn("testCI")
+            archiveAllTestResults()
+        }
+    }
+
+    stage("deploy to Test") {
+        milestone 1
+        askForDeploy('Deploy to Test?')
+        milestone 2
+        node("linux && docker") {
+            yarn("config:TEST -- --version ${VERSION_NUMBER}")
+            yarn("build:TEST")
+        }
+    }
+
+} catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException exception) {
+    currentBuild.result = 'SUCCESS'
+    return
+}
+
+/********** Helper functions **********/
+def askForDeploy(message) {
+    timeout(time: 28, unit: 'DAYS') {
+        input message: "${message}"
+    }
+}
+
+def cleanWorkspace() {
+    sh "mkdir ~/.tmp/${env.BUILD_TAG}"
+    try {
+        sh "sudo mv mentor-app/node_modules ~/.tmp/${env.BUILD_TAG}/node_modules"
+        sh "sudo mv mentor-app/yarn.lock ~/.tmp/${env.BUILD_TAG}/yarn.lock"
+    } catch (err) {
+    }
+    sh "sudo rm -rf mentor-app/*"
+    try {
+        sh "mkdir -p mentor-app/src"
+        sh "sudo mv ~/.tmp/${env.BUILD_TAG}/node_modules/ mentor-app/node_modules"
+        sh "sudo mv ~/.tmp/${env.BUILD_TAG}/yarn.lock mentor-app/yarn.lock"
+    } catch (err) {
+    }
+    sh "rm -rf ~/.tmp/${env.BUILD_TAG}"
+}
+
+def cloneProject() {
+    checkout scm
+}
+
+def determineVersionNumber() {
+    sh "git rev-list --count HEAD > nb-commits.txt"
+    def nbCommits = readFile("nb-commits.txt").trim()
+    VERSION_NUMBER = "${VERSION_PREFIX}.${nbCommits}"
+}
+
+def archiveAllTestResults() {
+    step([$class: 'CheckStylePublisher', pattern: 'test-reports/eslint/checkstyle-result.xml', unstableTotalAll: '0', usePreviousBuildAsReference: true])
+    step([$class: "JUnitResultArchiver", testResults: "test-reports/mocha/test-results_mocha.xml"])
+}
+
+def buildNpmImage() {
+    sh "docker build -t chat-vdab ."
+}
+
+def yarn(task) {
+    def npmName = "${JENKINS_NPM_NAME}.${VERSION_NUMBER}"
+
+    try {
+        startYarnContainer(npmName)
+        execYarnContainer(npmName, task)
+    } catch (err) {
+        printError(err)
+        currentBuild.result = "FAILURE"
+    } finally {
+        removeContainer(npmName)
+    }
+}
+
+def startYarnContainer(npmName) {
+    def currentDir = pwd()
+    killContainer(npmName)
+    sh "docker run -t -d --name ${npmName} -v $currentDir:/usr/src/app chat-vdab bash"
+}
+
+def execYarnContainer(npmName, task) {
+    sh "docker exec ${npmName} yarn run ${task}"
+}
+
+/********** Docker functions **********/
+def killContainer(name) {
+    try {
+        sh "docker rm -vf ${name} || true"
+    } catch (err) {
+    }
+}
+
+def removeContainer(name) {
+    try {
+        sh "docker stop ${name}"
+    } catch (err) {
+    }
+    try {
+        sh "docker rm -v ${name} || true"
+    } catch (err) {
+    }
+}
+
+def printError(error) {
+    println "******************************* WORKFLOW ERROR *******************************"
+    println "${error}"
+    println "******************************************************************************"
+}
