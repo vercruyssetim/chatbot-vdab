@@ -25,7 +25,7 @@ try {
     stage("deploy") {
         node("linux && docker") {
 
-            sh "docker push $DOCKER_IMAGE_NAME:$VERSION_NUMBER"
+            sh "docker push $DOCKER_IMAGE_NAME:latest"
         }
     }
 
@@ -86,7 +86,7 @@ def archiveAllTestResults() {
 }
 
 def buildNpmImage() {
-    sh "docker build -t $DOCKER_IMAGE_NAME:$VERSION_NUMBER -t $DOCKER_IMAGE_NAME:latest ."
+    sh "docker build -t $DOCKER_IMAGE_NAME:latest ."
 }
 
 def npm(task) {
