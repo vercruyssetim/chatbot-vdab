@@ -1,9 +1,7 @@
 VERSION_NUMBER = ""
-VERSION_PREFIX = "1.0.0"
+VERSION_PREFIX = "1.0"
 
 JENKINS_NPM_NAME = "jenkins_app_npm"
-
-CONSTANTS_FILE_LOCATION = env.CONSTANTS_FILE_LOCATION
 
 /*********** Build workflow ***********/
 try {
@@ -18,8 +16,15 @@ try {
     stage("build") {
         node("linux && docker") {
             buildNpmImage()
-            yarn("test")
+            npm("test")
             archiveAllTestResults()
+        }
+    }
+
+    stage("deploy") {
+        node("linux && docker") {
+            sh "docker tag chat-vdab vercruyssetim/chat-vdab:$VERSION_NUMBER"
+            sh "docker push vercruyssetim/chat-vdab:$VERSION_NUMBER"
         }
     }
 
@@ -28,8 +33,7 @@ try {
         askForDeploy('Deploy to Test?')
         milestone 2
         node("linux && docker") {
-            yarn("config:TEST -- --version ${VERSION_NUMBER}")
-            yarn("build:TEST")
+
         }
     }
 
@@ -81,12 +85,12 @@ def buildNpmImage() {
     sh "docker build -t chat-vdab ."
 }
 
-def yarn(task) {
+def npm(task) {
     def npmName = "${JENKINS_NPM_NAME}.${VERSION_NUMBER}"
 
     try {
-        startYarnContainer(npmName)
-        execYarnContainer(npmName, task)
+        startNpmContainer(npmName)
+        execNpmContainer(npmName, task)
     } catch (err) {
         printError(err)
         currentBuild.result = "FAILURE"
@@ -95,13 +99,13 @@ def yarn(task) {
     }
 }
 
-def startYarnContainer(npmName) {
+def startNpmContainer(npmName) {
     def currentDir = pwd()
     killContainer(npmName)
     sh "docker run -t -d --name ${npmName} -v $currentDir/test-reports:/usr/src/app/test-reports chat-vdab bash"
 }
 
-def execYarnContainer(npmName, task) {
+def execNpmContainer(npmName, task) {
     sh "docker exec ${npmName} npm run ${task} --no-color"
 }
 
