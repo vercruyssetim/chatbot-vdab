@@ -102,7 +102,7 @@ def startYarnContainer(npmName) {
 }
 
 def execYarnContainer(npmName, task) {
-    sh "docker exec ${npmName} yarn run ${task}"
+    sh "docker exec ${npmName} npm run ${task} --no-color"
 }
 
 /********** Docker functions **********/
