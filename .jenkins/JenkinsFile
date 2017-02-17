@@ -37,7 +37,7 @@ try {
             ssh "jenkins@DL01103V.ops.vdab.be " +
                     "'cd chat-vdab && " +
                     "docker rmi $DOCKER_IMAGE_NAME && " +
-                    "docker run -p 3000:3000 -v application.properties:/usr/src/app/application.properties $DOCKER_IMAGE_NAME'"
+                    "docker run --name chat-vdab -p 3000:3000 -v \$PWD/application.properties:/usr/src/app/application.properties $DOCKER_IMAGE_NAME'"
         }
     }
 
