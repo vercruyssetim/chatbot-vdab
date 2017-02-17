@@ -36,6 +36,7 @@ try {
         node("linux && docker") {
             try{
                 sh "ssh jenkins@DL01103V.ops.vdab.be 'docker stop chat-vdab'"
+                sh "ssh jenkins@DL01103V.ops.vdab.be 'docker rm chat-vdab'"
             } catch(err){
             }
             sh "ssh jenkins@DL01103V.ops.vdab.be 'docker rmi $DOCKER_IMAGE_NAME'"
