@@ -1,6 +1,7 @@
 VERSION_NUMBER = ""
 VERSION_PREFIX = "1.0"
 
+DOCKER_IMAGE_NAME = 'vercruyssetim/chat-vdab'
 JENKINS_NPM_NAME = "jenkins_app_npm"
 
 /*********** Build workflow ***********/
@@ -23,8 +24,8 @@ try {
 
     stage("deploy") {
         node("linux && docker") {
-            sh "docker tag chat-vdab vercruyssetim/chat-vdab:$VERSION_NUMBER"
-            sh "docker push vercruyssetim/chat-vdab:$VERSION_NUMBER"
+            sh "docker tag chat-vdab $DOCKER_IMAGE_NAME:$VERSION_NUMBER $DOCKER_IMAGE_NAME:latest"
+            sh "docker push $DOCKER_IMAGE_NAME:$VERSION_NUMBER"
         }
     }
 
@@ -33,7 +34,10 @@ try {
         askForDeploy('Deploy to Test?')
         milestone 2
         node("linux && docker") {
-
+            ssh "jenkins@DL01103V.ops.vdab.be " +
+                    "'cd chat-vdab && " +
+                    "docker rmi $DOCKER_IMAGE_NAME && " +
+                    "docker run -p 3000:3000 -v application.properties:/usr/src/app/application.properties $DOCKER_IMAGE_NAME'"
         }
     }
 
