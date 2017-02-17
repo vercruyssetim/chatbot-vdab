@@ -9,15 +9,15 @@ export default class ConversationService {
         const userAction = ConversationService.extractUserAction(entities, data._text);
         let context = this.getContext(sessionId);
 
-        let goal = this.goalEngine.getNextGoal(context, userAction);
-        this.workExecutor.executeWork(context, goal);
-        this.speecher.talk(context, goal);
+        context.goal.handleUserAction(userAction, context.data);
+        context.goal.tryToCompleteMainGoal();
 
         // console.log(`data ${JSON.stringify(data)}`);
         // console.log(`entities ${JSON.stringify(entities)}`);
         // console.log(`action ${JSON.stringify(action)}`);
 
     }
+
 
     getContext(sessionId) {
         if (!this.contexts[sessionId]) {
