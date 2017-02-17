@@ -34,10 +34,12 @@ try {
         askForDeploy('Deploy to Test?')
         milestone 2
         node("linux && docker") {
-            ssh "jenkins@DL01103V.ops.vdab.be " +
-                    "'cd chat-vdab && " +
-                    "docker rmi $DOCKER_IMAGE_NAME && " +
-                    "docker run --name chat-vdab -p 3000:3000 -v \$PWD/application.properties:/usr/src/app/application.properties $DOCKER_IMAGE_NAME'"
+            try{
+                ssh "jenkins@DL01103V.ops.vdab.be 'docker stop chat-vdab'"
+            } catch(err){
+            }
+            ssh "jenkins@DL01103V.ops.vdab.be 'docker rmi $DOCKER_IMAGE_NAME'"
+            ssh "jenkins@DL01103V.ops.vdab.be 'docker run --rm --name chat-vdab -p 3000:3000 -v \$PWD/chat-vdab/application.properties:/usr/src/app/application.properties $DOCKER_IMAGE_NAME'"
         }
     }
 
@@ -54,20 +56,7 @@ def askForDeploy(message) {
 }
 
 def cleanWorkspace() {
-    sh "mkdir ~/.tmp/${env.BUILD_TAG}"
-    try {
-        sh "sudo mv mentor-app/node_modules ~/.tmp/${env.BUILD_TAG}/node_modules"
-        sh "sudo mv mentor-app/yarn.lock ~/.tmp/${env.BUILD_TAG}/yarn.lock"
-    } catch (err) {
-    }
-    sh "sudo rm -rf mentor-app/*"
-    try {
-        sh "mkdir -p mentor-app/src"
-        sh "sudo mv ~/.tmp/${env.BUILD_TAG}/node_modules/ mentor-app/node_modules"
-        sh "sudo mv ~/.tmp/${env.BUILD_TAG}/yarn.lock mentor-app/yarn.lock"
-    } catch (err) {
-    }
-    sh "rm -rf ~/.tmp/${env.BUILD_TAG}"
+    sh "rm -rf *"
 }
 
 def cloneProject() {
