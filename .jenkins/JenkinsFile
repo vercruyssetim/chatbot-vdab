@@ -34,12 +34,15 @@ try {
         askForDeploy('Deploy to Test?')
         milestone 2
         node("linux && docker") {
-            try{
+            try {
                 sh "ssh jenkins@DL01103V.ops.vdab.be 'docker stop chat-vdab'"
                 sh "ssh jenkins@DL01103V.ops.vdab.be 'docker rm chat-vdab'"
-            } catch(err){
+            } catch (err) {
             }
-            sh "ssh jenkins@DL01103V.ops.vdab.be 'docker rmi $DOCKER_IMAGE_NAME'"
+            try {
+                sh "ssh jenkins@DL01103V.ops.vdab.be 'docker rmi $DOCKER_IMAGE_NAME'"
+            } catch (err) {
+            }
             sh "ssh jenkins@DL01103V.ops.vdab.be 'docker run -d --name chat-vdab -p 3000:3000 -v \$PWD/chat-vdab/application.properties:/usr/src/app/application.properties $DOCKER_IMAGE_NAME'"
         }
     }
