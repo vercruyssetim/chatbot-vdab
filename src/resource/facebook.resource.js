@@ -15,7 +15,7 @@ export default class FacebookResource {
             access_token: accessToken,
             json_file_store: './storage',
             port: '3000',
-            hostname: 'localhost'
+            hostname: '0.0.0.0'
         });
         let bot = controller.spawn({});
 
