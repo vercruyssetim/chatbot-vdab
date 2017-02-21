@@ -6,7 +6,7 @@ export default class ExpressServer {
 
     constructor() {
         this.port = 3000;
-        this.hostname = 'localhost';
+        this.hostname = '0.0.0.0';
         this.server = null;
     }
 
