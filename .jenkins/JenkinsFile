@@ -4,7 +4,7 @@ VERSION_PREFIX = "1.0"
 DOCKER_IMAGE_NAME = 'vercruyssetim/chat-vdab'
 JENKINS_NPM_NAME = "jenkins_app_npm"
 
-TEST_SERVER = 'lndadmin@PL00402v.vdab.be'
+TEST_SERVER = env.TEST_SERVER
 
 /*********** Build workflow ***********/
 try {
