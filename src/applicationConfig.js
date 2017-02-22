@@ -15,14 +15,23 @@ class ApplicationConfig {
 
     getFacebookResource() {
         if (!this.facebookServer) {
-            this.facebookServer = new FacebookResource(this.getExpressserver(), this.getWitClient(), this.getFacebookClient(), this.getUserService());
+            this.facebookServer = new FacebookResource(
+                this.getExpressserver(),
+                this.getWitClient(),
+                this.getFacebookClient(),
+                this.getUserService(),
+                this.getPropertiesService().get('host.name'),
+                this.getPropertiesService().get('port.name')
+            );
         }
         return this.facebookServer;
     }
 
     getFacebookClient(){
         if(!this.facebookClient){
-            this.facebookClient = new FacebookClient(this.getPropertiesService().get('facebook.access.token'));
+            this.facebookClient = new FacebookClient(
+                this.getPropertiesService().get('facebook.access.token')
+            );
         }
         return this.facebookClient;
     }
@@ -99,7 +108,10 @@ class ApplicationConfig {
 
     getExpressserver() {
         if (!this.expressServer) {
-            this.expressServer = new ExpressServer();
+            this.expressServer = new ExpressServer(
+                this.getPropertiesService().get('host.name'),
+                this.getPropertiesService().get('port.name')
+            );
             this.expressServer.startServer();
         }
         return this.expressServer;

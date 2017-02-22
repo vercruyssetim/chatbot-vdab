@@ -2,11 +2,13 @@ import Botkit from 'botkit';
 
 export default class FacebookResource {
 
-    constructor(webserver, witService, facebookClient, userService) {
+    constructor(webserver, witService, facebookClient, userService, hostName, portName) {
         this.webserver = webserver;
         this.witService = witService;
         this.facebookClient = facebookClient;
         this.userService = userService;
+        this.hostName = hostName;
+        this.portName = portName;
     }
 
     startResource(accessToken, verifyToken) {
@@ -14,8 +16,8 @@ export default class FacebookResource {
             verify_token: verifyToken,
             access_token: accessToken,
             json_file_store: './storage',
-            port: '3000',
-            hostname: '0.0.0.0'
+            port: this.hostName,
+            hostname: this.portName
         });
         let bot = controller.spawn({});
 

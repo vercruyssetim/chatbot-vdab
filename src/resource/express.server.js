@@ -4,9 +4,9 @@ import express from 'express';
 /* global __dirname */
 export default class ExpressServer {
 
-    constructor() {
-        this.port = 3000;
-        this.hostname = '0.0.0.0';
+    constructor(hostName, portName) {
+        this.port = portName;
+        this.hostname = hostName;
         this.server = null;
     }
 
