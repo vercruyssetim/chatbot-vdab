@@ -50,6 +50,10 @@ export default class ConversationService {
             this.scenarios[sessionId] = new Scenario(sender, this.getContext(sessionId), new ScheduleStopState());
             this.scenarios[sessionId].start();
         } else {
+            if(!this.scenarios[sessionId]){
+                sender.addMessage('sorry, ik begrijp niet goed wat je zegt');
+                sender.send();
+            }
             this.scenarios[sessionId].executeAction(action);
         }
 

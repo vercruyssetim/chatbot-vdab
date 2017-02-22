@@ -30,8 +30,10 @@ export default class FacebookResource {
     }
 
     handleMessageReceived(bot, message) {
+        console.log(`Receiving... ${JSON.stringify(message.text)}`);
         this.saveUser(message.user);
         this.witService.handleMessageReceived(message.text, message.user, (reply) => {
+            console.log(`Sending... ${JSON.stringify(reply)}`);
             bot.reply(message, FacebookResource.mapToFacebookResponse(reply));
         });
     }
