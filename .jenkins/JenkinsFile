@@ -4,6 +4,8 @@ VERSION_PREFIX = "1.0"
 DOCKER_IMAGE_NAME = 'vercruyssetim/chat-vdab'
 JENKINS_NPM_NAME = "jenkins_app_npm"
 
+TEST_SERVER = 'lndadmin@PL00402v.vdab.be'
+
 /*********** Build workflow ***********/
 try {
     stage("pre-steps") {
@@ -24,8 +26,7 @@ try {
 
     stage("deploy") {
         node("linux && docker") {
-            sh "docker push $DOCKER_IMAGE_NAME:latest"
-            sh "docker rmi $DOCKER_IMAGE_NAME"
+            publish()
         }
     }
 
@@ -34,21 +35,22 @@ try {
         askForDeploy('Deploy to Test?')
         milestone 2
         node("linux && docker") {
-            try {
-                sh "ssh jenkins@DL01103V.ops.vdab.be 'docker stop chat-vdab'"
-            } catch (err) {
-            }
-            try {
-                sh "ssh jenkins@DL01103V.ops.vdab.be 'docker rmi $DOCKER_IMAGE_NAME'"
-            } catch (err) {
-            }
-            sh "ssh jenkins@DL01103V.ops.vdab.be 'docker run -d --rm --name chat-vdab -p 3000:3000 -v \$PWD/chat-vdab/application.properties:/usr/src/app/application.properties $DOCKER_IMAGE_NAME'"
+            deploy(TEST_SERVER)
         }
     }
 
 } catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException exception) {
     currentBuild.result = 'SUCCESS'
     return
+}
+
+private void deploy(server) {
+    try {
+        sh "ssh ${server} 'docker stop chat-vdab'"
+        sh "ssh ${server} 'docker rmi $DOCKER_IMAGE_NAME'"
+    } catch (err) {
+    }
+    sh "ssh ${server} 'docker run -d --rm --name chat-vdab -p 3000:3000 -v \$PWD/chat-vdab/application.properties:/usr/src/app/application.properties $DOCKER_IMAGE_NAME'"
 }
 
 /********** Helper functions **********/
@@ -79,6 +81,11 @@ def archiveAllTestResults() {
 
 def buildNpmImage() {
     sh "docker build -t $DOCKER_IMAGE_NAME:latest ."
+}
+
+def publish() {
+    sh "docker push $DOCKER_IMAGE_NAME:latest"
+    sh "docker rmi $DOCKER_IMAGE_NAME"
 }
 
 def npm(task) {
