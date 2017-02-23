@@ -4,7 +4,12 @@ logs
 npm-debug.log*
 node_modules
 
-storage/
+/storage
 
 application.properties
 dist/
+
+test-reports/eslint/*
+!test-reports/eslint/dummy.xml
+test-reports/mocha/*
+!test-reports/mocha/dummy.xml

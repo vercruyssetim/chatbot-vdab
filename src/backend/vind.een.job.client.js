@@ -1,6 +1,6 @@
 import request from 'request';
 import UrlBuilder from './url.builder';
-import Promise from 'Promise';
+import Promise from 'promise';
 import Vacature from './vacature';
 
 const URL = 'https://www.vdab.be/api/vindeenjob';

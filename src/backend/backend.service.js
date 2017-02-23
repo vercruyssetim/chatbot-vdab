@@ -1,4 +1,4 @@
-import Promise from 'Promise';
+import Promise from 'promise';
 import _ from 'underscore';
 
 export default class BackendService {

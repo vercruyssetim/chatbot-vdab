@@ -1,0 +1,138 @@
+VERSION_NUMBER = ""
+VERSION_PREFIX = "1.0"
+
+DOCKER_IMAGE_NAME = 'vercruyssetim/chat-vdab'
+JENKINS_NPM_NAME = "jenkins_app_npm"
+
+TEST_SERVER = env.TEST_SERVER
+
+/*********** Build workflow ***********/
+try {
+    stage("pre-steps") {
+        node("linux && docker") {
+            cleanWorkspace()
+            cloneProject()
+            determineVersionNumber()
+        }
+    }
+
+    stage("build") {
+        node("linux && docker") {
+            buildNpmImage()
+            npm("test")
+            archiveAllTestResults()
+        }
+    }
+
+    stage("deploy") {
+        node("linux && docker") {
+            publish()
+        }
+    }
+
+    stage("deploy to Test") {
+        milestone 1
+        askForDeploy('Deploy to Test?')
+        milestone 2
+        node("linux && docker") {
+            deploy(TEST_SERVER)
+        }
+    }
+
+} catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException exception) {
+    currentBuild.result = 'SUCCESS'
+    return
+}
+
+private void deploy(server) {
+    try {
+        sh "ssh ${server} 'docker stop chat-vdab'"
+        sh "ssh ${server} 'docker rmi $DOCKER_IMAGE_NAME'"
+    } catch (err) {
+    }
+    sh "ssh ${server} 'docker run -d --rm --name chat-vdab -p 3000:3000 -v \$PWD/chat-vdab/application.properties:/usr/src/app/application.properties $DOCKER_IMAGE_NAME'"
+}
+
+/********** Helper functions **********/
+def askForDeploy(message) {
+    timeout(time: 28, unit: 'DAYS') {
+        input message: "${message}"
+    }
+}
+
+def cleanWorkspace() {
+    sh "rm -rf *"
+}
+
+def cloneProject() {
+    checkout scm
+}
+
+def determineVersionNumber() {
+    sh "git rev-list --count HEAD > nb-commits.txt"
+    def nbCommits = readFile("nb-commits.txt").trim()
+    VERSION_NUMBER = "${VERSION_PREFIX}.${nbCommits}"
+}
+
+def archiveAllTestResults() {
+    step([$class: 'CheckStylePublisher', pattern: 'test-reports/eslint/checkstyle-result.xml', unstableTotalAll: '0', usePreviousBuildAsReference: true])
+    step([$class: "JUnitResultArchiver", testResults: "test-reports/mocha/test-results_mocha.xml"])
+}
+
+def buildNpmImage() {
+    sh "docker build -t $DOCKER_IMAGE_NAME:latest ."
+}
+
+def publish() {
+    sh "docker push $DOCKER_IMAGE_NAME:latest"
+    sh "docker rmi $DOCKER_IMAGE_NAME"
+}
+
+def npm(task) {
+    def npmName = "${JENKINS_NPM_NAME}.${VERSION_NUMBER}"
+
+    try {
+        startNpmContainer(npmName)
+        execNpmContainer(npmName, task)
+    } catch (err) {
+        printError(err)
+        currentBuild.result = "FAILURE"
+    } finally {
+        removeContainer(npmName)
+    }
+}
+
+def startNpmContainer(npmName) {
+    def currentDir = pwd()
+    killContainer(npmName)
+    sh "docker run -t -d --name ${npmName} -v $currentDir/test-reports:/usr/src/app/test-reports vercruyssetim/chat-vdab bash"
+}
+
+def execNpmContainer(npmName, task) {
+    sh "docker exec ${npmName} npm run ${task} --no-color"
+}
+
+/********** Docker functions **********/
+def killContainer(name) {
+    try {
+        sh "docker rm -vf ${name} || true"
+    } catch (err) {
+    }
+}
+
+def removeContainer(name) {
+    try {
+        sh "docker stop ${name}"
+    } catch (err) {
+    }
+    try {
+        sh "docker rm -v ${name} || true"
+    } catch (err) {
+    }
+}
+
+def printError(error) {
+    println "******************************* WORKFLOW ERROR *******************************"
+    println "${error}"
+    println "******************************************************************************"
+}

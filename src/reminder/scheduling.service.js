@@ -7,7 +7,7 @@ export default class SchedulingService{
 
     schedule(sessionId, callBack){
         this.stop(sessionId);
-        this.schedules[sessionId] = schedule.scheduleJob(new schedule.RecurrenceRule(), callBack);
+        this.schedules[sessionId] = schedule.scheduleJob({hour: 12, minute: 15, dayOfWeek: 0}, callBack);
     }
 
     stop(sessionId){

@@ -8,7 +8,7 @@ export default class ScheduleStopState {
     }
 
     start(reply, {sessionId}){
-        reply.addMessage('Ik zal je niet meer lastigvallen');
+        reply.addMessage('Ik zal je geen jobs meer sturen');
         reply.send();
         this.schedulingService.stop(sessionId);
         return new EndState();

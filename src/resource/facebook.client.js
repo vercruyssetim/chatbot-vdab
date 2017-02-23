@@ -70,12 +70,12 @@ export default class FacebookClient {
                             },
                             {
                                 type: 'postback',
-                                title: 'Start herinneringen',
+                                title: 'Start dagelijkse herinneringen',
                                 payload: 'Kan ik herinneringen inplannen?'
                             },
                             {
                                 type: 'postback',
-                                title: 'Stop herinneringen',
+                                title: 'Stop dagelijkse herinneringen',
                                 payload: 'kan je me geen berichten meer sturen?'
                             }
                         ]

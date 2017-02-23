@@ -2,11 +2,13 @@ import Botkit from 'botkit';
 
 export default class FacebookResource {
 
-    constructor(webserver, witService, facebookClient, userService) {
+    constructor(webserver, witService, facebookClient, userService, hostName, portName) {
         this.webserver = webserver;
         this.witService = witService;
         this.facebookClient = facebookClient;
         this.userService = userService;
+        this.hostName = hostName;
+        this.portName = portName;
     }
 
     startResource(accessToken, verifyToken) {
@@ -14,8 +16,8 @@ export default class FacebookResource {
             verify_token: verifyToken,
             access_token: accessToken,
             json_file_store: './storage',
-            port: '3000',
-            hostname: 'localhost'
+            port: this.hostName,
+            hostname: this.portName
         });
         let bot = controller.spawn({});
 
@@ -30,8 +32,10 @@ export default class FacebookResource {
     }
 
     handleMessageReceived(bot, message) {
+        console.log(`Receiving... ${JSON.stringify(message.text)}`);
         this.saveUser(message.user);
         this.witService.handleMessageReceived(message.text, message.user, (reply) => {
+            console.log(`Sending... ${JSON.stringify(reply)}`);
             bot.reply(message, FacebookResource.mapToFacebookResponse(reply));
         });
     }
