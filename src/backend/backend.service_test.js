@@ -3,7 +3,7 @@ import chai from 'chai';
 
 let expect = chai.expect;
 
-describe('backend service:', () => {
+describe('backend service -> ', () => {
 
     let backendService, callBack;
     beforeEach(() => {

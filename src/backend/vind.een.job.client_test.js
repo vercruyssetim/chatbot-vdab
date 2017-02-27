@@ -1,7 +1,7 @@
 import {expect} from 'chai';
 import VindEenJobClient from './vind.een.job.client';
 
-describe('vind een job client: ', () => {
+describe('vind een job client -> ', () => {
 
     it('kan gegevens ophalen', () => {
         let vindEenJobClient = new VindEenJobClient();

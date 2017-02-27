@@ -1,7 +1,7 @@
 import FilterService from './filters.service';
 import {expect} from 'chai';
 
-describe('filter service:', () => {
+describe('filter service -> ', () => {
 
     let filterService;
 
@@ -10,7 +10,7 @@ describe('filter service:', () => {
     });
     describe('getFilters', () => {
 
-        it('will give simpel key -> label list', () => {
+        it('will give simpel key label list', () => {
             let filters = filterService.getFilters();
             expect(filters).to.deep.equal({
                 voltijds_deeltijds: 'voltijds/deeltijds',

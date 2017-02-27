@@ -1,4 +1,5 @@
 import {Wit} from 'node-wit';
+import WitMapper from './wit.mapper';
 
 export default class WitClient {
 
@@ -15,7 +16,7 @@ export default class WitClient {
         this.senderService.addSender(sessionId, sender);
         this.witClient.message(message)
             .then((data) => {
-                this.conversationService.getResponse(data, sessionId);
+                this.conversationService.getResponse(WitMapper.extractUserAction(WitMapper.extractEntities(data)), sessionId);
             })
             .catch(console.error);
     }

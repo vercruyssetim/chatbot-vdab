@@ -1,16 +1,18 @@
+import GoalContext from '../goal/goal.context';
+import GoalFactory from '../goal/goal.factory';
+import SpeechContext from './speech/speech.context';
+import DataContext from './data/data.context';
 export default class ConversationService {
 
     constructor() {
     }
 
 
-    getResponse(data, sessionId) {
-        const entities = ConversationService.extractEntities(data);
-        const userAction = ConversationService.extractUserAction(entities, data._text);
+    getResponse(userAction, sessionId) {
         let context = this.getContext(sessionId);
 
-        context.goal.handleUserAction(userAction, context.data);
-        context.goal.tryToCompleteMainGoal();
+        this.handleUserAction(userAction, context);
+        this.tryToCompleteMainGoal(context);
 
         // console.log(`data ${JSON.stringify(data)}`);
         // console.log(`entities ${JSON.stringify(entities)}`);
@@ -18,128 +20,49 @@ export default class ConversationService {
 
     }
 
+    handleUserAction(userAction, {data, goal, speech}) {
+        if (userAction.hasInitiative) {
+            let longtermGoal = GoalFactory.getNewMainGoal(userAction);
+            goal.startMainGoal(longtermGoal);
+            speech.start(longtermGoal);
+        } else {
+            if (!goal.hasOpenQuestion()) {
+                speech.error();
+            } else {
+                if (goal.isShortTermGoalCompletedBy(userAction)) {
+                    data.complete(goal.getShortTermGoal());
+                    speech.complete(goal.getShortTermGoal());
+                    goal.completeShortTermGoal();
+                } else {
+                    speech.failed(goal.getGetShortTermGoal());
+                }
+            }
+        }
+    }
+
+    tryToCompleteMainGoal({data, goal, speech}) {
+        if (goal.hasMainGoal() && !goal.hasOpenQuestion()) {
+            if (goal.isMainGoalCompletedBy(data)) {
+                data.complete(goal.getLongTermGoal());
+                speech.complete(goal.getLongTermGoal());
+                goal.completeMainGoal();
+            } else {
+                goal.nextShortTermGoal();
+                speech.start(goal.getShortTermGoal());
+            }
+        }
+    }
+
 
     getContext(sessionId) {
         if (!this.contexts[sessionId]) {
             this.contexts[sessionId] = {
-                data: {
-                    sessionId,
-                    filters: {},
-                    user: this.userService.getUser(sessionId)
-                },
-                goal: {}
+                data: new DataContext(sessionId, this.userService.getUser(sessionId)),
+                goal: new GoalContext(),
+                speech: new SpeechContext(sessionId)
             };
         }
         return this.contexts[sessionId];
     }
 
-    static extractUserAction({intent, yes_no, location, profession, company, filter, filterOption}, text) {
-
-        if (yes_no === 'ja') {
-            return {
-                type: 'positive'
-            };
-        }
-
-        if (yes_no === 'nee') {
-            return {
-                type: 'negative'
-            };
-        }
-
-        if (intent === 'telling_location') {
-            return {
-                type: intent,
-                value: location
-            };
-        }
-
-        if (intent === 'telling_profession') {
-            return {
-                type: intent,
-                value: profession
-            };
-        }
-
-        if (intent === 'telling_company') {
-            return {
-                type: intent,
-                value: company
-            };
-        }
-
-        if (intent) {
-            return {
-                type: intent,
-                hasInitiative: true
-            };
-        } else {
-            if (!intent) {
-                if (filter) {
-                    return {
-                        type: 'telling_filter',
-                        value: filter
-                    };
-                }
-
-                if (filterOption) {
-                    return {
-                        type: 'telling_filter_option',
-                        value: filterOption
-                    };
-                }
-
-                if (location) {
-                    return {
-                        type: 'telling_location',
-                        value: location
-                    };
-                }
-
-                if (profession) {
-                    return {
-                        type: 'telling_profession',
-                        value: profession
-                    };
-                }
-
-                if (company) {
-                    return {
-                        type: 'telling_company',
-                        value: company
-                    };
-                }
-
-                return {
-                    type: 'plain',
-                    value: text
-                };
-            }
-        }
-    }
-
-    static extractEntities(data) {
-        let intent, yes_no, location, profession, company, filter, filterOption;
-        if (data.entities) {
-            intent = ConversationService.firstEntityValue(data.entities, 'intent');
-            yes_no = ConversationService.firstEntityValue(data.entities, 'yes_no');
-            location = ConversationService.firstEntityValue(data.entities, 'location');
-            profession = ConversationService.firstEntityValue(data.entities, 'profession');
-            company = ConversationService.firstEntityValue(data.entities, 'company');
-            filter = ConversationService.firstEntityValue(data.entities, 'filter');
-            filterOption = ConversationService.firstEntityValue(data.entities, 'filter_option');
-        }
-        return {intent, yes_no, location, profession, company, filter, filterOption};
-    }
-
-    static firstEntityValue(entities, entity) {
-        const val = entities && entities[entity] &&
-            Array.isArray(entities[entity]) &&
-            entities[entity].length > 0 &&
-            entities[entity][0].value;
-        if (!val) {
-            return null;
-        }
-        return typeof val === 'object' ? val.value : val;
-    }
 }

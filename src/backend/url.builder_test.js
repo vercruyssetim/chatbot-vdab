@@ -1,7 +1,7 @@
 import {expect} from 'chai';
 import UrlBuilder from './url.builder';
 
-describe('urlBuilder', () => {
+describe('urlBuilder -> ', () => {
 
     it('build url one query param', () => {
         let urlBuilder = UrlBuilder.aUrl('http://www.google.com')
