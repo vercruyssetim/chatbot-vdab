@@ -16,7 +16,7 @@ export default class WitClient {
         this.senderService.addSender(sessionId, sender);
         this.witClient.message(message)
             .then((data) => {
-                this.conversationService.getResponse(WitMapper.extractUserAction(WitMapper.extractEntities(data)), sessionId);
+                this.conversationService.getResponse(WitMapper.extractEntities(data), sessionId);
             })
             .catch(console.error);
     }

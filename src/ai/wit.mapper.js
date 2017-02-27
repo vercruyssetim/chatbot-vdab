@@ -1,92 +1,7 @@
 export default class WitMapper {
 
-    static extractUserAction({intent, yes_no, location, profession, company, filter, filterOption}, text) {
-
-        if (yes_no === 'ja') {
-            return {
-                type: 'positive'
-            };
-        }
-
-        if (yes_no === 'nee') {
-            return {
-                type: 'negative'
-            };
-        }
-
-        if (intent === 'telling_location') {
-            return {
-                type: intent,
-                value: location
-            };
-        }
-
-        if (intent === 'telling_profession') {
-            return {
-                type: intent,
-                value: profession
-            };
-        }
-
-        if (intent === 'telling_company') {
-            return {
-                type: intent,
-                value: company
-            };
-        }
-
-        if (intent) {
-            return {
-                type: intent,
-                hasInitiative: true
-            };
-        } else {
-            if (!intent) {
-                if (filter) {
-                    return {
-                        type: 'telling_filter',
-                        value: filter
-                    };
-                }
-
-                if (filterOption) {
-                    return {
-                        type: 'telling_filter_option',
-                        value: filterOption
-                    };
-                }
-
-                if (location) {
-                    return {
-                        type: 'telling_location',
-                        value: location
-                    };
-                }
-
-                if (profession) {
-                    return {
-                        type: 'telling_profession',
-                        value: profession
-                    };
-                }
-
-                if (company) {
-                    return {
-                        type: 'telling_company',
-                        value: company
-                    };
-                }
-
-                return {
-                    type: 'plain',
-                    value: text
-                };
-            }
-        }
-    }
-
     static extractEntities(data) {
-        let intent, yes_no, location, profession, company, filter, filterOption;
+        let intent, yes_no, location, profession, company, filter, filterOption, hasInitiative;
         if (data.entities) {
             intent = WitMapper.firstEntityValue(data.entities, 'intent');
             yes_no = WitMapper.firstEntityValue(data.entities, 'yes_no');
@@ -96,7 +11,10 @@ export default class WitMapper {
             filter = WitMapper.firstEntityValue(data.entities, 'filter');
             filterOption = WitMapper.firstEntityValue(data.entities, 'filter_option');
         }
-        return {intent, yes_no, location, profession, company, filter, filterOption};
+        if (['start_vej', 'start_schedule', 'stop_schedule', 'filter_results', 'welcome'].indexOf(intent) > -1) {
+            hasInitiative = true;
+        }
+        return {intent, entities: {yes_no, location, profession, company, filter, filterOption}, hasInitiative};
     }
 
     static firstEntityValue(entities, entity) {

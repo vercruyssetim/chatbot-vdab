@@ -3,6 +3,11 @@ import mocha from 'gulp-mocha';
 
 export const testunit = 'test:unit';
 
+function handleError(err){
+    console.log(err.toString());
+    this.emit('end');
+}
+
 gulp.task(testunit, () => {
     return gulp.src('src/**/*_test.js', {read: false})
         .pipe(mocha({
@@ -12,8 +17,5 @@ gulp.task(testunit, () => {
                 junit_report_path: './test-reports/mocha/test-results_mocha.xml'
             }
         }))
-        .on('error', (err) => {
-            console.log(err.toString());
-            this.emit('end');
-        });
+        .on('error', handleError);
 });

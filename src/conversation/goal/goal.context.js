@@ -1,9 +1,6 @@
 export default class GoalContext {
 
     constructor() {
-        this.speechService = null;
-        this.actionService = null;
-
         this.mainGoal = null;
         this.shorttermGoal = null;
     }
@@ -25,7 +22,7 @@ export default class GoalContext {
     }
 
     hasMainGoal() {
-        return this.mainGoal !== null || this.mainGoal !== undefined;
+        return this.mainGoal !== null;
     }
 
     nextShortTermGoal(data){
@@ -45,6 +42,6 @@ export default class GoalContext {
     }
 
     hasOpenQuestion() {
-        return this.shorttermGoal !== null || this.shorttermGoal !== undefined;
+        return this.shorttermGoal !== null;
     }
 }

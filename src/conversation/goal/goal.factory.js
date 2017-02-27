@@ -1,9 +1,9 @@
-import WelcomeGoal from './welcome';
+import WelcomeGoal from './domain/longterm/welcome';
 import MainGoal from './main.goal';
 export default class GoalFactory{
 
     static getNewMainGoal(userAction){
-        if (userAction.type === 'welcome') {
+        if (userAction.intent === 'welcome') {
             return new MainGoal(new WelcomeGoal());
             // } else if (iniative === 'start_vej') {
             //     return new VejGoal(data);

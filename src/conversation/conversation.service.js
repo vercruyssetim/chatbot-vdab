@@ -1,10 +1,13 @@
-import GoalContext from '../goal/goal.context';
-import GoalFactory from '../goal/goal.factory';
+import GoalContext from './goal/goal.context';
+import GoalFactory from './goal/goal.factory';
 import SpeechContext from './speech/speech.context';
 import DataContext from './data/data.context';
 export default class ConversationService {
 
-    constructor() {
+    constructor(senderService, userService) {
+        this.contexts = {};
+        this.senderService = senderService;
+        this.userService = userService;
     }
 
 
@@ -24,7 +27,7 @@ export default class ConversationService {
         if (userAction.hasInitiative) {
             let longtermGoal = GoalFactory.getNewMainGoal(userAction);
             goal.startMainGoal(longtermGoal);
-            speech.start(longtermGoal);
+            speech.start(longtermGoal, data);
         } else {
             if (!goal.hasOpenQuestion()) {
                 speech.error();
@@ -34,7 +37,7 @@ export default class ConversationService {
                     speech.complete(goal.getShortTermGoal());
                     goal.completeShortTermGoal();
                 } else {
-                    speech.failed(goal.getGetShortTermGoal());
+                    speech.failed(goal.getShortTermGoal());
                 }
             }
         }
@@ -43,12 +46,13 @@ export default class ConversationService {
     tryToCompleteMainGoal({data, goal, speech}) {
         if (goal.hasMainGoal() && !goal.hasOpenQuestion()) {
             if (goal.isMainGoalCompletedBy(data)) {
-                data.complete(goal.getLongTermGoal());
-                speech.complete(goal.getLongTermGoal());
+                console.log(JSON.stringify(data));
+                data.complete(goal.getMainGoal(), data);
+                speech.complete(goal.getMainGoal(), data);
                 goal.completeMainGoal();
             } else {
                 goal.nextShortTermGoal();
-                speech.start(goal.getShortTermGoal());
+                speech.start(goal.getShortTermGoal(), data);
             }
         }
     }
@@ -59,7 +63,7 @@ export default class ConversationService {
             this.contexts[sessionId] = {
                 data: new DataContext(sessionId, this.userService.getUser(sessionId)),
                 goal: new GoalContext(),
-                speech: new SpeechContext(sessionId)
+                speech: new SpeechContext(sessionId, this.senderService)
             };
         }
         return this.contexts[sessionId];

@@ -1,22 +1,22 @@
-export default class LongtermGoal {
+export default class MainGoal {
 
     constructor(trueGoal) {
         this.trueGoal = trueGoal;
-
-        this.speechService = null;
-        this.actionService = null;
     }
 
-    started(){
-        this.speechService.started(this.trueGoal);
+    getName() {
+        return this.trueGoal.getName();
     }
 
-    complete(){
-        this.actionService.complete(this.trueGoal);
-        this.speechService.complete(this.trueGoal);
+    start(...args) {
+        this.trueGoal.start(...args);
     }
 
-    canBeCompleted(){
+    complete(...args) {
+        this.trueGoal.complete(...args);
+    }
+
+    isCompletedBy() {
         for (let index = 0; index < this.trueGoal.getShorttermGoals().length; index++) {
             let shorttermGoal = this.trueGoal.getShorttermGoals()[index];
             if (!shorttermGoal.isCompleted()) {
@@ -26,13 +26,16 @@ export default class LongtermGoal {
         return true;
     }
 
-    getNextShorttermGoal(data){
+    getNextShorttermGoal(data) {
         for (let index = 0; index < this.trueGoal.getShorttermGoals().length; index++) {
             let shorttermGoal = this.trueGoal.getShorttermGoals()[index];
             if (!shorttermGoal.isCompletedBy(data)) {
                 return shorttermGoal;
             }
         }
-        throw {name: 'ProgammingError', message: 'If all shorttermgoals are completed this method should not have been called'};
+        throw {
+            name: 'ProgammingError',
+            message: 'If all shorttermgoals are completed this method should not have been called'
+        };
     }
 }
