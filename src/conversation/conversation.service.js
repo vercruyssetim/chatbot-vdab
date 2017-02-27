@@ -4,6 +4,7 @@ import OverviewStartState from '../scenario/overview/overview.start.state';
 import FilterStartState from '../scenario/filter.results/filter.start.state';
 import ScheduleStartState from '../scenario/schedule/schedule.start.state';
 import ScheduleStopState from '../scenario/schedule/schedule.stop.state';
+import AnswerLocationState from '../scenario/vej/answer.location.state';
 
 export default class ConversationService {
 
@@ -30,16 +31,20 @@ export default class ConversationService {
         };
 
         // console.log(`data ${JSON.stringify(data)}`);
-        // console.log(`entities ${JSON.stringify(entities)}`);
-        // console.log(`action ${JSON.stringify(action)}`);
-
+        console.log(`entities ${JSON.stringify(entities)}`);
+        console.log(`action ${JSON.stringify(action)}`);
 
         if (entities.intent === 'welcome') {
             this.scenarios[sessionId] = new Scenario(sender, this.getContext(sessionId), new OverviewStartState());
             this.scenarios[sessionId].start();
         } else if (entities.intent === 'start_vej') {
-            this.scenarios[sessionId] = new Scenario(sender, this.getContext(sessionId), new VEJStartState());
-            this.scenarios[sessionId].start();
+            if (entities.location) {
+                this.scenarios[sessionId] = new Scenario(sender, this.getContext(sessionId), new AnswerLocationState());
+                this.scenarios[sessionId].executeAction({type: 'saveLocation', value: entities.location});
+            } else {
+                this.scenarios[sessionId] = new Scenario(sender, this.getContext(sessionId), new VEJStartState());
+                this.scenarios[sessionId].start();
+            }
         } else if (entities.intent === 'filter_results') {
             this.scenarios[sessionId] = new Scenario(sender, this.getContext(sessionId), new FilterStartState());
             this.scenarios[sessionId].start();
@@ -50,7 +55,7 @@ export default class ConversationService {
             this.scenarios[sessionId] = new Scenario(sender, this.getContext(sessionId), new ScheduleStopState());
             this.scenarios[sessionId].start();
         } else {
-            if(!this.scenarios[sessionId]){
+            if (!this.scenarios[sessionId]) {
                 sender.addMessage('sorry, ik begrijp niet goed wat je zegt');
                 sender.send();
             }
@@ -85,6 +90,12 @@ export default class ConversationService {
             };
         }
 
+        if (intent === 'unsure') {
+            return {
+                type: 'unsure'
+            };
+        }
+
         if (intent === 'telling_location' && location) {
             return {
                 type: 'saveLocation',
@@ -92,18 +103,32 @@ export default class ConversationService {
             };
         }
 
-        if (intent === 'telling_profession' && profession) {
-            return {
-                type: 'saveKeyword',
-                value: profession
-            };
+        if (intent === 'telling_profession') {
+            if (profession) {
+                return {
+                    type: 'saveKeyword',
+                    value: profession
+                };
+            } else {
+                return {
+                    type: 'saveKeyword',
+                    value: text
+                };
+            }
         }
 
-        if (intent === 'telling_company' && company) {
-            return {
-                type: 'saveKeyword',
-                value: company
-            };
+        if (intent === 'telling_company') {
+            if (company) {
+                return {
+                    type: 'saveKeyword',
+                    value: company
+                };
+            } else {
+                return {
+                    type: 'saveKeyword',
+                    value: text
+                };
+            }
         }
 
         if (!intent) {

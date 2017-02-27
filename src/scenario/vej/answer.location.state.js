@@ -8,4 +8,11 @@ export default class AnswerLocationState {
         reply.send();
         return new AnswerKeywordState();
     }
+
+    unsure(reply){
+        reply.addMessage('Geen erg');
+        reply.addMessage('Weet je wel als wat of bij wie je wil werken?');
+        reply.send();
+        return new AnswerKeywordState();
+    }
 }
