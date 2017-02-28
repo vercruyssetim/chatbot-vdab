@@ -65,12 +65,10 @@ export default class FacebookResource {
                 }
             };
         } else if (reply.quickreplies) {
-            let result = {
+            return {
                 text: reply.text,
                 quick_replies: FacebookResource.mapToQuickReplies(reply.quickreplies)
             };
-            console.log(`result ${JSON.stringify(result)}`);
-            return result;
         } else if (reply.buttons) {
             return {
                 attachment: {
@@ -116,7 +114,6 @@ export default class FacebookResource {
 
     static mapToQuickReplies(quickReplies) {
         return quickReplies.map((reply) => {
-            console.log(typeof reply === 'string');
             return {
                 content_type: 'text',
                 title: typeof reply === 'string' ? reply : reply.label,

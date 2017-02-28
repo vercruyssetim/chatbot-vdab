@@ -1,6 +1,7 @@
 import WelcomeGoal from './domain/longterm/welcome';
 import MainGoal from './main.goal';
 import VindEenJobGoal from './domain/longterm/vind.een.job';
+import ByeGoal from './domain/longterm/bye';
 export default class GoalFactory {
 
     static getNewMainGoal(userAction) {
@@ -14,6 +15,8 @@ export default class GoalFactory {
             return new VindEenJobGoal({});
         } else if (userAction.intent === 'filter_results') {
             return new VindEenJobGoal({filter: true});
+        } else if (userAction.intent === 'bye') {
+            return new ByeGoal();
             // } else if (iniative === 'start_schedule') {
             //     return new StartScheduleGoal(data);
             // } else if (iniative === 'stop_schedule') {
