@@ -32,16 +32,21 @@ export default class FacebookResource {
     }
 
     handleMessageReceived(bot, message) {
-        console.log(`Receiving... ${JSON.stringify(message.text)}`);
+        let text = this.extractText(message);
+        console.log(`Receiving... ${JSON.stringify(text)}`);
         this.saveUser(message.user);
-        this.witService.handleMessageReceived(message.text, message.user, (reply) => {
+        this.witService.handleMessageReceived(text, message.user, (reply) => {
             console.log(`Sending... ${JSON.stringify(reply)}`);
             bot.reply(message, FacebookResource.mapToFacebookResponse(reply));
         });
     }
 
-    saveUser(userId){
-        if(!this.userService.getUser(userId)){
+    extractText(message) {
+        return message.quick_reply ? message.quick_reply.payload : message.text;
+    }
+
+    saveUser(userId) {
+        if (!this.userService.getUser(userId)) {
             this.facebookClient.getUser(userId).then((user) => {
                 this.userService.setUser(userId, user);
             });
@@ -60,10 +65,12 @@ export default class FacebookResource {
                 }
             };
         } else if (reply.quickreplies) {
-            return {
+            let result = {
                 text: reply.text,
                 quick_replies: FacebookResource.mapToQuickReplies(reply.quickreplies)
             };
+            console.log(`result ${JSON.stringify(result)}`);
+            return result;
         } else if (reply.buttons) {
             return {
                 attachment: {
@@ -75,7 +82,7 @@ export default class FacebookResource {
                     }
                 }
             };
-        } else if(reply.image) {
+        } else if (reply.image) {
             return {
                 attachment: {
                     type: 'image',
@@ -109,10 +116,11 @@ export default class FacebookResource {
 
     static mapToQuickReplies(quickReplies) {
         return quickReplies.map((reply) => {
+            console.log(typeof reply === 'string');
             return {
                 content_type: 'text',
-                title: reply,
-                payload: reply
+                title: typeof reply === 'string' ? reply : reply.label,
+                payload: typeof reply === 'string' ? reply : reply.value
             };
         });
     }

@@ -19,6 +19,7 @@ export default class FilterGoal {
     completeData(data, userAction) {
         if (data.filter) {
             data.filters[data.filter] = userAction.entities.filterOption;
+            data.filter = null;
             this.completed = true;
         } else {
             data.filter = userAction.entities.filter;

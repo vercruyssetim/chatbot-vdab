@@ -19,7 +19,7 @@ export default class WelcomeGoal {
         speech.addDelay(6000);
         speech.addMessage('Ik ben een chat bot van de VDAB en ik kan je helpen met het vinden van een vacature');
         speech.addMessage('Ik ben nog vrij nieuw dus de kans bestaat dat ik nog fouten maak.');
-        speech.addQuickReplies('Zullen we beginnen?', ['Natuurlijk!']);
+        speech.addQuickReplies('Zullen we beginnen?', [{label:'Natuurlijk!', value: 'ik zoek een job'}]);
         speech.send();
     }
 }

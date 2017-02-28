@@ -60,7 +60,7 @@ export default class VindEenJobGoal {
             if (this.jobs.length !== 0) {
                 speech.addElements(BackendService.mapToElements(this.jobs));
                 speech.addDelay(3000);
-                speech.addQuickReplies('Wil je deze resultaten nog filteren?', ['ja, graag!', 'nee, dank je']);
+                speech.addQuickReplies('Wil je deze resultaten nog filteren?', [{value:'ik wil filteren', label:'ja, graag!'}, 'nee, dank je']);
                 speech.send();
             } else {
                 speech.addMessage('Sorry, ik kan geen resultaten voor deze criteria vinden...');

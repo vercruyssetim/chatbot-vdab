@@ -3,7 +3,7 @@ export default class SenderService {
     constructor() {
         this.senders = {};
         this.calls = {};
-        this.delay = 300;
+        this.delay = 600;
     }
 
     addSender(sessionId, sender) {
