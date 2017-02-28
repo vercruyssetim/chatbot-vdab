@@ -11,9 +11,9 @@ export default class GoalFactory {
         if (userAction.intent === 'welcome') {
             return new WelcomeGoal();
         } else if (userAction.intent === 'start_vej') {
-            return new VindEenJobGoal();
-            // } else if (iniative === 'filter_results') {
-            //     return new FilterGoal(data);
+            return new VindEenJobGoal({});
+        } else if (userAction.intent === 'filter_results') {
+            return new VindEenJobGoal({filter: true});
             // } else if (iniative === 'start_schedule') {
             //     return new StartScheduleGoal(data);
             // } else if (iniative === 'stop_schedule') {

@@ -3,6 +3,7 @@ export default class DataContext {
     constructor(sessionId, user) {
         this.sessionId = sessionId;
         this.user = user;
+        this.filters = {};
     }
 
     complete(state, userAction) {

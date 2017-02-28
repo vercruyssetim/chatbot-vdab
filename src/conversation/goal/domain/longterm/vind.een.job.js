@@ -2,25 +2,39 @@ import HasLocationGoal from '../shortterm/has.location.goal';
 import HasKeywordGoal from '../shortterm/has.keyword.goal';
 import applicationConfig from '../../../../applicationConfig';
 import BackendService from '../../../../backend/backend.service';
+import FilterGoal from '../shortterm/has.filter.goal';
 
 export default class VindEenJobGoal {
 
-    constructor() {
+    constructor({filter}) {
         this.shorttermGoals = [
             new HasLocationGoal(),
-            new HasKeywordGoal()
+            new HasKeywordGoal(),
+            new FilterGoal(filter)
         ];
+        this.clearData = !filter;
         this.vindEenJobClient = applicationConfig.getVindEenJobClient();
         this.filterService = applicationConfig.getFilterService();
     }
 
     startData(data, userAction) {
-        let {location, keyword} = userAction.entities;
-        if (location) {
-            data.location = location;
-        }
-        if (keyword) {
-            data.keyword = keyword;
+        if(this.clearData){
+            data.location = null;
+            data.keyword = null;
+            data.filters = {};
+
+            let {location, company, profession} = userAction.entities;
+            if (location) {
+                data.location = location;
+            }
+
+            if (company) {
+                data.keyword = company;
+            }
+
+            if (profession) {
+                data.keyword = profession;
+            }
         }
     }
 
@@ -28,7 +42,6 @@ export default class VindEenJobGoal {
         this.promise = this.vindEenJobClient.lookupJobs({keyword, location, filters, limit: '5'}).then((jobs) => {
             this.jobs = jobs;
         });
-        console.log(`completeData ${JSON.stringify(this.promise)}`);
     }
 
     getShorttermGoals() {
@@ -43,7 +56,6 @@ export default class VindEenJobGoal {
     complete(speech, {keyword, location, filters}) {
         speech.addMessage(this.buildMessage({keyword, location, filters}));
         speech.send();
-        console.log(`complete ${JSON.stringify(this.promise)}`);
         this.promise.then(() => {
             if (this.jobs.length !== 0) {
                 speech.addElements(BackendService.mapToElements(this.jobs));
@@ -65,8 +77,8 @@ export default class VindEenJobGoal {
         if (location) {
             result += ` in ${location}`;
         }
-        if (filters) {
-            result += ` gefilterd op ${filters}`;
+        if (filters && Object.keys(filters).length > 0) {
+            result += ` gefilterd op ${this.filterService.toString(filters)}`;
         }
         return result;
     }
