@@ -6,13 +6,13 @@ import Vacature from './vacature';
 const URL = 'https://www.vdab.be/api/vindeenjob';
 export default class VindEenJobClient {
 
-    lookupJobs({location, keyword, filters}) {
+    lookupJobs({location, keyword, filters, limit}) {
         let {arbeidsduur, arbeidscircuit, diplomaNiveau} = VindEenJobClient.mapFilters(filters);
 
         let url = UrlBuilder.aUrl(`${URL}/vacatures`)
             .withQueryParam('ts', '1485512560843')
             .withQueryParam('offset', '0')
-            .withQueryParam('limit', '100')
+            .withQueryParam('limit', limit)
             .withQueryParam('afstand', '20')
             .withQueryParam('locatie', location)
             .withQueryParam('trefwoord', keyword)

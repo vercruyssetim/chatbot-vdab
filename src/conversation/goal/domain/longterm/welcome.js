@@ -8,10 +8,6 @@ export default class WelcomeGoal {
         return this.shorttermGoals;
     }
 
-    getName() {
-        return 'welcome';
-    }
-
     start(speech, data) {
         speech.addMessage(`Goeiedag ${data.user.getFullName()}!`);
         speech.send();

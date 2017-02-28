@@ -1,12 +1,17 @@
 import WelcomeGoal from './domain/longterm/welcome';
 import MainGoal from './main.goal';
-export default class GoalFactory{
+import VindEenJobGoal from './domain/longterm/vind.een.job';
+export default class GoalFactory {
 
-    static getNewMainGoal(userAction){
+    static getNewMainGoal(userAction) {
+        return new MainGoal(GoalFactory.getMainGoal(userAction));
+    }
+
+    static getMainGoal(userAction){
         if (userAction.intent === 'welcome') {
-            return new MainGoal(new WelcomeGoal());
-            // } else if (iniative === 'start_vej') {
-            //     return new VejGoal(data);
+            return new WelcomeGoal();
+        } else if (userAction.intent === 'start_vej') {
+            return new VindEenJobGoal();
             // } else if (iniative === 'filter_results') {
             //     return new FilterGoal(data);
             // } else if (iniative === 'start_schedule') {

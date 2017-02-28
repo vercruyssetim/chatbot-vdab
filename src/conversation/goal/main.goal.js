@@ -16,10 +16,22 @@ export default class MainGoal {
         this.trueGoal.complete(...args);
     }
 
-    isCompletedBy() {
+    completeData(...args) {
+        if (this.trueGoal.completeData) {
+            this.trueGoal.completeData(...args);
+        }
+    }
+
+    startData(...args) {
+        if (this.trueGoal.startData) {
+            this.trueGoal.startData(...args);
+        }
+    }
+
+    isCompletedBy(data) {
         for (let index = 0; index < this.trueGoal.getShorttermGoals().length; index++) {
             let shorttermGoal = this.trueGoal.getShorttermGoals()[index];
-            if (!shorttermGoal.isCompleted()) {
+            if (!shorttermGoal.isCompletedBy(data)) {
                 return false;
             }
         }

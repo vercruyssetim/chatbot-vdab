@@ -38,7 +38,7 @@ export default class GoalContext {
     }
 
     isShortTermGoalCompletedBy(userAction) {
-        return this.shorttermGoal.isCompletedBy(userAction);
+        return this.shorttermGoal.isCompletedByUserAction(userAction);
     }
 
     hasOpenQuestion() {

@@ -27,14 +27,15 @@ export default class ConversationService {
         if (userAction.hasInitiative) {
             let longtermGoal = GoalFactory.getNewMainGoal(userAction);
             goal.startMainGoal(longtermGoal);
+            data.start(longtermGoal, userAction);
             speech.start(longtermGoal, data);
         } else {
             if (!goal.hasOpenQuestion()) {
                 speech.error();
             } else {
                 if (goal.isShortTermGoalCompletedBy(userAction)) {
-                    data.complete(goal.getShortTermGoal());
-                    speech.complete(goal.getShortTermGoal());
+                    data.complete(goal.getShortTermGoal(), userAction);
+                    speech.complete(goal.getShortTermGoal(), data);
                     goal.completeShortTermGoal();
                 } else {
                     speech.failed(goal.getShortTermGoal());
@@ -46,12 +47,11 @@ export default class ConversationService {
     tryToCompleteMainGoal({data, goal, speech}) {
         if (goal.hasMainGoal() && !goal.hasOpenQuestion()) {
             if (goal.isMainGoalCompletedBy(data)) {
-                console.log(JSON.stringify(data));
                 data.complete(goal.getMainGoal(), data);
                 speech.complete(goal.getMainGoal(), data);
                 goal.completeMainGoal();
             } else {
-                goal.nextShortTermGoal();
+                goal.nextShortTermGoal(data);
                 speech.start(goal.getShortTermGoal(), data);
             }
         }

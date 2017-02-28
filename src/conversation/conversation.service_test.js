@@ -99,5 +99,19 @@ describe('ConversationService -> ', () => {
             expect(speech.complete).to.have.been.calledWith('mainGoal', data);
             expect(goal.completeMainGoal).to.have.been.calledOnce;
         });
+
+        it('Should start subgoal when main goal can not be completed', () => {
+            sinon.stub(goal, 'hasMainGoal').returns(true);
+            sinon.stub(goal, 'hasOpenQuestion').returns(false);
+            sinon.stub(goal, 'isMainGoalCompletedBy').returns(false);
+            sinon.stub(goal, 'getShortTermGoal').returns('shortTermGoal');
+            sinon.stub(goal, 'nextShortTermGoal');
+            sinon.stub(speech, 'start');
+
+            conversationService.tryToCompleteMainGoal(context);
+
+            expect(goal.nextShortTermGoal).to.have.been.calledOnce;
+            expect(speech.start).to.have.been.calledWith('shortTermGoal', data);
+        });
     });
 });

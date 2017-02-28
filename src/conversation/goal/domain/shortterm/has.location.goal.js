@@ -1,14 +1,25 @@
 export default class HasLocationGoal {
 
-    isCompleted(contextData) {
-        return contextData.hasLocation !== null || contextData.hasLocation !== undefined;
+    isCompletedByUserAction(userAction) {
+        return userAction.intent === 'telling_location' && userAction.entities.location;
     }
 
-    isCompletedBy(userAction){
-        return userAction.type === 'telling_location' && userAction;
+    isCompletedBy(data) {
+        return data.location !== null && data.location !== undefined;
     }
 
-    complete(){
-
+    completeData(data, userAction) {
+        data.location = userAction.entities.location;
     }
+
+    start(speech) {
+        speech.addMessage('Waar in Vlaanderen zou je willen werken?');
+        speech.send();
+    }
+
+    complete(speech, data){
+        speech.addMessage(`Fijn dat je in ${data.location} wil werken`);
+        speech.send();
+    }
+
 }
