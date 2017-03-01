@@ -1,9 +1,12 @@
+import _ from 'lodash';
+
 export default class DataContext {
 
     constructor(sessionId, user) {
         this.sessionId = sessionId;
         this.user = user;
         this.filters = {};
+        this.jobIds = [];
     }
 
     complete(state, userAction) {
@@ -18,11 +21,10 @@ export default class DataContext {
         }
     }
 
-    hasLocation() {
-        return this.location !== null && this.location !== undefined;
-    }
-
-    setLocation(location) {
-        this.location = location;
+    filterJobs(jobs) {
+        return _(jobs)
+            .filter((job) => this.jobIds.indexOf(job.id) === -1)
+            .take(6)
+            .value();
     }
 }

@@ -7,12 +7,9 @@ export default class SchedulingService {
     }
 
     schedule(sessionId) {
+        this.stop(sessionId);
         return Rx.Observable.create((observer) => {
-            this.stop(sessionId);
-            this.schedules[sessionId] = schedule.scheduleJob(new schedule.RecurrenceRule(), () => {
-                console.log('triggered');
-                observer.next();
-            });
+            this.schedules[sessionId] = schedule.scheduleJob({hour: 12, minute: 15, dayOfWeek: 0}, () => observer.next());
         });
     }
 

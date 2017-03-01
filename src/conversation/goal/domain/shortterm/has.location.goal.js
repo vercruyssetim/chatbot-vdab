@@ -21,5 +21,4 @@ export default class HasLocationGoal {
         speech.addMessage(`Fijn dat je in ${data.location} wil werken`);
         speech.send();
     }
-
 }

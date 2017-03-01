@@ -4,6 +4,15 @@ export default class StopSchedule {
 
     constructor() {
         this.schedulingService = applicationConfig.getSchedulingService();
+        this.shorttermGoals = [];
+    }
+
+    start() {
+
+    }
+
+    getShorttermGoals() {
+        return this.shorttermGoals;
     }
 
     complete(speech, {sessionId}) {
