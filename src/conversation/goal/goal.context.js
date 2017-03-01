@@ -7,6 +7,7 @@ export default class GoalContext {
 
     startMainGoal(mainGoal) {
         this.mainGoal = mainGoal;
+        this.shorttermGoal = null;
     }
 
     completeMainGoal(){

@@ -3,7 +3,8 @@ export default class SenderService {
     constructor() {
         this.senders = {};
         this.calls = {};
-        this.delay = 600;
+        this.delay = 300;
+        this.intervals = {};
     }
 
     addSender(sessionId, sender) {
@@ -48,16 +49,19 @@ export default class SenderService {
     }
 
     send(sessionId) {
-        let interval = setInterval(() => {
-            if (this.calls[sessionId].length === 0) {
-                clearInterval(interval);
-            } else {
-                let call = this.calls[sessionId].splice(0, 1)[0];
-                if (!call.delay) {
-                    this.senders[sessionId](call);
+        if(!this.intervals[sessionId]) {
+            this.intervals[sessionId] = setInterval(() => {
+                if (this.calls[sessionId].length === 0) {
+                    clearInterval(this.intervals[sessionId]);
+                    this.intervals[sessionId] = null;
+                } else {
+                    let call = this.calls[sessionId].splice(0, 1)[0];
+                    if (!call.delay) {
+                        this.senders[sessionId](call);
+                    }
                 }
-            }
-        }, this.delay);
+            }, this.delay);
+        }
 
     }
 
