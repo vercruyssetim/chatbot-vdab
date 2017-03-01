@@ -10,8 +10,28 @@ export default class AnswerKeywordState {
     }
 
     saveKeyword(reply, {sessionId, keyword, location}) {
-        reply.addMessage(`Ik zoek jobs voor ${keyword} in ${location}`);
+        if(location){
+            reply.addMessage(`Ik zoek jobs voor ${keyword} in ${location}`);
+
+        } else {
+            reply.addMessage(`Ik zoek jobs voor ${keyword}`);
+        }
         reply.send();
+        this.lookupJobs(reply, {sessionId, keyword, location});
+    }
+
+    unsure(reply, {sessionId, location}) {
+        if(location){
+            reply.addMessage(`Ik zoek jobs in ${location}`);
+            reply.send();
+            this.lookupJobs(reply, {sessionId, location});
+        } else {
+            reply.addMessage('Sorry, zonder informatie kan ik geen job voor je vinden');
+            reply.send();
+        }
+    }
+
+    lookupJobs(reply, {sessionId, location, keyword}){
         this.backendService.lookupJobs({sessionId, keyword, location}).then((jobs) => {
             if(jobs.length !== 0){
                 reply.addElements(jobs);
