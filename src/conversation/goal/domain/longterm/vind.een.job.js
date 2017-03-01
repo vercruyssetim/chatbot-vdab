@@ -48,9 +48,11 @@ export default class VindEenJobGoal {
         return this.shorttermGoals;
     }
 
-    start(speech) {
-        speech.addMessage('Laten we een job voor je zoeken');
-        speech.send();
+    start(speech, data) {
+        if(!data.location && !data.keyword) {
+            speech.addMessage('Laten we een job voor je zoeken');
+            speech.send();
+        }
     }
 
     complete(speech, {keyword, location, filters}) {
