@@ -18,7 +18,7 @@ export default class VindEenJobGoal {
     }
 
     startData(data, userAction) {
-        if(this.clearData){
+        if (this.clearData) {
             data.location = null;
             data.keyword = null;
             data.filters = {};
@@ -54,13 +54,26 @@ export default class VindEenJobGoal {
     }
 
     complete(speech, {keyword, location, filters}) {
+        if (!keyword && !location) {
+            speech.addMessage('je moet wel weten wat je wil');
+            speech.send();
+            return;
+        }
+
         speech.addMessage(this.buildMessage({keyword, location, filters}));
         speech.send();
         this.promise.then(() => {
             if (this.jobs.length !== 0) {
                 speech.addElements(BackendService.mapToElements(this.jobs));
                 speech.addDelay(3000);
-                speech.addQuickReplies('Wil je deze resultaten nog filteren?', [{value:'ik wil filteren', label:'ja, graag!'}, {label:'nee, dank je', value: 'bye'}]);
+                speech.addQuickReplies('Wil je deze resultaten nog filteren?',
+                    [{
+                        value: 'ik wil filteren',
+                        label: 'ja, graag!'
+                    }, {
+                        value: 'bye',
+                        label: 'nee, dank je'
+                    }]);
                 speech.send();
             } else {
                 speech.addMessage('Sorry, ik kan geen resultaten voor deze criteria vinden...');

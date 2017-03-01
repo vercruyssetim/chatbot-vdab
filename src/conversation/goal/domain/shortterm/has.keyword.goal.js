@@ -1,11 +1,17 @@
 export default class HasKeywordGoal {
 
+    constructor(){
+        this.isCompleted = false;
+    }
+
     isCompletedByUserAction(userAction) {
-        return userAction.intent === 'telling_profession' || userAction.intent === 'telling_company';
+        return userAction.intent === 'telling_profession' || userAction.intent === 'telling_company' || userAction.intent === 'unsure';
     }
 
     completeData(data, userAction) {
-        if (userAction.entities.company) {
+        if(userAction.intent === 'unsure') {
+            this.isCompleted = true;
+        } else if (userAction.entities.company) {
             data.keyword = userAction.entities.company;
         } else if (userAction.entities.profession) {
             data.keyword = userAction.entities.profession;
@@ -15,7 +21,7 @@ export default class HasKeywordGoal {
     }
 
     isCompletedBy(data) {
-        return data.keyword !== null && data.keyword !== undefined;
+        return this.isCompleted || (data.keyword !== null && data.keyword !== undefined);
     }
 
 
