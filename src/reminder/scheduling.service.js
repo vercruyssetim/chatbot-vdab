@@ -1,17 +1,23 @@
 import schedule from 'node-schedule';
+import Rx from 'rxjs';
 
-export default class SchedulingService{
-    constructor(){
+export default class SchedulingService {
+    constructor() {
         this.schedules = {};
     }
 
-    schedule(sessionId, callBack){
-        this.stop(sessionId);
-        this.schedules[sessionId] = schedule.scheduleJob({hour: 12, minute: 15, dayOfWeek: 0}, callBack);
+    schedule(sessionId) {
+        return Rx.Observable.create((observer) => {
+            this.stop(sessionId);
+            this.schedules[sessionId] = schedule.scheduleJob(new schedule.RecurrenceRule(), () => {
+                console.log('triggered');
+                observer.next();
+            });
+        });
     }
 
-    stop(sessionId){
-        if(this.schedules[sessionId]){
+    stop(sessionId) {
+        if (this.schedules[sessionId]) {
             this.schedules[sessionId].cancel();
         }
     }

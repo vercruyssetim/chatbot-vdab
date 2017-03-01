@@ -2,13 +2,15 @@ import WelcomeGoal from './domain/longterm/welcome';
 import MainGoal from './main.goal';
 import VindEenJobGoal from './domain/longterm/vind.een.job';
 import ByeGoal from './domain/longterm/bye';
+import StartSchedule from './domain/longterm/start.schedule';
+import StopSchedule from './domain/longterm/stop.schedule';
 export default class GoalFactory {
 
     static getNewMainGoal(userAction) {
         return new MainGoal(GoalFactory.getMainGoal(userAction));
     }
 
-    static getMainGoal(userAction){
+    static getMainGoal(userAction) {
         if (userAction.intent === 'welcome') {
             return new WelcomeGoal();
         } else if (userAction.intent === 'start_vej') {
@@ -17,10 +19,10 @@ export default class GoalFactory {
             return new VindEenJobGoal({filter: true});
         } else if (userAction.intent === 'bye') {
             return new ByeGoal();
-            // } else if (iniative === 'start_schedule') {
-            //     return new StartScheduleGoal(data);
-            // } else if (iniative === 'stop_schedule') {
-            //     return new StopScheduleGoal(data);
+        } else if (userAction.intent === 'start_schedule') {
+            return new StartSchedule();
+        } else if (userAction.intent === 'stop_schedule') {
+            return new StopSchedule();
         } else {
             throw {name: 'RuntimeException', message: `No goal found for ${userAction.type}`};
         }
