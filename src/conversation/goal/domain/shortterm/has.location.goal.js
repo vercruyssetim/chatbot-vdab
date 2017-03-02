@@ -5,7 +5,7 @@ export default class HasLocationGoal {
     }
 
     isCompletedByUserAction(userAction) {
-        return (userAction.intent === 'telling_location' && userAction.entities.location) || userAction.intent === 'unsure';
+        return userAction.entities.location || userAction.intent === 'unsure';
     }
 
     isCompletedBy(data) {
