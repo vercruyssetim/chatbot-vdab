@@ -5,7 +5,7 @@ export default class HasKeywordGoal {
     }
 
     isCompletedByUserAction(userAction) {
-        return userAction.intent === 'telling_profession' || userAction.intent === 'telling_company' || userAction.intent === 'unsure';
+        return userAction.entities.company || userAction.entities.profession || userAction.intent === 'unsure';
     }
 
     completeData(data, userAction) {
