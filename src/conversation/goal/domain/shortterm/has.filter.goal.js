@@ -40,5 +40,10 @@ export default class FilterGoal {
 
     }
 
+    failed(speech){
+        speech.addMessage('Gelieve één van de voorgestelde filters te kiezen');
+        speech.send();
+    }
+
 
 }

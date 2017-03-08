@@ -33,4 +33,9 @@ export default class HasLocationGoal {
         }
         speech.send();
     }
+
+    failed(speech){
+        speech.addMessage('Sorry, welke locatie bedoelde je precies?');
+        speech.send();
+    }
 }

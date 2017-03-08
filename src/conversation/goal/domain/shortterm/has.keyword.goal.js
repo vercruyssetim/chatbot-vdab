@@ -33,4 +33,10 @@ export default class HasKeywordGoal {
     complete() {
 
     }
+
+    failed(speech){
+        speech.addMessage('Sorry, Ik begrijp niet goed wat je bedoelt.');
+        speech.addMessage('Bij wie of als wat wil je werken?');
+        speech.send();
+    }
 }
