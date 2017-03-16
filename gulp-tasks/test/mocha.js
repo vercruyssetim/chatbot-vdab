@@ -11,6 +11,7 @@ function handleError(err){
 gulp.task(testunit, () => {
     return gulp.src('src/**/*_test.js', {read: false})
         .pipe(mocha({
+            compilers: 'js:babel-core/register',
             useColors: false,
             reporter: 'mocha-jenkins-reporter',
             reporterOptions: {

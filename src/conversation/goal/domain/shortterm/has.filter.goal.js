@@ -2,33 +2,36 @@ import applicationConfig from '../../../../applicationConfig';
 
 export default class FilterGoal {
 
-    constructor(filter) {
-        this.required = filter;
-        this.completed = false;
+    constructor(data, filter) {
         this.filterService = applicationConfig.getFilterService();
+        data.filterGoal = {
+            required: filter,
+            completed: false
+        };
+        this.name = 'hasFilter';
     }
 
     isCompletedByUserAction(userAction) {
         return userAction.entities.filter || userAction.entities.filterOption;
     }
 
-    isCompletedBy() {
-        return !this.required || this.completed;
+    isCompletedBy({filterGoal}) {
+        return !filterGoal.required || filterGoal.completed;
     }
 
-    completeData(data, userAction) {
-        if (data.filter) {
-            data.filters[data.filter] = userAction.entities.filterOption;
-            data.filter = null;
-            this.completed = true;
+    completeData({filterGoal, filters}, userAction) {
+        if (filterGoal.value) {
+            filters[filterGoal.value] = userAction.entities.filterOption;
+            filterGoal.value = null;
+            filterGoal.completed = true;
         } else {
-            data.filter = userAction.entities.filter;
+            filterGoal.value = userAction.entities.filter;
         }
     }
 
-    start(speech, data) {
-        if (data.filter) {
-            speech.addButtons(`Kies een optie voor ${this.filterService.getLabel(data.filter)}`, this.filterService.getFilterOptions(data.filter));
+    start(speech, {filterGoal}) {
+        if (filterGoal.value) {
+            speech.addButtons(`Kies een optie voor ${this.filterService.getLabel(filterGoal.value)}`, this.filterService.getFilterOptions(filterGoal.value));
             speech.send();
         } else {
             speech.addButtons('Waarop wil je filteren?', this.filterService.getFilters());

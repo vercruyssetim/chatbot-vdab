@@ -5,6 +5,7 @@ export default class StopSchedule {
     constructor() {
         this.schedulingService = applicationConfig.getSchedulingService();
         this.shorttermGoals = [];
+        this.name = 'stopSchedule';
     }
 
     start() {

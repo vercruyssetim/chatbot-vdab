@@ -6,11 +6,13 @@ export default class User {
 
     withFirstName(firstName) {
         this.firstName = firstName;
+        this.fullName = this.getFullName();
         return this;
     }
 
     withLastName(lastName) {
         this.lastName = lastName;
+        this.fullName = this.getFullName();
         return this;
     }
 
@@ -24,7 +26,7 @@ export default class User {
         return this;
     }
 
-    getFullName(){
+    getFullName() {
         return `${this.firstName} ${this.lastName}`;
     }
 }

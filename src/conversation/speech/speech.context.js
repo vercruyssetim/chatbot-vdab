@@ -13,11 +13,11 @@ export default class SpeechContext {
     }
 
     start(state, data) {
-        state.start(this.speech, data);
+        state.start(this.speech, data.data);
     }
 
     complete(state, data) {
-        state.complete(this.speech, data);
+        state.complete(this.speech, data.data);
     }
 
     error() {

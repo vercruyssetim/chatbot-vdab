@@ -4,8 +4,8 @@ export default class UserService {
         this.users = {};
     }
 
-    setUser(userId, users) {
-        this.users[userId] = users;
+    setUser(userId, user) {
+        this.users[userId] = user;
     }
 
     getUser(userId){

@@ -2,6 +2,7 @@ export default class WelcomeGoal {
 
     constructor() {
         this.shorttermGoals = [];
+        this.name = 'Welcome';
     }
 
     getShorttermGoals() {
@@ -9,7 +10,7 @@ export default class WelcomeGoal {
     }
 
     start(speech, data) {
-        speech.addMessage(`Goeiedag ${data.user.getFullName()}!`);
+        speech.addMessage(`Goeiedag ${data.user.fullName}!`);
         speech.send();
     }
 

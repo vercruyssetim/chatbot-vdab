@@ -19,7 +19,7 @@ export default class GoalContext {
     }
 
     isMainGoalCompletedBy(data){
-        return this.mainGoal.isCompletedBy(data);
+        return this.mainGoal.isCompletedBy(data.data);
     }
 
     hasMainGoal() {
@@ -27,7 +27,7 @@ export default class GoalContext {
     }
 
     nextShortTermGoal(data){
-        this.shorttermGoal = this.mainGoal.getNextShorttermGoal(data);
+        this.shorttermGoal = this.mainGoal.getNextShorttermGoal(data.data);
     }
 
     completeShortTermGoal(){

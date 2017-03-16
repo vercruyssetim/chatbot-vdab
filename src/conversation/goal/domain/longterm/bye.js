@@ -2,6 +2,7 @@ export default class ByeGoal {
 
     constructor() {
         this.shorttermGoals = [];
+        this.name = 'bye';
     }
 
     getShorttermGoals() {

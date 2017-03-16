@@ -6,67 +6,68 @@ import FilterGoal from '../shortterm/has.filter.goal';
 
 export default class VindEenJobGoal {
 
-    constructor({filter}) {
+    constructor(data, {filter}) {
         this.shorttermGoals = [
-            new HasLocationGoal(),
-            new HasKeywordGoal(),
-            new FilterGoal(filter)
+            new HasLocationGoal(data),
+            new HasKeywordGoal(data),
+            new FilterGoal(data, filter)
         ];
-        this.clearData = !filter;
+        data.vindEenJob = {
+            clearData: !filter
+        };
         this.vindEenJobClient = applicationConfig.getVindEenJobClient();
         this.filterService = applicationConfig.getFilterService();
+        this.name = 'VindEenJob';
     }
 
     startData(data, userAction) {
         if (this.clearData) {
-            data.location = null;
-            data.keyword = null;
+            data.locationGoal = {};
+            data.keywordGoal = {};
             data.filters = {};
 
             let {location, company, profession} = userAction.entities;
             if (location) {
-                data.location = location;
+                data.locationGoal.value = location;
             }
 
             if (company) {
-                data.keyword = company;
+                data.keywordGoal.value = company;
             }
 
             if (profession) {
-                data.keyword = profession;
+                data.keywordGoal.value = profession;
             }
         }
     }
 
-    completeData({location, keyword, filters}) {
-        this.promise = this.vindEenJobClient.lookupJobs({keyword, location, filters, limit: '5'}).then((jobs) => {
-            this.jobs = jobs;
-        });
+    completeData({locationGoal, keywordGoal, filters}) {
+        this.promise = this.vindEenJobClient.lookupJobs({keyword: keywordGoal.value, location: locationGoal.value, filters, limit: '5'});
     }
 
     getShorttermGoals() {
         return this.shorttermGoals;
     }
 
-    start(speech, data) {
-        if(!data.location && !data.keyword) {
+    start(speech, {locationGoal, keywordGoal}) {
+        if ((!locationGoal || !locationGoal.value) && (!keywordGoal || !keywordGoal.value)) {
             speech.addMessage('Laten we een job voor je zoeken');
             speech.send();
         }
     }
 
-    complete(speech, {keyword, location, filters}) {
-        if (!keyword && !location) {
+    complete(speech, {keywordGoal, locationGoal, filters}) {
+        if (!keywordGoal.value && !locationGoal.value) {
             speech.addMessage('je moet wel weten wat je wil');
             speech.send();
             return;
         }
 
-        speech.addMessage(this.buildMessage({keyword, location, filters}));
+        speech.addMessage(this.buildMessage({keyword: keywordGoal.value, location: locationGoal.value, filters}));
         speech.send();
-        this.promise.then(() => {
-            if (this.jobs.length !== 0) {
-                speech.addElements(BackendService.mapToElements(this.jobs));
+        this.promise.then((jobs) => {
+            if (jobs.length !== 0) {
+                speech.addElements(BackendService.mapToElements(jobs));
                 speech.addDelay(3000);
                 speech.addQuickReplies('Wil je deze resultaten nog filteren?',
                     [{

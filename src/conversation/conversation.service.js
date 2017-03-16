@@ -1,21 +1,25 @@
-import GoalContext from './goal/goal.context';
 import GoalFactory from './goal/goal.factory';
-import SpeechContext from './speech/speech.context';
-import DataContext from './data/data.context';
+import ContextFactory from './context.factory';
 export default class ConversationService {
 
-    constructor(senderService, userService) {
-        this.contexts = {};
+    constructor(senderService, userService, contextRepository) {
+        this.contextRepository = contextRepository;
         this.senderService = senderService;
         this.userService = userService;
+        this.contexts = {};
     }
 
 
     getResponse(userAction, sessionId) {
-        let context = this.getContext(sessionId);
-
-        this.handleUserAction(userAction, context);
-        this.tryToCompleteMainGoal(context);
+        this.getContext(sessionId)
+            .then((context) => {
+                this.handleUserAction(userAction, context);
+                this.tryToCompleteMainGoal(context);
+                this.contextRepository.update(ContextFactory.toData(context));
+            })
+            .catch((error) => {
+                console.log(error);
+            });
 
         // console.log(`data ${JSON.stringify(data)}`);
         // console.log(`entities ${JSON.stringify(entities)}`);
@@ -25,7 +29,7 @@ export default class ConversationService {
 
     handleUserAction(userAction, {data, goal, speech}) {
         if (userAction.hasInitiative) {
-            let longtermGoal = GoalFactory.getNewMainGoal(userAction);
+            let longtermGoal = GoalFactory.getNewMainGoal(userAction, data);
             goal.startMainGoal(longtermGoal);
             data.start(longtermGoal, userAction);
             speech.start(longtermGoal, data);
@@ -57,16 +61,16 @@ export default class ConversationService {
         }
     }
 
-
     getContext(sessionId) {
         if (!this.contexts[sessionId]) {
-            this.contexts[sessionId] = {
-                data: new DataContext(sessionId, this.userService.getUser(sessionId)),
-                goal: new GoalContext(),
-                speech: new SpeechContext(sessionId, this.senderService)
-            };
+            this.contexts[sessionId] = this.contextRepository.findOne({_id: sessionId})
+                .then((context) => {
+                    if (!context) {
+                        return Promise.resolve(ContextFactory.createNewContext(sessionId, this.userService.getUser(sessionId), this.senderService));
+                    }
+                    return Promise.resolve(ContextFactory.fromData(context, this.senderService));
+                });
         }
         return this.contexts[sessionId];
     }
-
 }

@@ -10,6 +10,7 @@ import ConversationService from './conversation/conversation.service';
 import SchedulingService from './reminder/scheduling.service';
 import FacebookClient from './resource/facebook.client';
 import UserService from './storage/user.service';
+import MongoRepository from './db/mongo.repository';
 
 class ApplicationConfig {
 
@@ -27,8 +28,8 @@ class ApplicationConfig {
         return this.facebookServer;
     }
 
-    getFacebookClient(){
-        if(!this.facebookClient){
+    getFacebookClient() {
+        if (!this.facebookClient) {
             this.facebookClient = new FacebookClient(
                 this.getPropertiesService().get('facebook.access.token')
             );
@@ -56,7 +57,7 @@ class ApplicationConfig {
     }
 
     getUserService() {
-        if(!this.userService) {
+        if (!this.userService) {
             this.userService = new UserService();
         }
         return this.userService;
@@ -71,11 +72,18 @@ class ApplicationConfig {
         return this.backendService;
     }
 
-    getSchedulingService(){
-        if(!this.schedulingService){
+    getSchedulingService() {
+        if (!this.schedulingService) {
             this.schedulingService = new SchedulingService();
         }
         return this.schedulingService;
+    }
+
+    getContextRepository() {
+        if (!this.contextRepository) {
+            this.contextRepository = new MongoRepository('context', this.getPropertiesService().get('mongo.url'));
+        }
+        return this.contextRepository;
     }
 
     getVindEenJobClient() {
@@ -101,7 +109,7 @@ class ApplicationConfig {
 
     getConversationService() {
         if (!this.conversationService) {
-            this.conversationService = new ConversationService(this.getSenderService(), this.getUserService());
+            this.conversationService = new ConversationService(this.getSenderService(), this.getUserService(), this.getContextRepository());
         }
         return this.conversationService;
     }

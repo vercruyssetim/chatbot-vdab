@@ -1,30 +1,23 @@
-import _ from 'lodash';
-
 export default class DataContext {
 
     constructor(sessionId, user) {
-        this.sessionId = sessionId;
-        this.user = user;
-        this.filters = {};
-        this.jobIds = [];
+        this.data = {
+            sessionId,
+            user,
+            filters: {},
+            jobIds: []
+        };
     }
 
     complete(state, userAction) {
         if (state.completeData) {
-            state.completeData(this, userAction);
+            state.completeData(this.data, userAction);
         }
     }
 
     start(state, userAction) {
         if (state.startData) {
-            state.startData(this, userAction);
+            state.startData(this.data, userAction);
         }
-    }
-
-    filterJobs(jobs) {
-        return _(jobs)
-            .filter((job) => this.jobIds.indexOf(job.id) === -1)
-            .take(6)
-            .value();
     }
 }

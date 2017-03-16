@@ -3,16 +3,18 @@ import HasLocationGoal from '../shortterm/has.location.goal';
 import HasKeywordGoal from '../shortterm/has.keyword.goal';
 import BackendService from '../../../../backend/backend.service';
 import Rx from 'rxjs';
+import _ from 'lodash';
 
 export default class StartSchedule {
 
-    constructor() {
+    constructor(data) {
         this.shorttermGoals = [
-            new HasLocationGoal(),
-            new HasKeywordGoal()
+            new HasLocationGoal(data),
+            new HasKeywordGoal(data)
         ];
         this.vindEenJobClient = applicationConfig.getVindEenJobClient();
         this.schedulingService = applicationConfig.getSchedulingService();
+        this.name =  'startSchedule';
     }
 
     getShorttermGoals() {
@@ -31,7 +33,7 @@ export default class StartSchedule {
                 filters: data.filters,
                 limit: '30'
             }))
-            .map((jobs) => data.filterJobs(jobs))
+            .map((jobs) => this.filterJobs(jobs, data))
             .share();
 
         this.observable
@@ -51,5 +53,12 @@ export default class StartSchedule {
                 speech.send();
             }
         });
+    }
+
+    filterJobs(jobs, data) {
+        return _(jobs)
+            .filter((job) => data.jobIds.indexOf(job.id) === -1)
+            .take(6)
+            .value();
     }
 }

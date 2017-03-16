@@ -1,22 +1,25 @@
 export default class HasLocationGoal {
 
-    constructor() {
-        this.isCompleted = false;
+    constructor(data) {
+        data.locationGoal = {
+            completed: false
+        };
+        this.name = 'hasLocation';
     }
 
     isCompletedByUserAction(userAction) {
         return userAction.entities.location || userAction.intent === 'unsure';
     }
 
-    isCompletedBy(data) {
-        return this.isCompleted || (data.location !== null && data.location !== undefined);
+    isCompletedBy({locationGoal}) {
+        return locationGoal.completed || (locationGoal.value !== null && locationGoal.value !== undefined);
     }
 
-    completeData(data, userAction) {
+    completeData({locationGoal}, userAction) {
         if (userAction.intent === 'unsure') {
-            this.isCompleted = true;
+            locationGoal.completed = true;
         } else {
-            data.location = userAction.entities.location;
+            locationGoal.value = userAction.entities.location;
         }
     }
 
@@ -25,9 +28,9 @@ export default class HasLocationGoal {
         speech.send();
     }
 
-    complete(speech, data) {
-        if (data.location) {
-            speech.addMessage(`Fijn dat je in ${data.location} wil werken`);
+    complete(speech, {locationGoal}) {
+        if (locationGoal.value) {
+            speech.addMessage(`Fijn dat je in ${locationGoal.value} wil werken`);
         } else {
             speech.addMessage('We zullen overal in vlaanderen voor je zoeken');
         }

@@ -17,7 +17,7 @@ describe('Speech context -> ', () => {
             failed: () => {}
         };
         data = {
-
+            data: {}
         };
     });
 
@@ -27,7 +27,7 @@ describe('Speech context -> ', () => {
 
             speechContext.start(state, data);
 
-            expect(state.start).to.have.been.calledWith(speechContext.speech, data);
+            expect(state.start).to.have.been.calledWith(speechContext.speech, data.data);
         });
     });
 
@@ -35,9 +35,9 @@ describe('Speech context -> ', () => {
         it('Will call complete method on state', () => {
             sinon.stub(state, 'complete');
 
-            speechContext.complete(state);
+            speechContext.complete(state, data);
 
-            expect(state.complete).to.have.been.calledWith(speechContext.speech);
+            expect(state.complete).to.have.been.calledWith(speechContext.speech, data.data);
         });
     });
 
