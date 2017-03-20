@@ -7,7 +7,7 @@ describe('mongo -> ', () => {
 
     let userRepository;
     beforeEach(() => {
-        userRepository = new MongoRepository('user_test', 'mongodb://0.0.0.0:27017/chatbotDb');
+        userRepository = new MongoRepository('user_test', 'mongodb://mongodb:27017/chatbotDb');
         userRepository.drop();
     });
 

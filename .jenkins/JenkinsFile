@@ -102,7 +102,7 @@ def npm(task) {
 def startNpmContainer(npmName) {
     def currentDir = pwd()
     killContainer(npmName)
-    sh "docker run -t -d --name ${npmName} -v $currentDir/test-reports:/usr/src/app/test-reports vercruyssetim/chat-vdab bash"
+    sh "docker run -t -d --name ${npmName} --link chat-vdab-mongo:mongodb -v $currentDir/test-reports:/usr/src/app/test-reports vercruyssetim/chat-vdab bash"
 }
 
 def execNpmContainer(npmName, task) {
