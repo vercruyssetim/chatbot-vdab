@@ -1,0 +1,19 @@
+version: '2'
+
+services:
+
+  # Local Percona database server to mimic a cloud database
+  mongodb:
+    image: mongo
+    container_name: chat-vdab-mongodb
+    ports:
+      # This opens up port 3306 on the docker machine IP, if you are running multiple DBs you might need to change this
+      - 27017:27017
+
+  nodejs:
+    image: vercruyssetim/chat-vdab
+    container_name: chat-vdab
+    volumes:
+      - ./application.properties:/usr/src/app/application.properties
+    ports:
+     - 3000:3000
