@@ -106,7 +106,9 @@ def startNpmContainer(npmName) {
 }
 
 def execNpmContainer(npmName, task) {
-    sh "docker exec ${npmName} npm run ${task} --no-color"
+    ansiColor('xterm') {
+        sh "docker exec ${npmName} npm run ${task} --no-color"
+    }
 }
 
 /********** Docker functions **********/
