@@ -18,6 +18,10 @@ describe('mongo -> ', () => {
                 .then((result) => {
                     expect(result).to.deep.equal([{_id: 1, test: 'test'}]);
                     done();
+                })
+                .catch((error) => {
+                    console.log(error);
+                    done();
                 });
         });
     });
@@ -29,6 +33,10 @@ describe('mongo -> ', () => {
             userRepository.findOne({id: 2})
                 .then((result) => {
                     expect(result).to.have.properties({id: 2, test: 'match'});
+                    done();
+                })
+                .catch((error) => {
+                    console.log(error);
                     done();
                 });
         });
