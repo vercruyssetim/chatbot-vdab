@@ -19,7 +19,7 @@ try {
     stage("build") {
         node("linux && docker") {
             buildNpmImage()
-            npm("test --no-color")
+            npm("test")
             archiveAllTestResults()
         }
     }

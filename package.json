@@ -6,7 +6,7 @@
   "author": "Tim Vercruysse <tim.vercruysse@vdab.be>",
   "scripts": {
     "watch": "nodemon server.js",
-    "test": "gulp test",
+    "test": "gulp test --no-color",
     "dev": "gulp",
     "start": "gulp"
   },
