@@ -60,8 +60,7 @@
     "babel/object-curly-spacing": [
       2,
       "never"
-    ],
-    "babel/no-await-in-loop": 2
+    ]
   },
   "extends": "eslint:recommended"
 }

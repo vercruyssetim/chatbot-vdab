@@ -6,7 +6,7 @@
   "author": "Tim Vercruysse <tim.vercruysse@vdab.be>",
   "scripts": {
     "watch": "nodemon server.js",
-    "test": "gulp test --no-color",
+    "test": "gulp test",
     "dev": "gulp",
     "start": "gulp"
   },
@@ -42,7 +42,7 @@
     "gulp": "3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-eslint": "^3.0.1",
-    "gulp-mocha": "^4.1.0",
+    "gulp-mocha": "github:vercruyssetim/gulp-mocha",
     "gulp-nodemon": "^2.2.1",
     "mocha": "^3.2.0",
     "mocha-jenkins-reporter": "^0.3.7",
