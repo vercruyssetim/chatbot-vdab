@@ -13,6 +13,8 @@ services:
   nodejs:
     image: vercruyssetim/chat-vdab
     container_name: chat-vdab
+    links:
+      - mongodb
     volumes:
       - ./application.properties:/usr/src/app/application.properties
     ports:
