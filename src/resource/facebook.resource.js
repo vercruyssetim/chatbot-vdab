@@ -16,8 +16,8 @@ export default class FacebookResource {
             verify_token: verifyToken,
             access_token: accessToken,
             json_file_store: './storage',
-            port: this.hostName,
-            hostname: this.portName
+            port: this.portName,
+            hostname: this.hostName
         });
         let bot = controller.spawn({});
 
