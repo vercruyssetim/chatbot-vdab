@@ -6,9 +6,10 @@ chai.use(chaiProperties);
 describe('mongo -> ', () => {
 
     let userRepository;
-    beforeEach(() => {
+    beforeEach((done) => {
         userRepository = new MongoRepository('user_test', 'mongodb://mongodb:27017/chatbotDb');
-        userRepository.drop();
+        userRepository.drop()
+            .then(() => done());
     });
 
     describe('insert', () => {
@@ -18,10 +19,6 @@ describe('mongo -> ', () => {
                 .then((result) => {
                     console.log(JSON.stringify(result));
                     expect(result).to.deep.equal([{_id: 1, test: 'test'}]);
-                    done();
-                })
-                .catch((error) => {
-                    console.log(error);
                     done();
                 });
         });
@@ -35,10 +32,6 @@ describe('mongo -> ', () => {
                 .then((result) => {
                     console.log(JSON.stringify(result));
                     expect(result).to.have.properties({id: 2, test: 'match'});
-                    done();
-                })
-                .catch((error) => {
-                    console.log(error);
                     done();
                 });
         });
