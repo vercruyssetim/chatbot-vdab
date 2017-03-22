@@ -16,7 +16,7 @@ services:
     links:
       - mongodb
     volumes:
-      - ./application.properties:/usr/src/app/application.properties:r
+      - ./application.properties:/usr/src/app/application.properties:ro
       - ./data:/data/db:rw
     ports:
      - 3000:3000
