@@ -77,7 +77,10 @@ def archiveAllTestResults() {
 }
 
 def buildNpmImage() {
-    sh "docker build -t $DOCKER_IMAGE_NAME:latest ."
+    sh "docker build " +
+            "--build-arg HTTPS=http://vdabprdproxy.vdab.be:8080 "
+            "-t $DOCKER_IMAGE_NAME:latest " +
+            "."
 }
 
 def publish() {
@@ -102,7 +105,13 @@ def npm(task) {
 def startNpmContainer(npmName) {
     def currentDir = pwd()
     killContainer(npmName)
-    sh "docker run -t -d --name ${npmName} --link chat-vdab-mongo:mongodb -v $currentDir/test-reports:/usr/src/app/test-reports vercruyssetim/chat-vdab bash"
+    sh "docker run " +
+            "-t " +
+            "-d " +
+            "--name ${npmName} " +
+            "--link chat-vdab-mongo:mongodb " +
+            "-v $currentDir/test-reports:/usr/src/app/test-reports vercruyssetim/chat-vdab " +
+            "bash"
 }
 
 def execNpmContainer(npmName, task) {
