@@ -46,8 +46,8 @@ try {
 
 private void deploy(server) {
     sh "scp docker-compose.yml ${server}:chat-vdab/docker-compose.yml"
-    sh "ssh ${server} cd chat-vdab && docker-compose pull nodejs"
-    sh "ssh ${server} cd chat-vdab && docker-compose up --no-deps -d nodejs"
+    sh "ssh ${server} 'cd chat-vdab && docker-compose pull nodejs'"
+    sh "ssh ${server} 'cd chat-vdab && docker-compose up --no-deps -d nodejs'"
 }
 
 /********** Helper functions **********/
@@ -87,6 +87,7 @@ def publish() {
     sh "docker tag $DOCKER_IMAGE_NAME:latest $DOCKER_IMAGE_NAME:$VERSION_NUMBER"
     sh "docker push $DOCKER_IMAGE_NAME"
     sh "docker rmi $DOCKER_IMAGE_NAME"
+    sh "docker rmi $DOCKER_IMAGE_NAME:$VERSION_NUMBER"
 }
 
 def npm(task) {
