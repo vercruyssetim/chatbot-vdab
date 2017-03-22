@@ -11,7 +11,7 @@ class Server {
         let facebookAccessToken = this.propertiesService.get('facebook.access.token');
         let facebookVerifyToken = this.propertiesService.get('facebook.verify.token');
         this.facebookServer.startResource(facebookAccessToken, facebookVerifyToken);
-        console.log('Application started!!');
+        console.log('Application started!!!!!');
     }
 }
 
