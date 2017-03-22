@@ -17,7 +17,6 @@ describe('mongo -> ', () => {
             userRepository.insert({_id: 1, test: 'test'});
             userRepository.findAll()
                 .then((result) => {
-                    console.log(JSON.stringify(result));
                     expect(result).to.deep.equal([{_id: 1, test: 'test'}]);
                     done();
                 });
@@ -30,7 +29,6 @@ describe('mongo -> ', () => {
             userRepository.insert({id: 2, test: 'match'});
             userRepository.findOne({id: 2})
                 .then((result) => {
-                    console.log(JSON.stringify(result));
                     expect(result).to.have.properties({id: 2, test: 'match'});
                     done();
                 });
