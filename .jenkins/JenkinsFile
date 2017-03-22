@@ -80,13 +80,12 @@ def buildNpmImage() {
     sh "docker build " +
             "--build-arg HTTPS_PROXY=http://vdabprdproxy.vdab.be:8080 " +
             "-t $DOCKER_IMAGE_NAME:$VERSION_NUMBER " +
-            "-t $DOCKER_IMAGE_NAME:latest " +
             "."
 }
 
 def publish() {
-    sh "docker push $DOCKER_IMAGE_NAME:$VERSION_NUMBER"
-    sh "docker push $DOCKER_IMAGE_NAME:latest"
+    sh "docker tag $DOCKER_IMAGE_NAME:latest $DOCKER_IMAGE_NAME:$VERSION_NUMBER"
+    sh "docker push $DOCKER_IMAGE_NAME"
     sh "docker rmi $DOCKER_IMAGE_NAME"
 }
 
