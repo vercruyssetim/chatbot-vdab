@@ -48,7 +48,7 @@ private void deploy(server) {
     sh "scp docker-compose.yml ${server}:chat-vdab/docker-compose.yml"
     sh "ssh ${server} 'cd chat-vdab && docker-compose pull nodejs'"
     sh "ssh ${server} 'cd chat-vdab && docker-compose up --no-deps -d nodejs'"
-    sh 'ssh ${server} "docker rmi \$(docker images | grep \'<none>\' | awk \'{print \$3}\' " '
+    sh "ssh ${server} 'docker rmi \$(docker images | grep \"'\"<none>\"'\" | awk \"'\"{print \$3}\"'\") '"
 }
 
 /********** Helper functions **********/
