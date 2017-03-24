@@ -10,15 +10,19 @@ export default class GoalContext {
         this.shorttermGoal = null;
     }
 
-    completeMainGoal(){
+    completeMainGoal(data) {
+        let oldMainGoal = this.mainGoal;
         this.mainGoal = null;
+        if (oldMainGoal.completeGoal) {
+            oldMainGoal.completeGoal(this, data.data);
+        }
     }
 
-    getMainGoal(){
+    getMainGoal() {
         return this.mainGoal;
     }
 
-    isMainGoalCompletedBy(data){
+    isMainGoalCompletedBy(data) {
         return this.mainGoal.isCompletedBy(data.data);
     }
 
@@ -26,15 +30,19 @@ export default class GoalContext {
         return this.mainGoal !== null;
     }
 
-    nextShortTermGoal(data){
+    nextShortTermGoal(data) {
         this.shorttermGoal = this.mainGoal.getNextShorttermGoal(data.data);
     }
 
-    completeShortTermGoal(){
+    completeShortTermGoal(data) {
+        let oldShorttermGoal = this.shorttermGoal;
         this.shorttermGoal = null;
+        if (oldShorttermGoal.completeGoal) {
+            oldShorttermGoal.completeGoal(this, data.data);
+        }
     }
 
-    getShortTermGoal(){
+    getShortTermGoal() {
         return this.shorttermGoal;
     }
 

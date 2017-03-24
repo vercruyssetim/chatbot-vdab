@@ -7,6 +7,7 @@ import StopSchedule from './domain/longterm/stop.schedule';
 import HasLocationGoal from './domain/shortterm/has.location.goal';
 import HasKeywordGoal from './domain/shortterm/has.keyword.goal';
 import FilterGoal from './domain/shortterm/has.filter.goal';
+import AcceptNextGoal from './domain/shortterm/accept.next.goal';
 export default class GoalFactory {
 
     static getNewMainGoal(userAction, data) {
@@ -31,29 +32,33 @@ export default class GoalFactory {
         }
     }
 
-    static newMainGoal(name) {
+    static newMainGoal(name, data = {}) {
         if (name === 'welcome') {
-            return new MainGoal(new WelcomeGoal({}));
+            return new MainGoal(new WelcomeGoal(data));
         } else if (name === 'VindEenJob') {
-            return new MainGoal(new VindEenJobGoal({}, {}));
+            return new MainGoal(new VindEenJobGoal(data, false));
+        } else if (name === 'filter') {
+            return new MainGoal(new VindEenJobGoal(data, {filter: true}));
         } else if (name === 'bye') {
-            return new MainGoal(new ByeGoal({}));
+            return new MainGoal(new ByeGoal(data));
         } else if (name === 'startSchedule') {
-            return new MainGoal(new StartSchedule({}));
+            return new MainGoal(new StartSchedule(data));
         } else if (name === 'stopSchedule') {
-            return new MainGoal(new StopSchedule({}));
+            return new MainGoal(new StopSchedule(data));
         } else {
             return null;
         }
     }
 
-    static newShortTermGoal(name) {
+    static newShortTermGoal(name, data = {}) {
         if (name === 'hasLocation') {
-            return new HasLocationGoal({});
+            return new HasLocationGoal(data);
         } else if (name === 'hasKeyword') {
-            return new HasKeywordGoal({});
+            return new HasKeywordGoal(data);
         } else if (name === 'hasFilter') {
-            return new FilterGoal({});
+            return new FilterGoal(data);
+        } else if(name === 'acceptNext'){
+            return new AcceptNextGoal(data);
         } else {
             return null;
         }

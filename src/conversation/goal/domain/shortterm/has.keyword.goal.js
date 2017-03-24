@@ -11,20 +11,20 @@ export default class HasKeywordGoal {
         return userAction.entities.company || userAction.entities.profession || userAction.intent === 'unsure';
     }
 
-    completeData({keywordGoal}, userAction) {
+    completeData({vindEenJob, keywordGoal}, userAction) {
         if (userAction.intent === 'unsure') {
             keywordGoal.completed = true;
         } else if (userAction.entities.company) {
-            keywordGoal.value = userAction.entities.company;
+            vindEenJob.keyword = userAction.entities.company;
         } else if (userAction.entities.profession) {
-            keywordGoal.value = userAction.entities.profession;
+            vindEenJob.keyword = userAction.entities.profession;
         } else {
-            keywordGoal.value = userAction.entities.text;
+            vindEenJob.keyword = userAction.entities.text;
         }
     }
 
-    isCompletedBy({keywordGoal}) {
-        return keywordGoal.completed || (keywordGoal.value !== null && keywordGoal.value !== undefined);
+    isCompletedBy({vindEenJob, keywordGoal}) {
+        return keywordGoal.completed || vindEenJob.keyword;
     }
 
 

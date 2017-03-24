@@ -11,15 +11,15 @@ export default class HasLocationGoal {
         return userAction.entities.location || userAction.intent === 'unsure';
     }
 
-    isCompletedBy({locationGoal}) {
-        return locationGoal.completed || (locationGoal.value !== null && locationGoal.value !== undefined);
+    isCompletedBy({vindEenJob, locationGoal}) {
+        return locationGoal.completed || vindEenJob.location;
     }
 
-    completeData({locationGoal}, userAction) {
+    completeData({vindEenJob, locationGoal}, userAction) {
         if (userAction.intent === 'unsure') {
             locationGoal.completed = true;
         } else {
-            locationGoal.value = userAction.entities.location;
+            vindEenJob.location = userAction.entities.location;
         }
     }
 
@@ -28,9 +28,9 @@ export default class HasLocationGoal {
         speech.send();
     }
 
-    complete(speech, {locationGoal}) {
-        if (locationGoal.value) {
-            speech.addMessage(`Fijn dat je in ${locationGoal.value} wil werken`);
+    complete(speech, {vindEenJob}) {
+        if (vindEenJob.location) {
+            speech.addMessage(`Fijn dat je in ${vindEenJob.location} wil werken`);
         } else {
             speech.addMessage('We zullen overal in vlaanderen voor je zoeken');
         }

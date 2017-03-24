@@ -28,6 +28,12 @@ export default class MainGoal {
         }
     }
 
+    completeGoal(...args) {
+        if(this.trueGoal.completeGoal){
+            this.trueGoal.completeGoal(...args);
+        }
+    }
+
     isCompletedBy(data) {
         for (let index = 0; index < this.trueGoal.getShorttermGoals().length; index++) {
             let shorttermGoal = this.trueGoal.getShorttermGoals()[index];

@@ -40,7 +40,7 @@ export default class ConversationService {
                 if (goal.isShortTermGoalCompletedBy(userAction)) {
                     data.complete(goal.getShortTermGoal(), userAction);
                     speech.complete(goal.getShortTermGoal(), data);
-                    goal.completeShortTermGoal();
+                    goal.completeShortTermGoal(data);
                 } else {
                     speech.failed(goal.getShortTermGoal());
                 }
@@ -53,7 +53,7 @@ export default class ConversationService {
             if (goal.isMainGoalCompletedBy(data)) {
                 data.complete(goal.getMainGoal(), data);
                 speech.complete(goal.getMainGoal(), data);
-                goal.completeMainGoal();
+                goal.completeMainGoal(data);
             } else {
                 goal.nextShortTermGoal(data);
                 speech.start(goal.getShortTermGoal(), data);

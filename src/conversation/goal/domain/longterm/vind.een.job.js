@@ -3,6 +3,7 @@ import HasKeywordGoal from '../shortterm/has.keyword.goal';
 import applicationConfig from '../../../../applicationConfig';
 import BackendService from '../../../../backend/backend.service';
 import FilterGoal from '../shortterm/has.filter.goal';
+import GoalFactory from '../../goal.factory';
 
 export default class VindEenJobGoal {
 
@@ -12,58 +13,66 @@ export default class VindEenJobGoal {
             new HasKeywordGoal(data),
             new FilterGoal(data, filter)
         ];
-        data.vindEenJob = {
-            clearData: !filter
-        };
+
+        data.vindEenJob = data.vindEenJob ? data.vindEenJob : {filters: {}};
+        data.vindEenJob.clearData = !filter;
+        if(data.vindEenJob.clearData) {
+            data.vindEenJob.location= null;
+            data.vindEenJob.keyword = null;
+            data.vindEenJob.filters = {};
+        }
+
         this.vindEenJobClient = applicationConfig.getVindEenJobClient();
         this.filterService = applicationConfig.getFilterService();
         this.name = 'VindEenJob';
     }
 
-    startData(data, userAction) {
-        if (this.clearData) {
-            data.locationGoal = {};
-            data.keywordGoal = {};
-            data.filters = {};
+    startData({vindEenJob}, userAction) {
+        if (vindEenJob.clearData) {
 
             let {location, company, profession} = userAction.entities;
             if (location) {
-                data.locationGoal.value = location;
+                vindEenJob.location = location;
             }
 
             if (company) {
-                data.keywordGoal.value = company;
+                vindEenJob.keyword = company;
             }
 
             if (profession) {
-                data.keywordGoal.value = profession;
+                vindEenJob.keyword = profession;
             }
         }
     }
 
-    completeData({locationGoal, keywordGoal, filters}) {
-        this.promise = this.vindEenJobClient.lookupJobs({keyword: keywordGoal.value, location: locationGoal.value, filters, limit: '5'});
+    completeData({vindEenJob}) {
+        this.promise = this.vindEenJobClient.lookupJobs({
+            keyword: vindEenJob.keyword,
+            location: vindEenJob.location,
+            filters: vindEenJob.filters,
+            limit: '5'
+        });
     }
 
     getShorttermGoals() {
         return this.shorttermGoals;
     }
 
-    start(speech, {locationGoal, keywordGoal}) {
-        if ((!locationGoal || !locationGoal.value) && (!keywordGoal || !keywordGoal.value)) {
+    start(speech, {vindEenJob}) {
+        if (!vindEenJob.location && !vindEenJob.keyword) {
             speech.addMessage('Laten we een job voor je zoeken');
             speech.send();
         }
     }
 
-    complete(speech, {keywordGoal, locationGoal, filters}) {
-        if (!keywordGoal.value && !locationGoal.value) {
+    complete(speech, {vindEenJob}) {
+        if (!vindEenJob.keyword && !vindEenJob.location) {
             speech.addMessage('je moet wel weten wat je wil');
             speech.send();
             return;
         }
 
-        speech.addMessage(this.buildMessage({keyword: keywordGoal.value, location: locationGoal.value, filters}));
+        speech.addMessage(this.buildMessage({keyword: vindEenJob.keyword, location: vindEenJob.location, filters: vindEenJob.filters}));
         speech.send();
         this.promise.then((jobs) => {
             if (jobs.length !== 0) {
@@ -83,6 +92,11 @@ export default class VindEenJobGoal {
                 speech.send();
             }
         });
+    }
+
+    completeGoal(goal, data) {
+        goal.mainGoal = GoalFactory.newMainGoal('filter', data);
+        goal.shorttermGoal = GoalFactory.newShortTermGoal('acceptNext', data);
     }
 
     buildMessage({keyword, location, filters}) {

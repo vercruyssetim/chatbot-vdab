@@ -19,9 +19,9 @@ export default class FilterGoal {
         return !filterGoal.required || filterGoal.completed;
     }
 
-    completeData({filterGoal, filters}, userAction) {
+    completeData({filterGoal, vindEenJob}, userAction) {
         if (filterGoal.value) {
-            filters[filterGoal.value] = userAction.entities.filterOption;
+            vindEenJob.filters[filterGoal.value] = userAction.entities.filterOption;
             filterGoal.value = null;
             filterGoal.completed = true;
         } else {
