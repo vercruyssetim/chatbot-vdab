@@ -25,21 +25,21 @@ export default class StartSchedule {
 
     }
 
-    completeData(data) {
-        this.observable = this.schedulingService.schedule(data.sessionId)
+    completeData({sessionId, vindEenJob, jobIds}) {
+        this.observable = this.schedulingService.schedule(sessionId)
             .flatMap(() => this.vindEenJobClient.lookupJobs({
-                keyword: data.keyword,
-                location: data.location,
-                filters: data.filters,
+                keyword: vindEenJob.keyword,
+                location: vindEenJob.location,
+                filters: vindEenJob.filters,
                 limit: '30'
             }))
-            .map((jobs) => this.filterJobs(jobs, data))
+            .map((jobs) => this.filterJobs(jobs, jobIds))
             .share();
 
         this.observable
             .flatMap((jobs) => Rx.Observable.from(jobs))
             .map((job) => job.id)
-            .subscribe((jobId) => data.jobIds.push(jobId));
+            .subscribe((jobId) => jobIds.push(jobId));
     }
 
     complete(speech) {
@@ -55,9 +55,9 @@ export default class StartSchedule {
         });
     }
 
-    filterJobs(jobs, data) {
+    filterJobs(jobs, jobIds) {
         return _(jobs)
-            .filter((job) => data.jobIds.indexOf(job.id) === -1)
+            .filter((job) => jobIds.indexOf(job.id) === -1)
             .take(6)
             .value();
     }

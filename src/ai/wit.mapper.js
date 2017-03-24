@@ -12,7 +12,7 @@ export default class WitMapper {
             filterOption = WitMapper.firstEntityValue(data.entities, 'filter_option');
             //TODO: add plain
         }
-        if (['start_vej', 'start_schedule', 'stop_schedule', 'filter_results', 'welcome', 'bye'].indexOf(intent) > -1) {
+        if (['start_vej', 'start_schedule', 'stop_schedule', 'filter_results', 'welcome', 'bye', 'hungry'].includes(intent)) {
             hasInitiative = true;
         }
         return {intent, entities: {yes_no, location, profession, company, filter, filterOption}, hasInitiative};

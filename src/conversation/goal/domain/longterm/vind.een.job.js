@@ -80,10 +80,10 @@ export default class VindEenJobGoal {
                 speech.addDelay(3000);
                 speech.addQuickReplies('Wil je deze resultaten nog filteren?',
                     [{
-                        value: 'ik wil filteren',
+                        value: 'ja, graag',
                         label: 'ja, graag!'
                     }, {
-                        value: 'bye',
+                        value: 'nee, dank je',
                         label: 'nee, dank je'
                     }]);
                 speech.send();

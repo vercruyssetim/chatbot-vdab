@@ -8,6 +8,7 @@ import HasLocationGoal from './domain/shortterm/has.location.goal';
 import HasKeywordGoal from './domain/shortterm/has.keyword.goal';
 import FilterGoal from './domain/shortterm/has.filter.goal';
 import AcceptNextGoal from './domain/shortterm/accept.next.goal';
+import Hungry from './domain/longterm/hungry';
 export default class GoalFactory {
 
     static getNewMainGoal(userAction, data) {
@@ -27,6 +28,8 @@ export default class GoalFactory {
             return new StartSchedule(data);
         } else if (userAction.intent === 'stop_schedule') {
             return new StopSchedule(data);
+        } else if (userAction.intent === 'hungry') {
+            return new Hungry(data);
         } else {
             throw {name: 'RuntimeException', message: `No goal found for ${userAction.type}`};
         }
@@ -45,6 +48,8 @@ export default class GoalFactory {
             return new MainGoal(new StartSchedule(data));
         } else if (name === 'stopSchedule') {
             return new MainGoal(new StopSchedule(data));
+        } else if (name === 'hungry') {
+            return new MainGoal(new Hungry(data));
         } else {
             return null;
         }
@@ -57,7 +62,7 @@ export default class GoalFactory {
             return new HasKeywordGoal(data);
         } else if (name === 'hasFilter') {
             return new FilterGoal(data);
-        } else if(name === 'acceptNext'){
+        } else if (name === 'acceptNext') {
             return new AcceptNextGoal(data);
         } else {
             return null;
