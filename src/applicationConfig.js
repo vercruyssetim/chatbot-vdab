@@ -11,6 +11,7 @@ import SchedulingService from './reminder/scheduling.service';
 import FacebookClient from './resource/facebook.client';
 import UserService from './storage/user.service';
 import MongoRepository from './db/mongo.repository';
+import ApiClient from './ai/api.client';
 
 class ApplicationConfig {
 
@@ -19,8 +20,11 @@ class ApplicationConfig {
             this.facebookServer = new FacebookResource(
                 this.getExpressserver(),
                 this.getWitClient(),
+                this.getApiClient(),
                 this.getFacebookClient(),
                 this.getUserService(),
+                this.getSenderService(),
+                this.getConversationService(),
                 this.getPropertiesService().get('host.name'),
                 this.getPropertiesService().get('port.name')
             );
@@ -39,14 +43,16 @@ class ApplicationConfig {
 
     getWitClient() {
         if (!this.witService) {
-            this.witService = new WitClient(
-                this.getSenderService(),
-                this.getPropertiesService().get('wit.ai.access.token'),
-                this.getBackendService(),
-                this.getConversationService()
-            );
+            this.witService = new WitClient(this.getPropertiesService().get('wit.ai.access.token'));
         }
         return this.witService;
+    }
+
+    getApiClient() {
+        if (!this.apiService) {
+            this.apiService = new ApiClient(this.getPropertiesService().get('api.ai.access.token'));
+        }
+        return this.apiService;
     }
 
     getSenderService() {

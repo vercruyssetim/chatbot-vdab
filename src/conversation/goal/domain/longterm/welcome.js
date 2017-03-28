@@ -26,7 +26,6 @@ export default class WelcomeGoal {
     }
 
     complete(speech, {welcome}) {
-        console.log(JSON.stringify(welcome));
         if(welcome.time === 1){
             speech.addMessage('Ik ben een chat bot van de VDAB en ik kan je helpen met het vinden van een vacature');
             speech.addMessage('Ik ben nog vrij nieuw dus de kans bestaat dat ik nog fouten maak.');

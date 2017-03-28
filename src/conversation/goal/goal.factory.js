@@ -9,6 +9,8 @@ import HasKeywordGoal from './domain/shortterm/has.keyword.goal';
 import FilterGoal from './domain/shortterm/has.filter.goal';
 import AcceptNextGoal from './domain/shortterm/accept.next.goal';
 import Hungry from './domain/longterm/hungry';
+import BladSteenSchaarGoal from './domain/longterm/blad.steen.schaar';
+import BladSteenSchaarChoiceGoal from './domain/shortterm/blad.steen.schaar.choice';
 export default class GoalFactory {
 
     static getNewMainGoal(userAction, data) {
@@ -24,6 +26,8 @@ export default class GoalFactory {
             return new VindEenJobGoal(data, {filter: true});
         } else if (userAction.intent === 'bye') {
             return new ByeGoal(data);
+        } else if (userAction.intent === 'blad_steen_schaar') {
+            return new BladSteenSchaarGoal(data);
         } else if (userAction.intent === 'start_schedule') {
             return new StartSchedule(data);
         } else if (userAction.intent === 'stop_schedule') {
@@ -44,6 +48,8 @@ export default class GoalFactory {
             return new MainGoal(new VindEenJobGoal(data, {filter: true}));
         } else if (name === 'bye') {
             return new MainGoal(new ByeGoal(data));
+        } else if (name === 'bladSteenSchaar') {
+            return new MainGoal(new BladSteenSchaarGoal(data));
         } else if (name === 'startSchedule') {
             return new MainGoal(new StartSchedule(data));
         } else if (name === 'stopSchedule') {
@@ -64,6 +70,8 @@ export default class GoalFactory {
             return new FilterGoal(data);
         } else if (name === 'acceptNext') {
             return new AcceptNextGoal(data);
+        } else if (name === 'bladSteenSchaarChoice') {
+            return new BladSteenSchaarChoiceGoal(data);
         } else {
             return null;
         }

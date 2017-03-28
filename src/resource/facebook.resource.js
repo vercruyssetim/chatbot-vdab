@@ -2,11 +2,14 @@ import Botkit from 'botkit';
 
 export default class FacebookResource {
 
-    constructor(webserver, witService, facebookClient, userService, hostName, portName) {
+    constructor(webserver, witService, apiClient, facebookClient, userService, senderService, conversationService, hostName, portName) {
         this.webserver = webserver;
         this.witService = witService;
+        this.apiClient = apiClient;
         this.facebookClient = facebookClient;
         this.userService = userService;
+        this.senderService = senderService;
+        this.conversationService = conversationService;
         this.hostName = hostName;
         this.portName = portName;
     }
@@ -34,11 +37,20 @@ export default class FacebookResource {
     handleMessageReceived(bot, message) {
         let text = this.extractText(message);
         console.log(`Receiving... ${JSON.stringify(text)}`);
+
         this.saveUser(message.user);
-        this.witService.handleMessageReceived(text, message.user, (reply) => {
-            console.log(`Sending... ${JSON.stringify(reply)}`);
+        this.senderService.addSender(message.user, (reply) => {
             bot.reply(message, FacebookResource.mapToFacebookResponse(reply));
+            console.log(`Sending... ${JSON.stringify(reply)}`);
         });
+
+        this.witService.handleMessageReceived(text, message.user)
+            .then((data) => this.conversationService.getResponse(data, message.user))
+            .catch(console.error);
+
+        this.apiClient.sendQuery(text, message.user)
+            .then((data) => console.log(`From api : ${JSON.stringify(data)}`))
+            .catch(console.error);
     }
 
     extractText(message) {
