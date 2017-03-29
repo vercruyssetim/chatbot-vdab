@@ -11,6 +11,7 @@ import AcceptNextGoal from './domain/shortterm/accept.next.goal';
 import Hungry from './domain/longterm/hungry';
 import BladSteenSchaarGoal from './domain/longterm/blad.steen.schaar';
 import BladSteenSchaarChoiceGoal from './domain/shortterm/blad.steen.schaar.choice';
+import ConfirmInputGoal from './domain/shortterm/confirm.input.goal';
 export default class GoalFactory {
 
     static getNewMainGoal(userAction, data) {
@@ -70,6 +71,8 @@ export default class GoalFactory {
             return new FilterGoal(data);
         } else if (name === 'acceptNext') {
             return new AcceptNextGoal(data);
+        } else if (name === 'confirmInput') {
+            return new ConfirmInputGoal(data);
         } else if (name === 'bladSteenSchaarChoice') {
             return new BladSteenSchaarChoiceGoal(data);
         } else {

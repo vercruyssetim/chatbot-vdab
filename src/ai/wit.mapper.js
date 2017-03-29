@@ -10,7 +10,6 @@ export default class WitMapper {
             company = WitMapper.firstEntityValue(data.entities, 'company');
             filter = WitMapper.firstEntityValue(data.entities, 'filter');
             filterOption = WitMapper.firstEntityValue(data.entities, 'filter_option');
-            console.log(JSON.stringify(data));
             bladSteenSchaar = WitMapper.firstEntityValue(data.entities, 'bladSteenSchaar');
             //TODO: add plain
         }
@@ -38,6 +37,7 @@ export default class WitMapper {
         const val = entities && entities[entity] &&
             Array.isArray(entities[entity]) &&
             entities[entity].length > 0 &&
+            entities[entity][0].confidence > 0.5 &&
             entities[entity][0].value;
         if (!val) {
             return null;

@@ -4,14 +4,18 @@ import HasKeywordGoal from '../shortterm/has.keyword.goal';
 import BackendService from '../../../../backend/backend.service';
 import Rx from 'rxjs';
 import _ from 'lodash';
+import ConfirmInputGoal from '../shortterm/confirm.input.goal';
 
 export default class StartSchedule {
 
     constructor(data) {
         this.shorttermGoals = [
+            new ConfirmInputGoal(data),
             new HasLocationGoal(data),
             new HasKeywordGoal(data)
         ];
+        data.vindEenJob = data.vindEenJob ? data.vindEenJob : {filters: {}};
+
         this.vindEenJobClient = applicationConfig.getVindEenJobClient();
         this.schedulingService = applicationConfig.getSchedulingService();
         this.name =  'startSchedule';

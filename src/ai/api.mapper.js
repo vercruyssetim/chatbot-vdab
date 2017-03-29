@@ -2,7 +2,6 @@ export default class ApiMapper {
 
     static extractEntities(data) {
         let intent, yes_no, location, profession, company, filter, filterOption, hasInitiative;
-        console.log(JSON.stringify(data.result));
         intent = data.result.action;
         if (data.result.action === 'yes' || data.result.action === 'no') {
             yes_no = data.result.action;
