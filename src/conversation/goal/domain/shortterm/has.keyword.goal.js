@@ -1,3 +1,4 @@
+import GoalFactory from '../../goal.factory';
 export default class HasKeywordGoal {
 
     constructor(data) {
@@ -14,6 +15,7 @@ export default class HasKeywordGoal {
     completeData({vindEenJob, keywordGoal}, userAction) {
         if (userAction.intent === 'unsure') {
             keywordGoal.completed = true;
+            keywordGoal.unsure = true;
         } else if (userAction.entities.company) {
             vindEenJob.keyword = userAction.entities.company;
         } else if (userAction.entities.profession) {
@@ -27,19 +29,27 @@ export default class HasKeywordGoal {
         return keywordGoal.completed || vindEenJob.keyword;
     }
 
+    completeGoal(goal, data){
+        if(data.keywordGoal.unsure){
+            goal.mainGoal.getShorttermGoals().push(GoalFactory.newShortTermGoal('diploma', data));
+        }
+    }
 
     start(speech) {
-        speech.addMessage('Als wat of bij wie wil je werken?');
+        speech.addMessage('Welke job zoek je?');
         speech.send();
     }
 
-    complete() {
-
+    complete(speech, {keywordGoal}){
+        if(keywordGoal.unsure){
+            speech.addMessage('Geen probleem, we komen er samen wel uit.');
+            speech.send();
+        }
     }
 
     failed(speech) {
-        speech.addMessage('Sorry, Ik begrijp niet goed wat je bedoelt.');
-        speech.addMessage('Bij wie of als wat wil je werken?');
+        speech.addMessage('Sorry, ik begrijp niet goed wat je bedoelt. Ik leer nog elke dag bij.');
+        speech.addMessage('Probeer het eens met een ander woord.');
         speech.send();
     }
 }

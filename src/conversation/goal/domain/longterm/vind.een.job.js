@@ -60,31 +60,23 @@ export default class VindEenJobGoal {
 
     start(speech, {vindEenJob}) {
         if (!vindEenJob.location && !vindEenJob.keyword) {
-            speech.addMessage('Laten we een job voor je zoeken');
+            speech.addMessage('Laten we een job voor je zoeken!');
             speech.send();
         }
     }
 
-    complete(speech, {vindEenJob}) {
-        if (!vindEenJob.keyword && !vindEenJob.location) {
-            speech.addMessage('je moet wel weten wat je wil');
-            speech.send();
-            return;
-        }
-
-        speech.addMessage(this.buildMessage({keyword: vindEenJob.keyword, location: vindEenJob.location, filters: vindEenJob.filters}));
-        speech.send();
+    complete(speech) {
         this.promise.then((jobs) => {
             if (jobs.length !== 0) {
                 speech.addElements(BackendService.mapToElements(jobs));
                 speech.addDelay(3000);
-                speech.addQuickReplies('Wil je deze resultaten nog filteren?',
+                speech.addQuickReplies('Wil je je zoekresultaat verfijnen?',
                     [{
-                        value: 'ja, graag',
-                        label: 'ja, graag!'
+                        value: 'Ja',
+                        label: 'ja'
                     }, {
-                        value: 'nee, dank je',
-                        label: 'nee, dank je'
+                        value: 'Nee',
+                        label: 'nee'
                     }]);
                 speech.send();
             } else {
@@ -98,19 +90,4 @@ export default class VindEenJobGoal {
         goal.mainGoal = GoalFactory.newMainGoal('filter', data);
         goal.shorttermGoal = GoalFactory.newShortTermGoal('acceptNext', data);
     }
-
-    buildMessage({keyword, location, filters}) {
-        let result = 'ik zoek jobs';
-        if (keyword) {
-            result += ` voor ${keyword}`;
-        }
-        if (location) {
-            result += ` in ${location}`;
-        }
-        if (filters && Object.keys(filters).length > 0) {
-            result += ` gefilterd op ${this.filterService.toString(filters)}`;
-        }
-        return result;
-    }
-
 }

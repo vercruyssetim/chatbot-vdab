@@ -24,21 +24,22 @@ export default class HasLocationGoal {
     }
 
     start(speech) {
-        speech.addMessage('Waar in Vlaanderen zou je willen werken?');
+        speech.addMessage('In welke gemeente of stad wil je werken?');
         speech.send();
     }
 
     complete(speech, {vindEenJob}) {
         if (vindEenJob.location) {
-            speech.addMessage(`Fijn dat je in ${vindEenJob.location} wil werken`);
+            speech.addMessage('Oké, check!');
+            speech.addMessage('Ik toon je zo meteen een aantal jobs');
         } else {
-            speech.addMessage('We zullen overal in vlaanderen voor je zoeken');
+            speech.addMessage('Oké, geen probleem. Dan zoek ik overal. Even geduld.');
         }
         speech.send();
     }
 
     failed(speech){
-        speech.addMessage('Sorry, welke locatie bedoelde je precies?');
+        speech.addMessage('Sorry, ik begrijp niet goed wat je bedoelt. Ik leer nog elke dag bij. Welke locatie bedoel je precies?');
         speech.send();
     }
 }

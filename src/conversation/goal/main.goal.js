@@ -44,6 +44,10 @@ export default class MainGoal {
         return true;
     }
 
+    getShorttermGoals(){
+        return this.trueGoal.getShorttermGoals();
+    }
+
     getNextShorttermGoal(data) {
         for (let index = 0; index < this.trueGoal.getShorttermGoals().length; index++) {
             let shorttermGoal = this.trueGoal.getShorttermGoals()[index];
