@@ -13,11 +13,15 @@ export default class SpeechContext {
     }
 
     start(state, data) {
-        state.start(this.speech, data.data);
+        if(state.start){
+            state.start(this.speech, data.data);
+        }
     }
 
     complete(state, data) {
-        state.complete(this.speech, data.data);
+        if(state.complete){
+            state.complete(this.speech, data.data);
+        }
     }
 
     error() {

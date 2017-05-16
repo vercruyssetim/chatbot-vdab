@@ -29,7 +29,7 @@ export default class FacebookClient {
                     form: {
                         setting_type: 'greeting',
                         greeting: {
-                            text: 'hallo {{user_full_name}} welkom bij de chatbot van de vdab.'
+                            text: 'Hallo {{user_full_name}}, welkom bij de chatbot van VDAB'
                         }
                     }
                 },

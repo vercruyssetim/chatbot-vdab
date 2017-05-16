@@ -12,6 +12,7 @@ import Hungry from './domain/longterm/hungry';
 import BladSteenSchaarGoal from './domain/longterm/blad.steen.schaar';
 import BladSteenSchaarChoiceGoal from './domain/shortterm/blad.steen.schaar.choice';
 import ConfirmInputGoal from './domain/shortterm/confirm.input.goal';
+import JaNeeGoal from './domain/shortterm/ja.nee.goal';
 export default class GoalFactory {
 
     static getNewMainGoal(userAction, data) {
@@ -75,6 +76,8 @@ export default class GoalFactory {
             return new ConfirmInputGoal(data);
         } else if (name === 'bladSteenSchaarChoice') {
             return new BladSteenSchaarChoiceGoal(data);
+        } else if (name === 'jaNee') {
+            return new JaNeeGoal(data);
         } else {
             return null;
         }
