@@ -1,3 +1,4 @@
+import {UNSURE} from '../../../../backend/vind.een.job.client';
 export default class HasLocationGoal {
 
     constructor(data) {
@@ -18,6 +19,7 @@ export default class HasLocationGoal {
     completeData({vindEenJob, locationGoal}, userAction) {
         if (userAction.intent === 'unsure') {
             locationGoal.completed = true;
+            vindEenJob.location = UNSURE;
         } else {
             vindEenJob.location = userAction.entities.location;
         }
@@ -29,7 +31,7 @@ export default class HasLocationGoal {
     }
 
     complete(speech, {vindEenJob}) {
-        if (vindEenJob.location) {
+        if (vindEenJob.location !== UNSURE) {
             speech.addMessage('Oké, check!');
             speech.addMessage('Ik toon je zo meteen een aantal jobs');
         } else {

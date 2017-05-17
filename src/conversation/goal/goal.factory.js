@@ -14,6 +14,7 @@ import BladSteenSchaarChoiceGoal from './domain/shortterm/blad.steen.schaar.choi
 import ConfirmInputGoal from './domain/shortterm/confirm.input.goal';
 import JaNeeGoal from './domain/shortterm/ja.nee.goal';
 import DiplomaGoal from './domain/shortterm/diploma.goal';
+import LocationOrFilter from './domain/longterm/location.or.filter';
 export default class GoalFactory {
 
     static getNewMainGoal(userAction, data) {
@@ -24,7 +25,7 @@ export default class GoalFactory {
         if (userAction.intent === 'welcome') {
             return new WelcomeGoal(data);
         } else if (userAction.intent === 'start_vej') {
-            return new VindEenJobGoal(data, {});
+            return new VindEenJobGoal(data, {clearData: true});
         } else if (userAction.intent === 'filter_results') {
             return new VindEenJobGoal(data, {filter: true});
         } else if (userAction.intent === 'bye') {
@@ -46,7 +47,11 @@ export default class GoalFactory {
         if (name === 'welcome') {
             return new MainGoal(new WelcomeGoal(data));
         } else if (name === 'VindEenJob') {
-            return new MainGoal(new VindEenJobGoal(data, false));
+            return new MainGoal(new VindEenJobGoal(data, {clearData: true}));
+        } else if (name === 'VindEenJobOpnieuw') {
+            return new MainGoal(new VindEenJobGoal(data, {}));
+        } else if (name === 'locationOrFilter') {
+            return new MainGoal(new LocationOrFilter(data));
         } else if (name === 'filter') {
             return new MainGoal(new VindEenJobGoal(data, {filter: true}));
         } else if (name === 'bye') {

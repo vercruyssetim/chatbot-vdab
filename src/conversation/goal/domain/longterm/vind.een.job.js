@@ -4,10 +4,11 @@ import applicationConfig from '../../../../applicationConfig';
 import BackendService from '../../../../backend/backend.service';
 import FilterGoal from '../shortterm/has.filter.goal';
 import GoalFactory from '../../goal.factory';
+import {UNSURE} from '../../../../backend/vind.een.job.client';
 
 export default class VindEenJobGoal {
 
-    constructor(data, {filter}) {
+    constructor(data, {filter, clearData}) {
         this.shorttermGoals = [
             new HasLocationGoal(data),
             new HasKeywordGoal(data),
@@ -15,7 +16,7 @@ export default class VindEenJobGoal {
         ];
 
         data.vindEenJob = data.vindEenJob ? data.vindEenJob : {filters: {}};
-        data.vindEenJob.clearData = !filter;
+        data.vindEenJob.clearData = clearData;
         if(data.vindEenJob.clearData) {
             data.vindEenJob.location= null;
             data.vindEenJob.keyword = null;
@@ -65,19 +66,16 @@ export default class VindEenJobGoal {
         }
     }
 
-    complete(speech) {
+    complete(speech, {vindEenJob}) {
         this.promise.then((jobs) => {
             if (jobs.length !== 0) {
                 speech.addElements(BackendService.mapToElements(jobs));
                 speech.addDelay(3000);
-                speech.addQuickReplies('Wil je je zoekresultaat verfijnen?',
-                    [{
-                        value: 'Ja',
-                        label: 'ja'
-                    }, {
-                        value: 'Nee',
-                        label: 'nee'
-                    }]);
+                if (vindEenJob.location === UNSURE) {
+                    speech.addQuickReplies('Wil je toch nog een stad of gemeente ingeven?', [{value: 'Ja', label: 'ja'}, {value: 'Nee', label: 'nee'}]);
+                } else {
+                    speech.addQuickReplies('Wil je je zoekresultaat verfijnen?', [{value: 'Ja', label: 'ja'}, {value: 'Nee', label: 'nee'}]);
+                }
                 speech.send();
             } else {
                 speech.addMessage('Sorry, ik kan geen resultaten voor deze criteria vinden...');
@@ -87,7 +85,12 @@ export default class VindEenJobGoal {
     }
 
     completeGoal(goal, data) {
-        goal.mainGoal = GoalFactory.newMainGoal('filter', data);
-        goal.shorttermGoal = GoalFactory.newShortTermGoal('acceptNext', data);
+        if (data.vindEenJob.location === UNSURE) {
+            goal.mainGoal = GoalFactory.newMainGoal('locationOrFilter', data);
+            goal.shorttermGoal = GoalFactory.newShortTermGoal('jaNee', data);
+        } else {
+            goal.mainGoal = GoalFactory.newMainGoal('filter', data);
+            goal.shorttermGoal = GoalFactory.newShortTermGoal('acceptNext', data);
+        }
     }
 }

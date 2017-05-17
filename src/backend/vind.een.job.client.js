@@ -4,6 +4,7 @@ import Promise from 'promise';
 import Vacature from './vacature';
 
 const URL = 'https://www.vdab.be/api/vindeenjob';
+export const UNSURE = 'unsure';
 export default class VindEenJobClient {
 
     lookupJobs({location, keyword, filters, limit}) {
@@ -14,7 +15,7 @@ export default class VindEenJobClient {
             .withQueryParam('offset', '0')
             .withQueryParam('limit', limit)
             .withQueryParam('afstand', '20')
-            .withQueryParam('locatie', location)
+            .withQueryParam('locatie', location === UNSURE ? null : location)
             .withQueryParam('trefwoord', keyword)
             .withQueryParam('arbeidsduur', arbeidsduur)
             .withQueryParam('arbeidscircuit', arbeidscircuit)

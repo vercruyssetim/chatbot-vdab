@@ -18,7 +18,7 @@ export default class WelcomeGoal {
     start(speech, {welcome, user}) {
         if (welcome.time !== 0) {
             speech.addMessage(`Dag ${user.fullName}`);
-            speech.addQuickReplies('Volgens mij hebben wij elkaar al eens ontmoet?', [{label: 'Ja', value: 'ja'}, {label: 'Nee', value: 'nee'}]);
+            speech.addQuickReplies('Volgens mij hebben wij elkaar al eens ontmoet?', [{label: 'Ja, dat klopt!', value: 'ja'}, {label: 'Nee, volgens mij niet', value: 'nee'}]);
             speech.send();
         }
     }
