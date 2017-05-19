@@ -1,3 +1,4 @@
+import {UNSURE} from '../../../../backend/vind.een.job.client';
 export default class ConfirmInputGoal {
 
     constructor(data) {
@@ -11,7 +12,7 @@ export default class ConfirmInputGoal {
     }
 
     start(speech, {vindEenJob}) {
-        speech.addMessage(this.buildMessage(vindEenJob));
+        speech.addQuickReplies(this.buildMessage(vindEenJob), [{value: 'ja', label: 'ja'}, {value: 'nee', label: 'nee'}]);
         speech.send();
     }
 
@@ -41,7 +42,7 @@ export default class ConfirmInputGoal {
         if (keyword) {
             result += ` voor ${keyword}`;
         }
-        if (location) {
+        if (location && location !== UNSURE) {
             result += ` in ${location}`;
         }
         if (filters && Object.keys(filters).length > 0) {

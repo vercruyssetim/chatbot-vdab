@@ -5,11 +5,13 @@ import BackendService from '../../../../backend/backend.service';
 import Rx from 'rxjs';
 import _ from 'lodash';
 import ConfirmInputGoal from '../shortterm/confirm.input.goal';
+import ConfirmSchedule from '../shortterm/confirm.schedule';
 
 export default class StartSchedule {
 
     constructor(data) {
         this.shorttermGoals = [
+            new ConfirmSchedule(data),
             new ConfirmInputGoal(data),
             new HasLocationGoal(data),
             new HasKeywordGoal(data)
@@ -23,10 +25,6 @@ export default class StartSchedule {
 
     getShorttermGoals() {
         return this.shorttermGoals;
-    }
-
-    start() {
-
     }
 
     completeData({sessionId, vindEenJob, jobIds}) {
@@ -46,14 +44,15 @@ export default class StartSchedule {
             .subscribe((jobId) => jobIds.push(jobId));
     }
 
-    complete(speech) {
-        speech.addMessage('Vanaf nu zal ik je één keer per dag nieuwe vacatures sturen');
+    complete(speech, {user}) {
+        speech.addMessage('Super! Dan zie ik je morgen. <Harry wuift>');
         speech.send();
         this.observable.subscribe((jobs) => {
             if (jobs.length !== 0) {
-                speech.addMessage('Hier zijn je dagelijkse jobs!');
+                speech.addMessage(`Dag ${user.firstName}, zoals beloofd: je dagelijkse portie verse jobs!`);
                 speech.addElements(BackendService.mapToElements(jobs));
                 speech.addDelay(3000);
+                speech.addQuickReplies('Ben je me beu? Schakel me uit. Ik beloof dat ik het je niet kwalijk neem. <Harry wuift>', [{value: 'kan je me geen berichten meer sturen?', label: 'Schakel me uit'}]);
                 speech.send();
             }
         });

@@ -9,7 +9,7 @@ export default class SchedulingService {
     schedule(sessionId) {
         this.stop(sessionId);
         return Rx.Observable.create((observer) => {
-            this.schedules[sessionId] = schedule.scheduleJob({hour: 12, minute: 15, dayOfWeek: 0}, () => observer.next());
+            this.schedules[sessionId] = schedule.scheduleJob({hour: 12, minute: 15}, () => observer.next());
         });
     }
 

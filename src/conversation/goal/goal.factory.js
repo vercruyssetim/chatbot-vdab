@@ -15,6 +15,7 @@ import ConfirmInputGoal from './domain/shortterm/confirm.input.goal';
 import JaNeeGoal from './domain/shortterm/ja.nee.goal';
 import DiplomaGoal from './domain/shortterm/diploma.goal';
 import LocationOrFilter from './domain/longterm/location.or.filter';
+import ConfirmSchedule from './domain/shortterm/confirm.schedule';
 export default class GoalFactory {
 
     static getNewMainGoal(userAction, data) {
@@ -80,6 +81,8 @@ export default class GoalFactory {
             return new AcceptNextGoal(data);
         } else if (name === 'confirmInput') {
             return new ConfirmInputGoal(data);
+        } else if (name === 'confirmSchedule') {
+            return new ConfirmSchedule(data);
         } else if (name === 'bladSteenSchaarChoice') {
             return new BladSteenSchaarChoiceGoal(data);
         } else if (name === 'jaNee') {

@@ -17,7 +17,7 @@ export default class WelcomeGoal {
 
     start(speech, {welcome, user}) {
         if (welcome.time !== 0) {
-            speech.addMessage(`Dag ${user.fullName}`);
+            speech.addMessage(`Dag ${user.firstName}`);
             speech.addQuickReplies('Volgens mij hebben wij elkaar al eens ontmoet?', [{label: 'Ja, dat klopt!', value: 'ja'}, {label: 'Nee, volgens mij niet', value: 'nee'}]);
             speech.send();
         }
@@ -43,7 +43,7 @@ export default class WelcomeGoal {
             speech.addQuickReplies('Zullen we beginnen?', [{label: 'Ja', value: 'Natuurlijk'}]);
             speech.send();
         } else {
-            speech.addMessage(`Dag ${user.fullName}, ik ben Harry, de vacaturebot van VDAB. Ik wil je helpen om een job te vinden.`);
+            speech.addMessage(`Dag ${user.firstName}, ik ben Harry, de vacaturebot van VDAB. Ik wil je helpen om een job te vinden.`);
             speech.addMessage('Ik ben vrij nieuw, dus de kans bestaat dat ik nog fouten maak. Maar ik leer snel bij. ;-)');
             speech.addQuickReplies('Zullen we beginnen?', [{label: 'Ja, graag!', value: 'Natuurlijk'}]);
             speech.send();

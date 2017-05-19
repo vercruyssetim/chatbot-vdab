@@ -9,11 +9,15 @@ export default class MainGoal {
     }
 
     start(...args) {
-        this.trueGoal.start(...args);
+        if (this.trueGoal.start) {
+            this.trueGoal.start(...args);
+        }
     }
 
     complete(...args) {
-        this.trueGoal.complete(...args);
+        if (this.trueGoal.complete) {
+            this.trueGoal.complete(...args);
+        }
     }
 
     completeData(...args) {
@@ -29,7 +33,7 @@ export default class MainGoal {
     }
 
     completeGoal(...args) {
-        if(this.trueGoal.completeGoal){
+        if (this.trueGoal.completeGoal) {
             this.trueGoal.completeGoal(...args);
         }
     }
@@ -44,7 +48,7 @@ export default class MainGoal {
         return true;
     }
 
-    getShorttermGoals(){
+    getShorttermGoals() {
         return this.trueGoal.getShorttermGoals();
     }
 
