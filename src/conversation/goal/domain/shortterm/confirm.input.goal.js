@@ -1,7 +1,9 @@
 import {UNSURE} from '../../../../backend/vind.een.job.client';
+import applicationConfig from '../../../../applicationConfig';
 export default class ConfirmInputGoal {
 
     constructor(data) {
+        this.filterService = applicationConfig.getFilterService();
         data.confirmInput = {
             completed: false
         };
