@@ -22,6 +22,116 @@ export default class FacebookClient {
         });
     }
 
+    sendMessage(userId, message) {
+        return new Promise((resolve, error) => {
+            const options = {
+                method: 'post',
+                body: {
+                    recipient: {
+                        id: userId
+                    },
+                    message: FacebookClient.mapToFacebookResponse(message)
+                },
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                json: true,
+                url: `https://graph.facebook.com/v2.6/me/messages?access_token=${this.accessToken}`
+            };
+            request(options,
+                (err, result) => {
+                    if (!err && result.statusCode === 200) {
+                        resolve();
+                    } else {
+                        console.log(`Could not send message ${result.statusCode}`);
+                        error(err);
+                    }
+                }
+            );
+        });
+    }
+
+    static mapToFacebookResponse(reply) {
+        if (reply.elements) {
+            return {
+                attachment: {
+                    type: 'template',
+                    payload: {
+                        template_type: 'generic',
+                        elements: FacebookClient.mapListToElements(reply.elements)
+                    }
+                }
+            };
+        } else if (reply.quickreplies) {
+            return {
+                text: reply.text,
+                quick_replies: FacebookClient.mapToQuickReplies(reply.quickreplies)
+            };
+        } else if (reply.buttons) {
+            return {
+                attachment: {
+                    type: 'template',
+                    payload: {
+                        template_type: 'button',
+                        text: reply.text,
+                        buttons: FacebookClient.mapToButtons(reply.buttons)
+                    }
+                }
+            };
+        } else if (reply.image) {
+            return {
+                attachment: {
+                    type: 'image',
+                    payload: {
+                        url: reply.image
+                    }
+                }
+            };
+        } else {
+            return {
+                text: reply.text
+            };
+        }
+    }
+
+    static mapListToElements(list) {
+        return list.map((element) => {
+            return {
+                title: element.title,
+                subtitle: element.subtitle,
+                item_url: element.link,
+                image_url: element.image,
+                buttons: [{
+                    type: 'web_url',
+                    url: element.link,
+                    title: 'Open link naar vacature'
+                }]
+            };
+        });
+    }
+
+    static mapToQuickReplies(quickReplies) {
+        return quickReplies.map((reply) => {
+            return {
+                content_type: 'text',
+                title: reply.label.length > 20 ? reply.label.substring(0, 16) + '...' : reply.label,
+                payload: reply.value
+            };
+        });
+    }
+
+    static mapToButtons(buttons) {
+        let result = [];
+        Object.keys(buttons).forEach((key) => {
+            result.push({
+                type: 'postback',
+                title: buttons[key],
+                payload: key
+            });
+        });
+        return result;
+    }
+
     addGreeting() {
         return new Promise((resolve, error) => {
             request.post(`https://graph.facebook.com/v2.6/me/thread_settings?access_token=${this.accessToken}`,

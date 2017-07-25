@@ -1,18 +1,10 @@
 export default class SenderService {
 
-    constructor() {
-        this.senders = {};
+    constructor(facebookClient) {
         this.calls = {};
         this.delay = 300;
         this.intervals = {};
-    }
-
-    addSender(sessionId, sender) {
-        this.senders[sessionId] = sender;
-    }
-
-    removeSender(sessionId) {
-        delete this.senders[sessionId];
+        this.facebookClient = facebookClient;
     }
 
     addMessage(sessionId, text) {
@@ -57,7 +49,8 @@ export default class SenderService {
                 } else {
                     let call = this.calls[sessionId].splice(0, 1)[0];
                     if (!call.delay) {
-                        this.senders[sessionId](call);
+                        this.facebookClient.sendMessage(sessionId, call);
+                        console.log(`Sending... ${JSON.stringify(call)}`);
                     }
                 }
             }, this.delay);

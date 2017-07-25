@@ -1,60 +1,73 @@
-import Botkit from 'botkit';
-
 export default class FacebookResource {
 
-    constructor(webserver, witService, apiClient, facebookClient, userService, senderService, conversationService, hostName, portName) {
+    constructor(webserver, witService, apiClient, facebookClient, userService, conversationService) {
         this.webserver = webserver;
         this.witService = witService;
         this.apiClient = apiClient;
         this.facebookClient = facebookClient;
         this.userService = userService;
-        this.senderService = senderService;
         this.conversationService = conversationService;
-        this.hostName = hostName;
-        this.portName = portName;
     }
 
-    startResource(accessToken, verifyToken) {
-        let controller = Botkit.facebookbot({
-            verify_token: verifyToken,
-            access_token: accessToken,
-            json_file_store: './storage',
-            port: this.portName,
-            hostname: this.hostName
-        });
-        let bot = controller.spawn({});
+    startResource(verifyToken) {
+        this.webserver.server.get('/facebook/receive', (req, res) => this.handleFacebookConnectionRequest(req, res, verifyToken));
+        this.webserver.server.post('/facebook/receive', (req, res) => this.handleIncomingMessage(req, res));
+        console.log('** Serving webhook endpoints for Messenger Platform at: facebook/receive');
 
         this.facebookClient.addMenu();
         this.facebookClient.addGreeting();
-        this.facebookClient.login().then(() => {
-            controller.startTicking();
-        });
+        this.facebookClient.login();
 
-        controller.createWebhookEndpoints(this.webserver.server, bot);
-        controller.hears(['(.*)'], 'message_received', (bot, message) => this.handleMessageReceived(bot, message));
     }
 
-    handleMessageReceived(bot, message) {
-        let text = this.extractText(message);
+    handleFacebookConnectionRequest(req, res, verifyToken) {
+        console.log(req.query);
+        if (req.query['hub.mode'] === 'subscribe') {
+            if (req.query['hub.verify_token'] === verifyToken) {
+                res.send(req.query['hub.challenge']);
+            } else {
+                res.send('OK');
+            }
+        }
+    }
+
+    handleIncomingMessage(req, res) {
+        if (req.body.entry) {
+            for (let entry of req.body.entry) {
+                for (let facebook_message of entry.messaging) {
+                    this.handleMessageReceived({
+                        text: this.mapToText(facebook_message),
+                        user: facebook_message.sender.id
+                    });
+                }
+            }
+        }
+        res.send('ok');
+    }
+
+    mapToText(facebook_message) {
+        if (facebook_message.message) {
+            if (facebook_message.message.quick_reply) {
+                return facebook_message.message.quick_reply.payload;
+            } else
+                return facebook_message.message.text;
+        } else if (facebook_message.postback) {
+            return facebook_message.postback.payload;
+        }
+    }
+
+    handleMessageReceived({text, user}) {
         console.log(`Receiving... ${JSON.stringify(text)}`);
 
-        this.saveUser(message.user);
-        this.senderService.addSender(message.user, (reply) => {
-            bot.reply(message, FacebookResource.mapToFacebookResponse(reply));
-            console.log(`Sending... ${JSON.stringify(reply)}`);
-        });
+        this.saveUser(user);
 
-        this.witService.handleMessageReceived(text, message.user)
-            .then((data) => this.conversationService.getResponse(data, message.user))
+        this.witService.handleMessageReceived(text, user)
+            .then((data) => this.conversationService.getResponse(data, user))
             .catch(console.error);
 
-        this.apiClient.sendQuery(text, message.user)
+        this.apiClient.sendQuery(text, user)
             .then((data) => console.log(`From api : ${JSON.stringify(data)}`))
             .catch(console.error);
-    }
-
-    extractText(message) {
-        return message.quick_reply ? message.quick_reply.payload : message.text;
     }
 
     saveUser(userId) {
@@ -65,84 +78,5 @@ export default class FacebookResource {
         }
     }
 
-    static mapToFacebookResponse(reply) {
-        if (reply.elements) {
-            return {
-                attachment: {
-                    type: 'template',
-                    payload: {
-                        template_type: 'generic',
-                        elements: FacebookResource.mapListToElements(reply.elements)
-                    }
-                }
-            };
-        } else if (reply.quickreplies) {
-            return {
-                text: reply.text,
-                quick_replies: FacebookResource.mapToQuickReplies(reply.quickreplies)
-            };
-        } else if (reply.buttons) {
-            return {
-                attachment: {
-                    type: 'template',
-                    payload: {
-                        template_type: 'button',
-                        text: reply.text,
-                        buttons: FacebookResource.mapToButtons(reply.buttons)
-                    }
-                }
-            };
-        } else if (reply.image) {
-            return {
-                attachment: {
-                    type: 'image',
-                    payload: {
-                        url: reply.image
-                    }
-                }
-            };
-        } else {
-            return {
-                text: reply.text
-            };
-        }
-    }
 
-    static mapListToElements(list) {
-        return list.map((element) => {
-            return {
-                title: element.title,
-                subtitle: element.subtitle,
-                item_url: element.link,
-                image_url: element.image,
-                buttons: [{
-                    type: 'web_url',
-                    url: element.link,
-                    title: 'Open link naar vacature'
-                }]
-            };
-        });
-    }
-
-    static mapToQuickReplies(quickReplies) {
-        return quickReplies.map((reply) => {
-            return {
-                content_type: 'text',
-                title: typeof reply === 'string' ? reply : reply.label,
-                payload: typeof reply === 'string' ? reply : reply.value
-            };
-        });
-    }
-
-    static mapToButtons(buttons) {
-        let result = [];
-        Object.keys(buttons).forEach((key) => {
-            result.push({
-                type: 'postback',
-                title: buttons[key],
-                payload: key
-            });
-        });
-        return result;
-    }
 }

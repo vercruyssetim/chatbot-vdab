@@ -23,10 +23,18 @@ export default class VindEenJobClient {
             .build();
         console.log(`request naar VEJ ${url}`);
         return new Promise((resolve, error) => {
-            request.get(url, (err, res, body) => {
+            const options = {
+                method: 'get',
+                headers: {
+                    'x-monitor-key': 'JBUWmL8FxyN99qQM'
+                },
+                url
+            };
+            request(options, (err, res, body) => {
                 if (err) {
                     error(err);
                 } else {
+
                     resolve(VindEenJobClient.mapToVacature(JSON.parse(body).vacatures));
                 }
             });

@@ -19,6 +19,12 @@ export default class MongoRepository {
             .catch((error) => console.log(`update error: ${JSON.stringify(error)}`));
     }
 
+    remove(query) {
+        return this.collection
+            .then((collection) => collection.remove(query))
+            .catch((error) => console.log(`remove error: ${JSON.stringify(error)}`));
+    }
+
     findAll() {
         return this.collection
             .then((collection) => collection.find().toArray())

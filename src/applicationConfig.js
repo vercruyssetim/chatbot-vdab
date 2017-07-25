@@ -23,10 +23,7 @@ class ApplicationConfig {
                 this.getApiClient(),
                 this.getFacebookClient(),
                 this.getUserService(),
-                this.getSenderService(),
-                this.getConversationService(),
-                this.getPropertiesService().get('host.name'),
-                this.getPropertiesService().get('port.name')
+                this.getConversationService()
             );
         }
         return this.facebookServer;
@@ -57,7 +54,7 @@ class ApplicationConfig {
 
     getSenderService() {
         if (!this.senderService) {
-            this.senderService = new SenderService();
+            this.senderService = new SenderService(this.getFacebookClient());
         }
         return this.senderService;
     }
@@ -80,7 +77,7 @@ class ApplicationConfig {
 
     getSchedulingService() {
         if (!this.schedulingService) {
-            this.schedulingService = new SchedulingService();
+            this.schedulingService = new SchedulingService(this.getScheduleRepository());
         }
         return this.schedulingService;
     }
@@ -90,6 +87,13 @@ class ApplicationConfig {
             this.contextRepository = new MongoRepository('context', this.getPropertiesService().get('mongo.url'));
         }
         return this.contextRepository;
+    }
+
+    getScheduleRepository() {
+        if(!this.scheduleRepository){
+            this.scheduleRepository = new MongoRepository('schedule', this.getPropertiesService().get('mongo.url'));
+        }
+        return this.scheduleRepository;
     }
 
     getVindEenJobClient() {

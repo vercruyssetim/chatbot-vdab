@@ -6,6 +6,7 @@ import Rx from 'rxjs';
 import _ from 'lodash';
 import ConfirmInputGoal from '../shortterm/confirm.input.goal';
 import ConfirmSchedule from '../shortterm/confirm.schedule';
+import Schedule from '../../../../reminder/schedule';
 
 export default class StartSchedule {
 
@@ -20,6 +21,7 @@ export default class StartSchedule {
 
         this.vindEenJobClient = applicationConfig.getVindEenJobClient();
         this.schedulingService = applicationConfig.getSchedulingService();
+        this.schedule = {};
         this.name =  'startSchedule';
     }
 
@@ -27,27 +29,23 @@ export default class StartSchedule {
         return this.shorttermGoals;
     }
 
-    completeData({sessionId, vindEenJob, jobIds}) {
-        this.observable = this.schedulingService.schedule(sessionId)
-            .flatMap(() => this.vindEenJobClient.lookupJobs({
+    completeData({sessionId, vindEenJob}) {
+        this.schedule = Schedule.aSchedule()
+            .withSessionId(sessionId)
+            .withDataTask(() =>  this.vindEenJobClient.lookupJobs({
                 keyword: vindEenJob.keyword,
                 location: vindEenJob.location,
                 filters: vindEenJob.filters,
                 limit: '30'
             }))
-            .map((jobs) => this.filterJobs(jobs, jobIds))
-            .share();
-
-        this.observable
-            .flatMap((jobs) => Rx.Observable.from(jobs))
-            .map((job) => job.id)
-            .subscribe((jobId) => jobIds.push(jobId));
+            .withFilterTask((jobs, {jobIds}) => this.filterJobs(jobs, jobIds));
     }
 
-    complete(speech, {user}) {
+    complete(speech, {user, jobIds}) {
         speech.addMessage('Super! Dan zie ik je morgen. <Harry wuift>');
         speech.send();
-        this.observable.subscribe((jobs) => {
+
+        this.schedule.withSpeechTask((jobs, speech) => {
             if (jobs.length !== 0) {
                 speech.addMessage(`Dag ${user.firstName}, zoals beloofd: je dagelijkse portie verse jobs!`);
                 speech.addElements(BackendService.mapToElements(jobs));
@@ -56,6 +54,14 @@ export default class StartSchedule {
                 speech.send();
             }
         });
+
+        this.schedule.withOtherTask((jobs, {jobIds}) => {
+            Rx.Observable.from(jobs)
+                .map((job) => job.id)
+                .subscribe((jobId) => jobIds.push(jobId));
+        });
+
+        this.schedulingService.plan(speech, {jobIds}, this.schedule);
     }
 
     filterJobs(jobs, jobIds) {

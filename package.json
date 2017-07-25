@@ -17,7 +17,7 @@
   "license": "MIT",
   "dependencies": {
     "apiai": "^4.0.1",
-    "botkit": "0.4.2",
+    "body-parser": "^1.17.2",
     "express": "4.14.0",
     "lodash": "^4.17.4",
     "mongodb": "^2.2.24",
@@ -26,6 +26,7 @@
     "nodemon": "1.11.0",
     "promise": "7.1.1",
     "properties-reader": "0.0.15",
+    "request": "^2.81.0",
     "rxjs": "^5.2.0",
     "standard": "8.4.0"
   },
