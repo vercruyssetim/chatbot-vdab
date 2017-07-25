@@ -79,7 +79,6 @@ def archiveAllTestResults() {
 
 def buildNpmImage() {
     sh "docker build " +
-            "--build-arg HTTPS_PROXY=http://vdabprdproxy.vdab.be:8080 " +
             "-t $DOCKER_IMAGE_NAME:latest " +
             "."
 }
