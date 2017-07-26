@@ -1,3 +1,4 @@
+import applicationConfig from '../../../../applicationConfig';
 import StartSchedule from './start.schedule';
 import {expect} from 'chai';
 
@@ -5,6 +6,9 @@ describe('start schedule -> ', () => {
 
     let startSchedule;
     beforeEach(() => {
+        applicationConfig.propertiesService = {
+            get: () => {}
+        };
         startSchedule = new StartSchedule({});
     });
 
